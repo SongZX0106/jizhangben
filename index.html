@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资产记账本</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.06);
+            --accent-gold: #d4a574;
+            --accent-gold-light: #e8c9a0;
+            --accent-gold-dark: #b0864c;
+            --accent-emerald: #34d399;
+            --accent-rose: #f87171;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-gold: rgba(212, 165, 116, 0.3);
+            --shadow-glow: 0 0 60px rgba(212, 165, 116, 0.15);
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background Effects */
+        .bg-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-gradient {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+        }
+
+        .bg-gradient-1 {
+            top: -200px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.3) 0%, transparent 70%);
+        }
+
+        .bg-gradient-2 {
+            bottom: -300px;
+            left: -200px;
+            background: radial-gradient(circle, rgba(52, 211, 153, 0.15) 0%, transparent 70%);
+        }
+
+        .bg-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            color: var(--bg-primary);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-gold);
+        }
+
+        /* Total Assets Card */
+        .total-card {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1) 0%, rgba(212, 165, 116, 0.02) 100%);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-xl);
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .total-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(212, 165, 116, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .total-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .total-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--accent-gold-light);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .total-currency {
+            font-size: 28px;
+            font-weight: 400;
+            color: var(--accent-gold);
+        }
+
+        .total-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-lg);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .total-change.positive {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--accent-emerald);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
+
+        .total-change.negative {
+            background: rgba(248, 113, 113, 0.1);
+            color: var(--accent-rose);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+        }
+
+        /* Records Section */
+        .records-section {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .records-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Record Card */
+        .record-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .record-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-gold);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .record-date {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .record-day {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .record-month-year {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .record-total {
+            text-align: right;
+        }
+
+        .record-total-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .record-total-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--accent-gold-light);
+        }
+
+        .record-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .record-change.positive {
+            color: var(--accent-emerald);
+        }
+
+        .record-change.negative {
+            color: var(--accent-rose);
+        }
+
+        /* Platform Tags */
+        .platform-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .platform-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .platform-tag:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .platform-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .platform-icon.cmb { background: linear-gradient(135deg, #e63946 0%, #c1121f 100%); color: white; }
+        .platform-icon.alipay { background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%); color: white; }
+        .platform-icon.wechat { background: linear-gradient(135deg, #07c160 0%, #06ad56 100%); color: white; }
+        .platform-icon.icbc { background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%); color: white; }
+        .platform-icon.cash { background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; }
+
+        .platform-name {
+            color: var(--text-secondary);
+        }
+
+        .platform-amount {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* Record Images */
+        .record-images {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .record-image {
+            width: 64px;
+            height: 64px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .record-image:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-gold);
+        }
+
+        /* Add Record Form */
+        .form-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 24px;
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-title-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .form-title-icon svg {
+            width: 18px;
+            height: 18px;
+            color: var(--bg-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 15px;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Platform Entry */
+        .platform-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .platform-entry {
+            display: grid;
+            grid-template-columns: 1fr 120px 40px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .platform-select {
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .platform-select:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .amount-input {
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            text-align: right;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .btn-remove {
+            width: 40px;
+            height: 40px;
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            border-radius: var(--radius-md);
+            color: var(--accent-rose);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-remove:hover {
+            background: rgba(248, 113, 113, 0.2);
+        }
+
+        .btn-add-platform {
+            width: 100%;
+            padding: 12px;
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px dashed var(--border-gold);
+            border-radius: var(--radius-md);
+            color: var(--accent-gold);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-platform:hover {
+            background: rgba(212, 165, 116, 0.15);
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--accent-gold);
+            background: rgba(212, 165, 116, 0.05);
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-muted);
+        }
+
+        .upload-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .preview-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .preview-image-wrapper {
+            position: relative;
+        }
+
+        .preview-image {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-md);
+            object-fit: cover;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .preview-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            background: var(--accent-rose);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Form Total */
+        .form-total {
+            background: rgba(212, 165, 116, 0.1);
+            border: 1px solid var(--border-gold);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-total-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-total-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--accent-gold-light);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+            border: none;
+            border-radius: var(--radius-md);
+            color: var(--bg-primary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 165, 116, 0.4);
+        }
+
+        /* Image Preview Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: -48px;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .modal-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-prev {
+            left: -72px;
+        }
+
+        .modal-next {
+            right: -72px;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-section {
+                position: static;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .total-amount {
+                font-size: 40px;
+            }
+
+            .record-card {
+                padding: 20px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .platform-entry {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .btn-remove {
+                grid-column: span 2;
+                justify-self: end;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-effects">
+        <div class="bg-gradient bg-gradient-1"></div>
+        <div class="bg-gradient bg-gradient-2"></div>
+        <div class="bg-noise"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header animate-in">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 5v14H5V5h14zm0-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </svg>
+                </div>
+                <span class="logo-text">Ledger</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    导出
+                </button>
+                <button class="btn btn-primary" onclick="scrollToForm()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    新建记录
+                </button>
+            </div>
+        </header>
+
+        <!-- Total Assets Card -->
+        <div class="total-card animate-in delay-1">
+            <div class="total-label">总资产</div>
+            <div class="total-amount">
+                <span class="total-currency">¥</span>
+                <span id="grandTotal">10,250.80</span>
+            </div>
+            <div class="total-change positive" id="totalChange">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 15l-6-6-6 6"/>
+                </svg>
+                较上期 +8.3%
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-grid">
+            <!-- Records Section -->
+            <section class="records-section">
+                <div class="section-header animate-in delay-2">
+                    <h2 class="section-title">记账记录</h2>
+                    <select class="platform-select" style="width: auto;">
+                        <option>全部平台</option>
+                        <option>招商银行</option>
+                        <option>支付宝</option>
+                        <option>微信</option>
+                    </select>
+                </div>
+
+                <div class="records-list" id="recordsList">
+                    <!-- Records will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Add Record Form -->
+            <aside class="form-section animate-in delay-3" id="formSection">
+                <h3 class="form-title">
+                    <div class="form-title-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                    </div>
+                    新建记录
+                </h3>
+
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input type="date" class="form-input" id="recordDate">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">平台与金额</label>
+                    <div class="platform-entries" id="platformEntries">
+                        <!-- Platform entries will be rendered here -->
+                    </div>
+                    <button class="btn-add-platform" onclick="addPlatformEntry()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        添加平台
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">上传图片</label>
+                    <div class="image-upload-area" onclick="document.getElementById('imageInput').click()">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                                <polyline points="17,8 12,3 7,8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div class="upload-text">点击或拖拽上传图片</div>
+                        <div class="upload-hint">支持 JPG、PNG 格式，可上传多张</div>
+                    </div>
+                    <input type="file" id="imageInput" accept="image/*" multiple style="display: none;" onchange="handleImageUpload(event)">
+                    <div class="preview-images" id="previewImages"></div>
+                </div>
+
+                <div class="form-total">
+                    <span class="form-total-label">本次记录总额</span>
+                    <span class="form-total-amount" id="formTotal">¥0.00</span>
+                </div>
+
+                <button class="btn-submit" onclick="submitRecord()">保存记录</button>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Image Preview Modal -->
+    <div class="modal-overlay" id="imageModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <button class="modal-nav modal-prev" onclick="navigateModal(-1)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
+            <img class="modal-image" id="modalImage" src="" alt="预览图片">
+            <button class="modal-nav modal-next" onclick="navigateModal(1)">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Platform options
+        const platforms = [
+            { id: 'cmb', name: '招商银行', icon: '招' },
+            { id: 'alipay', name: '支付宝', icon: '支' },
+            { id: 'wechat', name: '微信', icon: '微' },
+            { id: 'icbc', name: '工商银行', icon: '工' },
+            { id: 'cash', name: '现金', icon: '现' }
+        ];
+
+        // Sample data
+        let records = [
+            {
+                id: 1,
+                date: '2026-04-08',
+                platforms: [
+                    { id: 'cmb', name: '招商银行', amount: 5280.00 },
+                    { id: 'alipay', name: '支付宝', amount: 3150.50 },
+                    { id: 'wechat', name: '微信', amount: 1820.30 }
+                ],
+                images: [
+                    'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=200&h=200&fit=crop',
+                    'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=200&h=200&fit=crop'
+                ],
+                total: 10250.80,
+                changePercent: 8.3
+            },
+            {
+                id: 2,
+                date: '2026-04-01',
+                platforms: [
+                    { id: 'cmb', name: '招商银行', amount: 4920.00 },
+                    { id: 'alipay', name: '支付宝', amount: 2850.00 },
+                    { id: 'icbc', name: '工商银行', amount: 1560.00 }
+                ],
+                images: [
+                    'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=200&h=200&fit=crop'
+                ],
+                total: 9330.00,
+                changePercent: -2.5
+            },
+            {
+                id: 3,
+                date: '2026-03-25',
+                platforms: [
+                    { id: 'cmb', name: '招商银行', amount: 4800.00 },
+                    { id: 'alipay', name: '支付宝', amount: 3200.00 },
+                    { id: 'wechat', name: '微信', amount: 1400.50 },
+                    { id: 'cash', name: '现金', amount: 500.00 }
+                ],
+                images: [],
+                total: 9900.50,
+                changePercent: 15.2
+            }
+        ];
+
+        // Current form state
+        let currentImages = [];
+        let modalImages = [];
+        let currentModalIndex = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderRecords();
+            addPlatformEntry();
+            setDefaultDate();
+            updateGrandTotal();
+        });
+
+        // Set default date to today
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('recordDate').value = today;
+        }
+
+        // Render records
+        function renderRecords() {
+            const container = document.getElementById('recordsList');
+            container.innerHTML = records.map((record, index) => {
+                const date = new Date(record.date);
+                const day = date.getDate();
+                const month = date.toLocaleString('zh-CN', { month: 'short' });
+                const year = date.getFullYear();
+                const isPositive = record.changePercent >= 0;
+
+                return `
+                    <div class="record-card animate-in delay-${index + 2}">
+                        <div class="record-header">
+                            <div class="record-date">
+                                <div class="record-day">${day}</div>
+                                <div class="record-month-year">${month} ${year}</div>
+                            </div>
+                            <div class="record-total">
+                                <div class="record-total-label">总额</div>
+                                <div class="record-total-amount">¥${formatNumber(record.total)}</div>
+                                <div class="record-change ${isPositive ? 'positive' : 'negative'}">
+                                    ${isPositive ? '↑' : '↓'} ${isPositive ? '+' : ''}${record.changePercent}%
+                                </div>
+                            </div>
+                        </div>
+                        <div class="platform-tags">
+                            ${record.platforms.map(p => `
+                                <div class="platform-tag">
+                                    <div class="platform-icon ${p.id}">${platforms.find(pl => pl.id === p.id)?.icon || p.name[0]}</div>
+                                    <span class="platform-name">${p.name}</span>
+                                    <span class="platform-amount">¥${formatNumber(p.amount)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${record.images.length > 0 ? `
+                            <div class="record-images">
+                                ${record.images.map((img, imgIndex) => `
+                                    <img class="record-image" src="${img}" alt="记录图片" onclick="openModal(${index}, ${imgIndex})">
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add platform entry
+        function addPlatformEntry() {
+            const container = document.getElementById('platformEntries');
+            const entry = document.createElement('div');
+            entry.className = 'platform-entry';
+            entry.innerHTML = `
+                <select class="platform-select" onchange="updateFormTotal()">
+                    <option value="">选择平台</option>
+                    ${platforms.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                </select>
+                <input type="number" class="amount-input" placeholder="金额" onchange="updateFormTotal()">
+                <button class="btn-remove" onclick="removePlatformEntry(this)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            `;
+            container.appendChild(entry);
+        }
+
+        // Remove platform entry
+        function removePlatformEntry(btn) {
+            const entries = document.querySelectorAll('.platform-entry');
+            if (entries.length > 1) {
+                btn.parentElement.remove();
+                updateFormTotal();
+            }
+        }
+
+        // Update form total
+        function updateFormTotal() {
+            const entries = document.querySelectorAll('.platform-entry');
+            let total = 0;
+            entries.forEach(entry => {
+                const amount = parseFloat(entry.querySelector('.amount-input').value) || 0;
+                total += amount;
+            });
+            document.getElementById('formTotal').textContent = '¥' + formatNumber(total);
+        }
+
+        // Update grand total
+        function updateGrandTotal() {
+            if (records.length === 0) {
+                document.getElementById('grandTotal').textContent = '0.00';
+                return;
+            }
+            const latestTotal = records[0].total;
+            document.getElementById('grandTotal').textContent = formatNumber(latestTotal);
+
+            // Update change indicator
+            const changeEl = document.getElementById('totalChange');
+            const latestChange = records[0].changePercent;
+            const isPositive = latestChange >= 0;
+            changeEl.className = `total-change ${isPositive ? 'positive' : 'negative'}`;
+            changeEl.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="${isPositive ? 'M18 15l-6-6-6 6' : 'M6 9l6 6 6-6'}"/>
+                </svg>
+                较上期 ${isPositive ? '+' : ''}${latestChange}%
+            `;
+        }
+
+        // Handle image upload
+        function handleImageUpload(event) {
+            const files = event.target.files;
+            const preview = document.getElementById('previewImages');
+
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    currentImages.push(e.target.result);
+                    renderPreviewImages();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Render preview images
+        function renderPreviewImages() {
+            const preview = document.getElementById('previewImages');
+            preview.innerHTML = currentImages.map((img, index) => `
+                <div class="preview-image-wrapper">
+                    <img class="preview-image" src="${img}" alt="预览">
+                    <button class="preview-remove" onclick="removePreviewImage(${index})">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        // Remove preview image
+        function removePreviewImage(index) {
+            currentImages.splice(index, 1);
+            renderPreviewImages();
+        }
+
+        // Submit record
+        function submitRecord() {
+            const date = document.getElementById('recordDate').value;
+            if (!date) {
+                alert('请选择日期');
+                return;
+            }
+
+            const entries = document.querySelectorAll('.platform-entry');
+            const platformData = [];
+            let total = 0;
+
+            entries.forEach(entry => {
+                const platformId = entry.querySelector('.platform-select').value;
+                const amount = parseFloat(entry.querySelector('.amount-input').value) || 0;
+                if (platformId && amount > 0) {
+                    const platform = platforms.find(p => p.id === platformId);
+                    platformData.push({
+                        id: platformId,
+                        name: platform.name,
+                        amount: amount
+                    });
+                    total += amount;
+                }
+            });
+
+            if (platformData.length === 0) {
+                alert('请至少添加一个平台和金额');
+                return;
+            }
+
+            // Calculate change percent
+            const previousTotal = records.length > 0 ? records[0].total : total;
+            const changePercent = previousTotal > 0 ? ((total - previousTotal) / previousTotal * 100).toFixed(1) : 0;
+
+            // Create new record
+            const newRecord = {
+                id: Date.now(),
+                date: date,
+                platforms: platformData,
+                images: [...currentImages],
+                total: total,
+                changePercent: parseFloat(changePercent)
+            };
+
+            records.unshift(newRecord);
+            renderRecords();
+            updateGrandTotal();
+
+            // Reset form
+            document.getElementById('platformEntries').innerHTML = '';
+            addPlatformEntry();
+            currentImages = [];
+            renderPreviewImages();
+            setDefaultDate();
+            document.getElementById('formTotal').textContent = '¥0.00';
+        }
+
+        // Open image modal
+        function openModal(recordIndex, imageIndex) {
+            modalImages = records[recordIndex].images;
+            currentModalIndex = imageIndex;
+            showModalImage();
+            document.getElementById('imageModal').classList.add('active');
+        }
+
+        // Show modal image
+        function showModalImage() {
+            document.getElementById('modalImage').src = modalImages[currentModalIndex];
+        }
+
+        // Navigate modal
+        function navigateModal(direction) {
+            currentModalIndex += direction;
+            if (currentModalIndex < 0) currentModalIndex = modalImages.length - 1;
+            if (currentModalIndex >= modalImages.length) currentModalIndex = 0;
+            showModalImage();
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+        }
+
+        // Close modal on background click
+        document.getElementById('imageModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) {
+                closeModal();
+            }
+        });
+
+        // Keyboard navigation for modal
+        document.addEventListener('keydown', (e) => {
+            if (!document.getElementById('imageModal').classList.contains('active')) return;
+            if (e.key === 'Escape') closeModal();
+            if (e.key === 'ArrowLeft') navigateModal(-1);
+            if (e.key === 'ArrowRight') navigateModal(1);
+        });
+
+        // Scroll to form
+        function scrollToForm() {
+            document.getElementById('formSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Format number
+        function formatNumber(num) {
+            return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    </script>
+</body>
+</html>
