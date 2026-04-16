@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ledger | 对账历史</title>
+<!-- Typography & Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-container": "#005d4a",
+                "surface": "#f9f9f9",
+                "tertiary-container": "#3f9eff",
+                "inverse-surface": "#0c0f0f",
+                "outline": "#757c7d",
+                "tertiary-fixed-dim": "#2a91f1",
+                "on-tertiary": "#f8f8ff",
+                "primary-fixed-dim": "#5debc4",
+                "surface-container-highest": "#dde4e5",
+                "secondary-fixed-dim": "#cbd6db",
+                "on-secondary-fixed": "#364145",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary": "#f0fbff",
+                "surface-container-low": "#f2f4f4",
+                "error-dim": "#4e0309",
+                "inverse-primary": "#70fdd5",
+                "primary-dim": "#005e4a",
+                "on-tertiary-fixed": "#000000",
+                "background": "#f9f9f9",
+                "on-background": "#2d3435",
+                "surface-bright": "#f9f9f9",
+                "tertiary-dim": "#005596",
+                "primary": "#006b55",
+                "error-container": "#fe8983",
+                "surface-variant": "#dde4e5",
+                "on-secondary-fixed-variant": "#525d61",
+                "on-error-container": "#752121",
+                "on-surface-variant": "#5a6061",
+                "on-primary-fixed-variant": "#006853",
+                "on-primary": "#defff1",
+                "on-surface": "#2d3435",
+                "secondary": "#566165",
+                "surface-tint": "#006b55",
+                "secondary-fixed": "#d9e4e9",
+                "secondary-dim": "#4a5559",
+                "on-secondary-container": "#495357",
+                "secondary-container": "#d9e4e9",
+                "on-error": "#fff7f6",
+                "on-primary-fixed": "#004939",
+                "inverse-on-surface": "#9c9d9d",
+                "on-tertiary-fixed-variant": "#00284c",
+                "tertiary": "#0061aa",
+                "primary-container": "#6dfad2",
+                "surface-dim": "#d3dbdd",
+                "on-tertiary-container": "#001e3b",
+                "surface-container-high": "#e4e9ea",
+                "primary-fixed": "#6dfad2",
+                "tertiary-fixed": "#3f9eff",
+                "outline-variant": "#adb3b4",
+                "surface-container": "#ebeeef",
+                "error": "#9f403d"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "fontFamily": {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, .display-text { font-family: 'Manrope', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-[#f9f9f9] dark:bg-gray-900 flex items-center justify-between px-6 py-4 w-full sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#006b55] dark:text-[#6dfad2] text-2xl" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h1 class="font-['Manrope'] font-bold text-xl tracking-tight text-[#006b55] dark:text-[#6dfad2]">Ledger</h1>
+</div>
+<div class="flex items-center gap-6">
+<button class="text-[#5a6061] dark:text-gray-400 font-medium hover:bg-[#f2f4f4] dark:hover:bg-gray-800 transition-colors px-3 py-1 rounded-lg">总览</button>
+<button class="text-[#006b55] dark:text-[#6dfad2] font-semibold px-3 py-1 rounded-lg">历史</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm" data-icon="person">person</span>
+</div>
+</div>
+</header>
+<main class="max-w-5xl mx-auto px-6 pt-12 pb-32">
+<!-- Editorial Header Section -->
+<section class="mb-16">
+<span class="text-primary font-semibold tracking-widest text-xs uppercase mb-4 block">2024年存档</span>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<h2 class="text-5xl md:text-6xl font-extrabold tracking-tight text-on-background">对账 <br/><span class="text-outline-variant/60">快照</span></h2>
+<div class="flex items-center gap-4 bg-surface-container-low p-2 pr-6 rounded-full">
+<div class="bg-primary-container text-on-primary-container w-10 h-10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant uppercase font-bold tracking-tighter">今年累计</p>
+<p class="font-headline font-bold text-lg">+12,500.00</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid / Asymmetric List -->
+<div class="space-y-12">
+<!-- March Entry -->
+<article class="group relative grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+<!-- Large Date Anchor -->
+<div class="md:col-span-3 flex flex-col pt-2">
+<span class="text-6xl font-extrabold text-on-background opacity-10 group-hover:opacity-100 transition-opacity duration-500">03</span>
+<h3 class="text-2xl font-bold font-headline mt-[-24px]">3月12日</h3>
+<p class="text-on-surface-variant text-sm mt-1">春季季度审计</p>
+</div>
+<!-- Content Card -->
+<div class="md:col-span-9 bg-surface-container-lowest rounded-xl p-8 shadow-[0_20px_40px_rgba(45,52,53,0.03)] transition-all duration-300 hover:shadow-[0_20px_40px_rgba(45,52,53,0.06)]">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+<!-- Financial Focus -->
+<div class="flex-1">
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-extrabold font-headline tracking-tighter">9,000</span>
+<span class="text-outline font-medium">USD</span>
+</div>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-bold">较2月 +1,000</span>
+<span class="material-symbols-outlined text-primary text-sm" data-icon="trending_up">trending_up</span>
+</div>
+<!-- Breakdown Pills -->
+<div class="mt-8 flex flex-wrap gap-3">
+<div class="bg-surface-container-low px-4 py-3 rounded-xl border-l-4 border-primary/40 flex items-center gap-4">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="payments">payments</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">支付宝</p>
+<p class="font-headline font-bold">6,000</p>
+</div>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-xl border-l-4 border-secondary/40 flex items-center gap-4">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">招商银行</p>
+<p class="font-headline font-bold">3,000</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Thumbnails (3 Images) -->
+<div class="flex -space-x-4 lg:space-x-3 items-center">
+<div class="relative w-20 h-24 rounded-lg overflow-hidden border-2 border-surface-container-lowest shadow-xl rotate-[-4deg] hover:rotate-0 transition-transform cursor-pointer">
+<img alt="收据" class="w-full h-full object-cover" data-alt="Close-up of a printed financial receipt on a textured paper background with soft cinematic lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBunGKBf6k2--S-aO4QTHvZLKQaLPr6HbkzgOukbYji-CVR-9dR1_1nZit4dL7kqNsBcmG0Kk6biFoIdH0orLdoV_Tc8CbKlriYe5OAepoUHgW-0a8wwR89AtRYe6r0dI5ff-OiaZSee02AzO9n89RpSavLWezPOQOGTVI8rdh2wpHTWsJtszHw2LuIotkIDVcONTVf8TfMlZisS3U88HXkltEVHLWJ2B7-MjmWdgSwhM8qfgECw2dpK518jX4XLEyNTlUDNCHuFhw"/>
+</div>
+<div class="relative w-20 h-24 rounded-lg overflow-hidden border-2 border-surface-container-lowest shadow-xl rotate-[2deg] hover:rotate-0 transition-transform cursor-pointer z-10">
+<img alt="电子表格" class="w-full h-full object-cover" data-alt="Clean minimal computer screen showing complex financial data and charts in a soft morning light setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAimJ_32lwHfSUoJ1SbbHQWHg-iZq1cdYvLPiFHTN067yMVcS9Ftf07VgcTJsmT6pK5WxX_wvuxgsL5rfrxRxyHjP-BmUatVmvqGkgvRgY124mTsFAjnNS85jHamhMWjw10KB1pIvcr2LNVNuzTNYn90A2Rk1v3L38Ms4fap0oh-5AWNX1d_czjSAhCERoZ26gku_-2nwZpdKUIdf4OTIE_zkodx7mD74oif0eDGdfk_D842A4iA1RTSYYH6VHXNJm49hms24RZ2kk"/>
+</div>
+<div class="relative w-20 h-24 rounded-lg overflow-hidden border-2 border-surface-container-lowest shadow-xl rotate-[6deg] hover:rotate-0 transition-transform cursor-pointer z-20">
+<img alt="银行账单" class="w-full h-full object-cover" data-alt="Macro photography of a bank statement showing numbers and transactions on high-quality cream paper" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAW5T_U2oHzP6guLKR5xIoEAZ0E35NHRcjt1yI_pvrdxg0G_keA6UBv634_UiIb1jMsEzoHKXQ8m4YSC_ULFXBzabaGAUAXtESoWHKVXHq8Nr_ue8zGx9MjIS85pn2bX385Mg_ozerQg-l6uUES504ZXyqd00aI6QOa_5VKcp7xMGUrcFh-xl__xQnU9Bft7AasZugQZqevnT9_sCcvoynNSg2AiqXrZIYOfzOZqPi_gUWLelMlIx9eIe-nWNUUnB-PalLcj4cdw1c"/>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Separator -->
+<div class="flex justify-center py-4">
+<div class="w-32 h-[2px] bg-surface-container-highest"></div>
+</div>
+<!-- February Entry -->
+<article class="group relative grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+<div class="md:col-span-3 flex flex-col pt-2">
+<span class="text-6xl font-extrabold text-on-background opacity-10 group-hover:opacity-100 transition-opacity duration-500">02</span>
+<h3 class="text-2xl font-bold font-headline mt-[-24px]">2月12日</h3>
+<p class="text-on-surface-variant text-sm mt-1">季度中对账</p>
+</div>
+<div class="md:col-span-9 bg-surface-container-lowest rounded-xl p-8 shadow-[0_20px_40px_rgba(45,52,53,0.03)] transition-all duration-300 hover:shadow-[0_20px_40px_rgba(45,52,53,0.06)]">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+<!-- Financial Focus -->
+<div class="flex-1">
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-extrabold font-headline tracking-tighter text-on-background/80">7,000</span>
+<span class="text-outline font-medium">USD</span>
+</div>
+<div class="mt-8 flex flex-wrap gap-3">
+<div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-4">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="payments">payments</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">支付宝</p>
+<p class="font-headline font-bold">5,000</p>
+</div>
+</div>
+<div class="bg-surface-container-low px-4 py-3 rounded-xl flex items-center gap-4">
+<div class="w-8 h-8 rounded-lg bg-surface-container-lowest flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="account_balance">account_balance</span>
+</div>
+<div>
+<p class="text-[10px] text-on-surface-variant font-bold uppercase">招商银行</p>
+<p class="font-headline font-bold">2,000</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Thumbnails (2 Images) -->
+<div class="flex -space-x-4 lg:space-x-3 items-center">
+<div class="relative w-20 h-24 rounded-lg overflow-hidden border-2 border-surface-container-lowest shadow-xl rotate-[-2deg] hover:rotate-0 transition-transform cursor-pointer">
+<img alt="报告" class="w-full h-full object-cover" data-alt="Minimalist top-down shot of a financial report on a white desk with professional stationery and soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWhR0KStMF0TFVU1N6EfoAvBFP89IAIhnwlaXcu5klsBV7ujX-YZce1mQdS5qAJ8d2dzqgWyw6AQNcYE6zmQyl-QSAFqUY5VjEXV6ZUMIA_CzWBpURcycfnGj14XXYR5_YyMWJyjZHzWMVX9m9BGEKa4LRlR9nDiXyKbATSfo23atKivTmHeyeL8M0aV22Pi9u3mz_WjWcw0_rFT1mAR_2FNlitNO9U6lH2Qns5zo5VpT7z7OhNavxeVvk6eHRFmvLtlu8zIiKaOU"/>
+</div>
+<div class="relative w-20 h-24 rounded-lg overflow-hidden border-2 border-surface-container-lowest shadow-xl rotate-[4deg] hover:rotate-0 transition-transform cursor-pointer z-10">
+<img alt="应用界面" class="w-full h-full object-cover" data-alt="Close up of a hand using a banking app on a high-resolution smartphone display with bokeh background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAu2UWurtMozcMn-YFzNOq0frNDzBG_mjz-AKk-ytRluhmunokb2hgReVDKrTupxJLsLHiR1h8rlrAR5TB_GdEiyDEPvweWDkKG777bFzdtqyLP_kAl8oBZ7o28oTamKv-sk6Rss3kxE61MTgXPv5fAYbEYslQURHbmhT2xOml_9w9UWztAy27L1e-m7zKauRcha_juqzPNR5cUwMl42ayK7ccKxqDewTgzJOZymqvD6AZokyx1FZ4p8rcA0jltX4n-Hc2NiVgKKTw"/>
+</div>
+</div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-8 pb-6 pt-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-[0_-10px_30px_rgba(45,52,53,0.04)] border-t border-[#adb3b4]/15">
+<a class="flex flex-col items-center justify-center text-[#006b55] dark:text-[#6dfad2] font-semibold bg-[#6dfad2]/10 rounded-xl px-4 py-1 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="history">history</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-wider mt-1">历史</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#5a6061] dark:text-gray-400 hover:text-[#006b55] dark:hover:text-[#6dfad2] transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="add_circle">add_circle</span>
+<span class="font-['Inter'] text-[11px] font-medium uppercase tracking-wider mt-1">添加</span>
+</a>
+</nav>
+<!-- Floating Action Area (Implicit Add) -->
+<div class="fixed bottom-24 right-8 z-30 md:hidden">
+<button class="w-14 h-14 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined text-3xl" data-icon="add">add</span>
+</button>
+</div>
+</body></html>
