@@ -6,12 +6,16 @@
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "资产记账本"
 			}
+		},
+		{
+			"path": "pages/add/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "添加记录"
+			}
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "资产记账本",
-		"navigationBarBackgroundColor": "#0a0a0f",
-		"backgroundColor": "#0a0a0f"
+		"navigationBarTitleText": "资产记账本"
 	}
 }

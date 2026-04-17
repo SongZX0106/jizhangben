@@ -32,7 +32,9 @@
       "Bash(gh api:*)",
       "Bash(curl -sL \"https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/README.md\")",
       "Bash(curl -sL --insecure \"https://raw.githubusercontent.com/KKKKhazix/khazix-skills/main/README.md\")",
-      "mcp__sequential-thinking__sequentialthinking"
+      "mcp__sequential-thinking__sequentialthinking",
+      "Bash(python3 -c ' *)",
+      "Bash(python3)"
     ],
     "additionalDirectories": [
       "C:\\Users\\yikonsh\\.claude\\plugins"
