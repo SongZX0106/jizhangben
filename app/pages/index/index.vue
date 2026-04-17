@@ -15,7 +15,7 @@
 			<div class="hero-eyebrow">Portfolio Snapshot</div>
 			<h1 class="hero-title">
 				资产快照
-				<span>不定期记录，看见真实的变化</span>
+				<span style="padding-top: 8px;">不定期记录，看见真实的变化</span>
 			</h1>
 			<div class="hero-stats" v-if="computedSnapshots.length > 0">
 				<div class="stat-block">
@@ -199,6 +199,7 @@ function goAdd() {
 </script>
 
 <style scoped>
+@import url("../../static/css2.css");
 .page {
 	min-height: 100vh;
 	background: var(--paper);
@@ -268,7 +269,7 @@ function goAdd() {
 .hero {
 	max-width: 900px;
 	margin: 0 auto;
-	padding: 56px 24px 40px;
+	padding: 40px 24px 40px;
 }
 
 .hero-eyebrow {

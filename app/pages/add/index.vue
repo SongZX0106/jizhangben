@@ -289,7 +289,17 @@ function chooseImage() {
         sizeType: ['compressed'],
         sourceType: ['album', 'camera'],
         success: (res) => {
-            screenshots.value.push(...res.tempFilePaths);
+            res.tempFilePaths.forEach(function(tempPath) {
+                uni.saveFile({
+                    tempFilePath: tempPath,
+                    success: function(saveRes) {
+                        screenshots.value.push(saveRes.savedFilePath);
+                    },
+                    fail: function() {
+                        screenshots.value.push(tempPath);
+                    }
+                });
+            });
         }
     });
 }
@@ -310,6 +320,15 @@ function goBack() {
 }
 
 function saveSnapshot() {
+    if(platforms.value.length === 0){
+        uni.showToast({
+            title:"请添加记录",
+            mask:true,
+            icon:"none"
+        })
+        return
+    }
+
     const snapshot = {
         id: Date.now().toString(),
         date: formDate.value,
@@ -340,6 +359,7 @@ function saveSnapshot() {
 </script>
 
 <style scoped>
+@import url("../../static/css2.css");
 .page {
     min-height: 100vh;
     background: var(--paper);
