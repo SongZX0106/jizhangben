@@ -50,7 +50,6 @@
 .hero-card[data-v-1cf27b2a] {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #fffdf9 0%, #f5f2ed 100%);
   border: 1px solid rgba(26, 26, 26, 0.06);
   border-radius: 20px;
   padding: 28px 28px 24px;
@@ -58,6 +57,30 @@
   justify-content: space-between;
   align-items: flex-start;
   box-shadow: 0 2px 16px rgba(26, 26, 26, 0.04);
+  transition: background 0.4s ease;
+}
+.hero-card.hero-neutral[data-v-1cf27b2a] {
+  background: linear-gradient(135deg, #fffdf9 0%, #f5f2ed 100%);
+}
+.hero-card.hero-up[data-v-1cf27b2a] {
+  background: linear-gradient(135deg, #fff5f3 0%, #fde8e4 50%, #fbeee0 100%);
+  border-color: rgba(196, 62, 62, 0.08);
+}
+.hero-card.hero-up .hero-eyebrow[data-v-1cf27b2a] {
+  color: #c43e3e;
+}
+.hero-card.hero-up .hero-eyebrow[data-v-1cf27b2a]::before {
+  background-color: #c43e3e;
+}
+.hero-card.hero-down[data-v-1cf27b2a] {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e4f5eb 50%, #eef7f0 100%);
+  border-color: rgba(46, 125, 91, 0.08);
+}
+.hero-card.hero-down .hero-eyebrow[data-v-1cf27b2a] {
+  color: #2e7d5b;
+}
+.hero-card.hero-down .hero-eyebrow[data-v-1cf27b2a]::before {
+  background-color: #2e7d5b;
 }
 .hero-watermark[data-v-1cf27b2a] {
   position: absolute;
@@ -440,6 +463,95 @@
   font-weight: 700;
   color: #a0a0a0;
   letter-spacing: 2px;
+}
+
+/* ===== Delete Dialog ===== */
+.dialog-overlay[data-v-1cf27b2a] {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(26, 26, 26, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+}
+.dialog-card[data-v-1cf27b2a] {
+  width: 100%;
+  max-width: 320px;
+  background-color: #fffdf9;
+  border-radius: 20px;
+  padding: 32px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 16px 48px rgba(26, 26, 26, 0.16);
+}
+.dialog-icon-wrap[data-v-1cf27b2a] {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #fdf0ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.dialog-icon[data-v-1cf27b2a] {
+  font-size: 20px;
+  color: #c43e3e;
+  font-weight: 700;
+}
+.dialog-title[data-v-1cf27b2a] {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+.dialog-msg[data-v-1cf27b2a] {
+  font-size: 13px;
+  color: #6b6b6b;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.dialog-sub[data-v-1cf27b2a] {
+  font-size: 11px;
+  color: #a0a0a0;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+.dialog-actions[data-v-1cf27b2a] {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+.dialog-btn[data-v-1cf27b2a] {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dialog-btn uni-text[data-v-1cf27b2a] {
+  font-size: 14px;
+  font-weight: 600;
+}
+.dialog-cancel[data-v-1cf27b2a] {
+  background-color: #f5f2ed;
+}
+.dialog-cancel uni-text[data-v-1cf27b2a] {
+  color: #6b6b6b;
+}
+.dialog-confirm[data-v-1cf27b2a] {
+  background-color: #c43e3e;
+}
+.dialog-confirm uni-text[data-v-1cf27b2a] {
+  color: #ffffff;
 }
 
 /* ===== FAB ===== */

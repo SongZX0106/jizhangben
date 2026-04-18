@@ -2,7 +2,16 @@
   <view class="page">
     <!-- HERO -->
     <view class="hero">
-      <view class="hero-card">
+      <view
+        :class="[
+          'hero-card',
+          computedSnapshots.length > 0 && computedSnapshots[0].change
+            ? computedSnapshots[0].change.pct >= 0
+              ? 'hero-up'
+              : 'hero-down'
+            : 'hero-neutral',
+        ]"
+      >
         <view class="hero-watermark">{{ currentYear }}</view>
         <view class="hero-left">
           <text class="hero-eyebrow">Portfolio Snapshot</text>
@@ -156,6 +165,29 @@
     <view class="fab" @click="goAdd">
       <text class="fab-icon">+</text>
     </view>
+
+    <!-- DELETE DIALOG -->
+    <view class="dialog-overlay" v-if="deleteDialog.show" @click="closeDelete">
+      <view class="dialog-card" @click.stop>
+        <view class="dialog-icon-wrap">
+          <text class="dialog-icon">✕</text>
+        </view>
+        <text class="dialog-title">确认删除</text>
+        <text class="dialog-msg">
+          确定要删除
+          {{ deleteDialog.item ? deleteDialog.item.date : "" }} 的快照记录吗？
+        </text>
+        <text class="dialog-sub">删除后无法恢复</text>
+        <view class="dialog-actions">
+          <view class="dialog-btn dialog-cancel" @click="closeDelete">
+            <text>取消</text>
+          </view>
+          <view class="dialog-btn dialog-confirm" @click="doDelete">
+            <text>删除</text>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -179,9 +211,11 @@ function loadSnapshots() {
 onShow(loadSnapshots);
 
 const computedSnapshots = computed(() => {
-  const sorted = [...rawSnapshots.value].sort((a, b) =>
-    b.date.localeCompare(a.date),
-  );
+  const sorted = [...rawSnapshots.value].sort((a, b) => {
+    const dateCmp = b.date.localeCompare(a.date);
+    if (dateCmp !== 0) return dateCmp;
+    return (b.id || "").localeCompare(a.id || "");
+  });
   return sorted.map((item, i) => {
     const total = (item.platforms || []).reduce(
       (s, p) => s + (parseFloat(p.amount) || 0),
@@ -286,22 +320,26 @@ function previewImage(urls, index) {
   });
 }
 
+const deleteDialog = ref({ show: false, item: null });
+
 function confirmDelete(item) {
-  uni.showModal({
-    title: "确认删除",
-    content: `确定要删除 ${item.date} 的快照记录吗？`,
-    confirmColor: "#c43e3e",
-    success(res) {
-      if (res.confirm) {
-        const idx = rawSnapshots.value.findIndex((s) => s.id === item.id);
-        if (idx > -1) {
-          rawSnapshots.value.splice(idx, 1);
-          uni.setStorageSync(STORAGE_KEY, JSON.stringify(rawSnapshots.value));
-          uni.showToast({ title: "已删除", icon: "success" });
-        }
-      }
-    },
-  });
+  deleteDialog.value = { show: true, item };
+}
+
+function closeDelete() {
+  deleteDialog.value = { show: false, item: null };
+}
+
+function doDelete() {
+  const item = deleteDialog.value.item;
+  if (!item) return;
+  const idx = rawSnapshots.value.findIndex((s) => s.id === item.id);
+  if (idx > -1) {
+    rawSnapshots.value.splice(idx, 1);
+    uni.setStorageSync(STORAGE_KEY, JSON.stringify(rawSnapshots.value));
+    uni.showToast({ title: "已删除", icon: "success" });
+  }
+  closeDelete();
 }
 
 function goAdd() {
@@ -360,7 +398,6 @@ function goAdd() {
 .hero-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #fffdf9 0%, #f5f2ed 100%);
   border: 1px solid rgba(26, 26, 26, 0.06);
   border-radius: 20px;
   padding: 28px 28px 24px;
@@ -368,6 +405,30 @@ function goAdd() {
   justify-content: space-between;
   align-items: flex-start;
   box-shadow: 0 2px 16px rgba(26, 26, 26, 0.04);
+  transition: background 0.4s ease;
+}
+.hero-card.hero-neutral {
+  background: linear-gradient(135deg, #fffdf9 0%, #f5f2ed 100%);
+}
+.hero-card.hero-up {
+  background: linear-gradient(135deg, #fff5f3 0%, #fde8e4 50%, #fbeee0 100%);
+  border-color: rgba(196, 62, 62, 0.08);
+}
+.hero-card.hero-up .hero-eyebrow {
+  color: #c43e3e;
+}
+.hero-card.hero-up .hero-eyebrow::before {
+  background-color: #c43e3e;
+}
+.hero-card.hero-down {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e4f5eb 50%, #eef7f0 100%);
+  border-color: rgba(46, 125, 91, 0.08);
+}
+.hero-card.hero-down .hero-eyebrow {
+  color: #2e7d5b;
+}
+.hero-card.hero-down .hero-eyebrow::before {
+  background-color: #2e7d5b;
 }
 .hero-watermark {
   position: absolute;
@@ -750,6 +811,95 @@ function goAdd() {
   font-weight: 700;
   color: #a0a0a0;
   letter-spacing: 2px;
+}
+
+/* ===== Delete Dialog ===== */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(26, 26, 26, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+}
+.dialog-card {
+  width: 100%;
+  max-width: 320px;
+  background-color: #fffdf9;
+  border-radius: 20px;
+  padding: 32px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 16px 48px rgba(26, 26, 26, 0.16);
+}
+.dialog-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #fdf0ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.dialog-icon {
+  font-size: 20px;
+  color: #c43e3e;
+  font-weight: 700;
+}
+.dialog-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+.dialog-msg {
+  font-size: 13px;
+  color: #6b6b6b;
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+.dialog-sub {
+  font-size: 11px;
+  color: #a0a0a0;
+  font-style: italic;
+  margin-bottom: 24px;
+}
+.dialog-actions {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+.dialog-btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.dialog-btn text {
+  font-size: 14px;
+  font-weight: 600;
+}
+.dialog-cancel {
+  background-color: #f5f2ed;
+}
+.dialog-cancel text {
+  color: #6b6b6b;
+}
+.dialog-confirm {
+  background-color: #c43e3e;
+}
+.dialog-confirm text {
+  color: #ffffff;
 }
 
 /* ===== FAB ===== */

@@ -65,9 +65,12 @@ if (uni.restoreGlobal) {
       }
       onShow(loadSnapshots);
       const computedSnapshots = vue.computed(() => {
-        const sorted = [...rawSnapshots.value].sort(
-          (a, b) => b.date.localeCompare(a.date)
-        );
+        const sorted = [...rawSnapshots.value].sort((a, b) => {
+          const dateCmp = b.date.localeCompare(a.date);
+          if (dateCmp !== 0)
+            return dateCmp;
+          return (b.id || "").localeCompare(a.id || "");
+        });
         return sorted.map((item, i) => {
           const total = (item.platforms || []).reduce(
             (s, p) => s + (parseFloat(p.amount) || 0),
@@ -169,27 +172,29 @@ if (uni.restoreGlobal) {
           current: urls[index]
         });
       }
+      const deleteDialog = vue.ref({ show: false, item: null });
       function confirmDelete(item) {
-        uni.showModal({
-          title: "确认删除",
-          content: `确定要删除 ${item.date} 的快照记录吗？`,
-          confirmColor: "#c43e3e",
-          success(res) {
-            if (res.confirm) {
-              const idx = rawSnapshots.value.findIndex((s) => s.id === item.id);
-              if (idx > -1) {
-                rawSnapshots.value.splice(idx, 1);
-                uni.setStorageSync(STORAGE_KEY$1, JSON.stringify(rawSnapshots.value));
-                uni.showToast({ title: "已删除", icon: "success" });
-              }
-            }
-          }
-        });
+        deleteDialog.value = { show: true, item };
+      }
+      function closeDelete() {
+        deleteDialog.value = { show: false, item: null };
+      }
+      function doDelete() {
+        const item = deleteDialog.value.item;
+        if (!item)
+          return;
+        const idx = rawSnapshots.value.findIndex((s) => s.id === item.id);
+        if (idx > -1) {
+          rawSnapshots.value.splice(idx, 1);
+          uni.setStorageSync(STORAGE_KEY$1, JSON.stringify(rawSnapshots.value));
+          uni.showToast({ title: "已删除", icon: "success" });
+        }
+        closeDelete();
       }
       function goAdd() {
         uni.navigateTo({ url: "/pages/add/index" });
       }
-      const __returned__ = { STORAGE_KEY: STORAGE_KEY$1, rawSnapshots, loadSnapshots, computedSnapshots, groupedSnapshots, formatNum, formatNumCN, currentYear, weekdays, formatDate, previewImage, confirmDelete, goAdd, ref: vue.ref, computed: vue.computed, get onShow() {
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$1, rawSnapshots, loadSnapshots, computedSnapshots, groupedSnapshots, formatNum, formatNumCN, currentYear, weekdays, formatDate, previewImage, deleteDialog, confirmDelete, closeDelete, doDelete, goAdd, ref: vue.ref, computed: vue.computed, get onShow() {
         return onShow;
       } };
       Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
@@ -200,99 +205,110 @@ if (uni.restoreGlobal) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
       vue.createCommentVNode(" HERO "),
       vue.createElementVNode("view", { class: "hero" }, [
-        vue.createElementVNode("view", { class: "hero-card" }, [
-          vue.createElementVNode(
-            "view",
-            { class: "hero-watermark" },
-            vue.toDisplayString($setup.currentYear),
-            1
-            /* TEXT */
-          ),
-          vue.createElementVNode("view", { class: "hero-left" }, [
-            vue.createElementVNode("text", { class: "hero-eyebrow" }, "Portfolio Snapshot"),
-            vue.createElementVNode("view", { class: "hero-title" }, [
-              vue.createElementVNode("text", { class: "hero-title-main" }, "资产快照")
+        vue.createElementVNode(
+          "view",
+          {
+            class: vue.normalizeClass([
+              "hero-card",
+              $setup.computedSnapshots.length > 0 && $setup.computedSnapshots[0].change ? $setup.computedSnapshots[0].change.pct >= 0 ? "hero-up" : "hero-down" : "hero-neutral"
             ])
-          ]),
-          $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
-            key: 0,
-            class: "hero-right"
-          }, [
-            vue.createElementVNode("view", { class: "stat-block" }, [
-              vue.createElementVNode("text", { class: "stat-label" }, "最新总资产"),
-              vue.createElementVNode(
-                "text",
-                { class: "stat-value" },
-                " ¥" + vue.toDisplayString($setup.formatNum($setup.computedSnapshots[0].total)),
-                1
-                /* TEXT */
-              ),
-              vue.createElementVNode(
-                "text",
-                { class: "stat-value-cn" },
-                vue.toDisplayString($setup.formatNumCN($setup.computedSnapshots[0].total)),
-                1
-                /* TEXT */
-              )
+          },
+          [
+            vue.createElementVNode(
+              "view",
+              { class: "hero-watermark" },
+              vue.toDisplayString($setup.currentYear),
+              1
+              /* TEXT */
+            ),
+            vue.createElementVNode("view", { class: "hero-left" }, [
+              vue.createElementVNode("text", { class: "hero-eyebrow" }, "Portfolio Snapshot"),
+              vue.createElementVNode("view", { class: "hero-title" }, [
+                vue.createElementVNode("text", { class: "hero-title-main" }, "资产快照")
+              ])
             ]),
-            vue.createElementVNode("view", { class: "stat-row" }, [
+            $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 0,
+              class: "hero-right"
+            }, [
               vue.createElementVNode("view", { class: "stat-block" }, [
-                vue.createElementVNode("text", { class: "stat-label" }, "较上次变动"),
-                $setup.computedSnapshots[0].change ? (vue.openBlock(), vue.createElementBlock(
-                  "view",
-                  {
-                    key: 0,
-                    class: vue.normalizeClass([
-                      "stat-change",
-                      $setup.computedSnapshots[0].change.pct >= 0 ? "up" : "down"
-                    ])
-                  },
-                  [
-                    vue.createElementVNode(
-                      "text",
-                      { class: "arrow-icon" },
-                      vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"),
-                      1
-                      /* TEXT */
-                    ),
-                    vue.createElementVNode(
-                      "text",
-                      null,
-                      vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.computedSnapshots[0].change.pct.toFixed(1)) + "%",
-                      1
-                      /* TEXT */
-                    )
-                  ],
-                  2
-                  /* CLASS */
-                )) : (vue.openBlock(), vue.createElementBlock("view", {
-                  key: 1,
-                  class: "stat-change neutral"
-                }, [
-                  vue.createElementVNode("text", null, "—")
-                ]))
-              ]),
-              vue.createElementVNode("view", { class: "stat-block stat-divider" }, [
-                vue.createElementVNode("text", { class: "stat-label" }, "记录次数"),
+                vue.createElementVNode("text", { class: "stat-label" }, "最新总资产"),
                 vue.createElementVNode(
                   "text",
-                  { class: "stat-value stat-value-sm" },
-                  vue.toDisplayString($setup.computedSnapshots.length),
+                  { class: "stat-value" },
+                  " ¥" + vue.toDisplayString($setup.formatNum($setup.computedSnapshots[0].total)),
+                  1
+                  /* TEXT */
+                ),
+                vue.createElementVNode(
+                  "text",
+                  { class: "stat-value-cn" },
+                  vue.toDisplayString($setup.formatNumCN($setup.computedSnapshots[0].total)),
                   1
                   /* TEXT */
                 )
+              ]),
+              vue.createElementVNode("view", { class: "stat-row" }, [
+                vue.createElementVNode("view", { class: "stat-block" }, [
+                  vue.createElementVNode("text", { class: "stat-label" }, "较上次变动"),
+                  $setup.computedSnapshots[0].change ? (vue.openBlock(), vue.createElementBlock(
+                    "view",
+                    {
+                      key: 0,
+                      class: vue.normalizeClass([
+                        "stat-change",
+                        $setup.computedSnapshots[0].change.pct >= 0 ? "up" : "down"
+                      ])
+                    },
+                    [
+                      vue.createElementVNode(
+                        "text",
+                        { class: "arrow-icon" },
+                        vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"),
+                        1
+                        /* TEXT */
+                      ),
+                      vue.createElementVNode(
+                        "text",
+                        null,
+                        vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.computedSnapshots[0].change.pct.toFixed(1)) + "%",
+                        1
+                        /* TEXT */
+                      )
+                    ],
+                    2
+                    /* CLASS */
+                  )) : (vue.openBlock(), vue.createElementBlock("view", {
+                    key: 1,
+                    class: "stat-change neutral"
+                  }, [
+                    vue.createElementVNode("text", null, "—")
+                  ]))
+                ]),
+                vue.createElementVNode("view", { class: "stat-block stat-divider" }, [
+                  vue.createElementVNode("text", { class: "stat-label" }, "记录次数"),
+                  vue.createElementVNode(
+                    "text",
+                    { class: "stat-value stat-value-sm" },
+                    vue.toDisplayString($setup.computedSnapshots.length),
+                    1
+                    /* TEXT */
+                  )
+                ])
               ])
+            ])) : (vue.openBlock(), vue.createElementBlock("view", {
+              key: 1,
+              class: "hero-right hero-empty"
+            }, [
+              vue.createElementVNode("text", { class: "empty-hint" }, "还没有快照记录，点击右下角 + 开始记录")
+            ])),
+            vue.createElementVNode("view", { class: "hero-bottom" }, [
+              vue.createElementVNode("text", { class: "hero-sub" }, "不定期记录，看见真实的变化")
             ])
-          ])) : (vue.openBlock(), vue.createElementBlock("view", {
-            key: 1,
-            class: "hero-right hero-empty"
-          }, [
-            vue.createElementVNode("text", { class: "empty-hint" }, "还没有快照记录，点击右下角 + 开始记录")
-          ])),
-          vue.createElementVNode("view", { class: "hero-bottom" }, [
-            vue.createElementVNode("text", { class: "hero-sub" }, "不定期记录，看见真实的变化")
-          ])
-        ])
+          ],
+          2
+          /* CLASS */
+        )
       ]),
       vue.createCommentVNode(" TIMELINE "),
       $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
@@ -501,7 +517,46 @@ if (uni.restoreGlobal) {
         onClick: $setup.goAdd
       }, [
         vue.createElementVNode("text", { class: "fab-icon" }, "+")
-      ])
+      ]),
+      vue.createCommentVNode(" DELETE DIALOG "),
+      $setup.deleteDialog.show ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 1,
+        class: "dialog-overlay",
+        onClick: $setup.closeDelete
+      }, [
+        vue.createElementVNode("view", {
+          class: "dialog-card",
+          onClick: _cache[0] || (_cache[0] = vue.withModifiers(() => {
+          }, ["stop"]))
+        }, [
+          vue.createElementVNode("view", { class: "dialog-icon-wrap" }, [
+            vue.createElementVNode("text", { class: "dialog-icon" }, "✕")
+          ]),
+          vue.createElementVNode("text", { class: "dialog-title" }, "确认删除"),
+          vue.createElementVNode(
+            "text",
+            { class: "dialog-msg" },
+            " 确定要删除 " + vue.toDisplayString($setup.deleteDialog.item ? $setup.deleteDialog.item.date : "") + " 的快照记录吗？ ",
+            1
+            /* TEXT */
+          ),
+          vue.createElementVNode("text", { class: "dialog-sub" }, "删除后无法恢复"),
+          vue.createElementVNode("view", { class: "dialog-actions" }, [
+            vue.createElementVNode("view", {
+              class: "dialog-btn dialog-cancel",
+              onClick: $setup.closeDelete
+            }, [
+              vue.createElementVNode("text", null, "取消")
+            ]),
+            vue.createElementVNode("view", {
+              class: "dialog-btn dialog-confirm",
+              onClick: $setup.doDelete
+            }, [
+              vue.createElementVNode("text", null, "删除")
+            ])
+          ])
+        ])
+      ])) : vue.createCommentVNode("v-if", true)
     ]);
   }
   const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-1cf27b2a"], ["__file", "E:/A0MyCodes/记账本App/app/pages/index/index.vue"]]);
@@ -1364,7 +1419,15 @@ if (uni.restoreGlobal) {
           sourceType: ["album", "camera"],
           success: (res) => {
             res.tempFilePaths.forEach(function(tempPath) {
-              screenshots.value.push(tempPath);
+              uni.saveFile({
+                tempFilePath: tempPath,
+                success: function(saveRes) {
+                  screenshots.value.push(saveRes.savedFilePath);
+                },
+                fail: function() {
+                  screenshots.value.push(tempPath);
+                }
+              });
             });
           }
         });

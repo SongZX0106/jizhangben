@@ -366,7 +366,15 @@ function chooseImage() {
     sourceType: ["album", "camera"],
     success: (res) => {
       res.tempFilePaths.forEach(function (tempPath) {
-        screenshots.value.push(tempPath);
+        uni.saveFile({
+          tempFilePath: tempPath,
+          success: function (saveRes) {
+            screenshots.value.push(saveRes.savedFilePath);
+          },
+          fail: function () {
+            screenshots.value.push(tempPath);
+          },
+        });
       });
     },
   });
