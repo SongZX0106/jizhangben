@@ -1,59 +1,61 @@
 <template>
   <view class="page">
-    <!-- HEADER -->
-    <view class="header">
-      <view class="header-inner">
-        <view class="logo">
-          <text class="logo-mark">A·A</text>
-          <text class="logo-sub">资产年鉴</text>
-        </view>
-      </view>
-    </view>
-
     <!-- HERO -->
     <view class="hero">
-      <text class="hero-eyebrow">Portfolio Snapshot</text>
-      <view class="hero-title">
-        <text class="hero-title-main">资产快照</text>
-        <text class="hero-title-sub">不定期记录，看见真实的变化</text>
-      </view>
-      <view class="hero-stats" v-if="computedSnapshots.length > 0">
-        <view class="stat-block">
-          <text class="stat-label">最新总资产</text>
-          <text class="stat-value">
-            ¥{{ formatNum(computedSnapshots[0].total) }}
-          </text>
+      <view class="hero-card">
+        <view class="hero-watermark">{{ currentYear }}</view>
+        <view class="hero-left">
+          <text class="hero-eyebrow">Portfolio Snapshot</text>
+          <view class="hero-title">
+            <text class="hero-title-main">资产快照</text>
+          </view>
         </view>
-        <view class="stat-block">
-          <text class="stat-label">较上次变动</text>
-          <view
-            v-if="computedSnapshots[0].change"
-            :class="[
-              'stat-change',
-              computedSnapshots[0].change.pct >= 0 ? 'up' : 'down',
-            ]"
-          >
-            <text class="arrow-icon">{{
-              computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"
+        <view class="hero-right" v-if="computedSnapshots.length > 0">
+          <view class="stat-block">
+            <text class="stat-label">最新总资产</text>
+            <text class="stat-value">
+              ¥{{ formatNum(computedSnapshots[0].total) }}
+            </text>
+            <text class="stat-value-cn">{{
+              formatNumCN(computedSnapshots[0].total)
             }}</text>
-            <text
-              >{{ computedSnapshots[0].change.pct >= 0 ? "+" : ""
-              }}{{ computedSnapshots[0].change.pct.toFixed(1) }}%</text
-            >
           </view>
-          <view v-else class="stat-change neutral">
-            <text>—</text>
+          <view class="stat-row">
+            <view class="stat-block">
+              <text class="stat-label">较上次变动</text>
+              <view
+                v-if="computedSnapshots[0].change"
+                :class="[
+                  'stat-change',
+                  computedSnapshots[0].change.pct >= 0 ? 'up' : 'down',
+                ]"
+              >
+                <text class="arrow-icon">{{
+                  computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"
+                }}</text>
+                <text
+                  >{{ computedSnapshots[0].change.pct >= 0 ? "+" : ""
+                  }}{{ computedSnapshots[0].change.pct.toFixed(1) }}%</text
+                >
+              </view>
+              <view v-else class="stat-change neutral">
+                <text>—</text>
+              </view>
+            </view>
+            <view class="stat-block stat-divider">
+              <text class="stat-label">记录次数</text>
+              <text class="stat-value stat-value-sm">
+                {{ computedSnapshots.length }}
+              </text>
+            </view>
           </view>
         </view>
-        <view class="stat-block">
-          <text class="stat-label">记录次数</text>
-          <text class="stat-value stat-value-sm">
-            {{ computedSnapshots.length }}
-          </text>
+        <view class="hero-right hero-empty" v-else>
+          <text class="empty-hint">还没有快照记录，点击右下角 + 开始记录</text>
         </view>
-      </view>
-      <view class="hero-stats hero-empty" v-else>
-        <text class="empty-hint">还没有快照记录，点击右下角 + 开始记录</text>
+        <view class="hero-bottom">
+          <text class="hero-sub">不定期记录，看见真实的变化</text>
+        </view>
       </view>
     </view>
 
@@ -136,7 +138,7 @@
               <view
                 class="screenshot-thumb"
                 v-for="(s, si) in item.screenshots"
-                :key="si"
+                :key="s"
                 @click="previewImage(item.screenshots, si)"
               >
                 <image :src="s" mode="aspectFill" />
@@ -158,7 +160,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed } from "vue";
 import { onShow } from "@dcloudio/uni-app";
 
 const STORAGE_KEY = "asset_snapshots";
@@ -167,13 +169,13 @@ const rawSnapshots = ref([]);
 function loadSnapshots() {
   try {
     const raw = uni.getStorageSync(STORAGE_KEY);
-    rawSnapshots.value = raw ? JSON.parse(raw) : [];
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    rawSnapshots.value = Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     rawSnapshots.value = [];
   }
 }
 
-onMounted(loadSnapshots);
 onShow(loadSnapshots);
 
 const computedSnapshots = computed(() => {
@@ -224,6 +226,48 @@ function formatNum(n) {
     : intPart + "." + decPart.replace(/0+$/, "");
 }
 
+function formatNumCN(n) {
+  const cnNums = ["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"];
+  const cnUnits = ["", "拾", "佰", "仟"];
+  const cnBigUnits = ["", "万", "亿"];
+  const num = Math.abs(parseFloat(n) || 0);
+  const parts = num.toFixed(2).split(".");
+  let intStr = parts[0];
+  let result = "";
+  let zero = false;
+  for (let i = 0; i < intStr.length; i++) {
+    const digit = parseInt(intStr[i]);
+    const pos = intStr.length - 1 - i;
+    const unit = cnUnits[pos % 4];
+    const bigUnit = cnBigUnits[Math.floor(pos / 4)];
+    if (digit === 0) {
+      zero = true;
+      if (pos % 4 === 0 && bigUnit) result += bigUnit;
+    } else {
+      if (zero) {
+        result += "零";
+        zero = false;
+      }
+      result += cnNums[digit] + unit;
+      if (pos % 4 === 0) result += bigUnit;
+    }
+  }
+  if (!result) result = "零";
+  result += "元";
+  const jiao = parseInt(parts[1][0]);
+  const fen = parseInt(parts[1][1]);
+  if (jiao === 0 && fen === 0) {
+    result += "整";
+  } else {
+    if (jiao > 0) result += cnNums[jiao] + "角";
+    else if (result.indexOf("元") < result.length - 1) result += "零";
+    if (fen > 0) result += cnNums[fen] + "分";
+  }
+  return result;
+}
+
+const currentYear = new Date().getFullYear();
+
 const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
 function formatDate(dateStr) {
@@ -266,12 +310,11 @@ function goAdd() {
 </script>
 
 <style scoped>
-@import url("../../static/css2.css");
-
 /* ===== Base ===== */
 .page {
   min-height: 100vh;
   background-color: #f5f2ed;
+  padding-top: 50px;
 }
 
 /* ===== Header ===== */
@@ -280,7 +323,6 @@ function goAdd() {
   top: 0;
   z-index: 50;
   background: rgba(245, 242, 237, 0.95);
-  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
   padding: 30px 24px 0;
 }
 .header-inner {
@@ -313,51 +355,116 @@ function goAdd() {
 .hero {
   max-width: 900px;
   margin: 0 auto;
-  padding: 24px 24px 16px;
+  padding: 0 24px;
+}
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #fffdf9 0%, #f5f2ed 100%);
+  border: 1px solid rgba(26, 26, 26, 0.06);
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 2px 16px rgba(26, 26, 26, 0.04);
+}
+.hero-watermark {
+  position: absolute;
+  top: -10px;
+  right: 10px;
+  font-family: "Playfair Display", serif;
+  font-size: 120px;
+  font-weight: 900;
+  color: rgba(26, 26, 26, 0.03);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.hero-left {
+  flex: 1;
+  padding-right: 24px;
 }
 .hero-eyebrow {
+  display: flex;
+  align-items: center;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 4px;
   color: #c45d3e;
   margin-bottom: 12px;
 }
+.hero-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 1.5px;
+  background-color: #c45d3e;
+  margin-right: 12px;
+}
 .hero-title {
-  margin-bottom: 16px;
+  margin: 0;
 }
 .hero-title-main {
+  display: block;
   font-family: "Playfair Display", "Noto Serif SC", serif;
-  font-size: 72rpx;
+  font-size: 55rpx;
   font-weight: 900;
   line-height: 1.1;
   color: #1a1a1a;
-  display: block;
 }
-.hero-title-sub {
-  display: block;
+.hero-bottom {
+  width: 100%;
+  padding-top: 12px;
+  margin-top: 12px;
+  border-top: 1px solid rgba(26, 26, 26, 0.06);
+  text-align: right;
+}
+.hero-sub {
+  font-size: 12px;
   color: #a0a0a0;
-  font-size: 14px;
   font-style: italic;
-  margin-top: 6px;
+  letter-spacing: 0.5px;
 }
-.hero-stats {
+.hero-sub::before {
+  content: "\201C";
+  font-family: "Playfair Display", serif;
+  font-size: 24px;
+  color: #c45d3e;
+  margin-right: 2px;
+  line-height: 0;
+  vertical-align: -6px;
+}
+.hero-right {
   display: flex;
-  flex-wrap: wrap;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(26, 26, 26, 0.08);
-}
-.hero-stats .stat-block {
-  margin: 0 32px 4px 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+  padding-top: 6px;
+  width: 100%;
+  justify-content: space-between;
 }
 .hero-empty {
-  border-top: 0;
-  padding-top: 0;
+  justify-content: center;
+  align-items: center;
 }
 .empty-hint {
-  font-size: 14px;
+  font-size: 13px;
   color: #a0a0a0;
   font-style: italic;
+}
+.stat-block {
+  text-align: right;
+}
+.stat-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.stat-divider {
+  padding-left: 20px;
+  border-left: 1px solid rgba(26, 26, 26, 0.08);
 }
 .stat-label {
   display: block;
@@ -370,12 +477,19 @@ function goAdd() {
 .stat-value {
   display: block;
   font-family: "JetBrains Mono", monospace;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
   color: #1a1a1a;
 }
 .stat-value-sm {
-  font-size: 22px;
+  font-size: 20px;
+}
+.stat-value-cn {
+  display: block;
+  font-size: 10px;
+  color: #a0a0a0;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
 }
 .stat-change {
   display: flex;
@@ -481,10 +595,11 @@ function goAdd() {
   line-height: 1.1;
 }
 .currency {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 400;
-  color: #a0a0a0;
+  color: #8e8e8e;
   margin-left: 4px;
+  font-family: "Playfair Display", "Noto Serif SC", serif;
 }
 .card-change {
   display: flex;
@@ -609,6 +724,15 @@ function goAdd() {
   padding: 12px 20px 16px;
   border-top: 1px solid rgba(26, 26, 26, 0.08);
 }
+.card-note::before {
+  content: "\201C";
+  font-family: "Playfair Display", serif;
+  font-size: 24px;
+  color: #c45d3e;
+  margin-right: 2px;
+  line-height: 0;
+  vertical-align: -6px;
+}
 .note-text {
   font-size: 13px;
   color: #6b6b6b;
@@ -652,11 +776,25 @@ function goAdd() {
 
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
-  .hero-stats .stat-block {
-    margin-right: 20px;
+  .hero-card {
+    flex-direction: column;
+    padding: 24px 20px 20px;
+  }
+  .hero-left {
+    padding-right: 0;
+    margin-bottom: 12px;
+  }
+  .hero-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .stat-block {
+    text-align: left;
   }
   .stat-value {
-    font-size: 22px;
+    font-size: 20px;
   }
   .card-total-amount {
     font-size: 28px;

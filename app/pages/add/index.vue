@@ -9,7 +9,6 @@
           </text>
           <text class="back-text">返回</text>
         </view>
-        <text class="logo-mark">A·A</text>
       </view>
     </view>
 
@@ -61,7 +60,6 @@
                 class="amount-input"
                 placeholder="0.00"
                 v-model="p.amount"
-                @input="updateTotal"
               />
             </view>
             <view class="platform-delete" @click="removePlatform(i)">
@@ -132,7 +130,7 @@
             </text>
             <text class="upload-text">上传</text>
           </view>
-          <view class="upload-thumb" v-for="(img, i) in screenshots" :key="i">
+          <view class="upload-thumb" v-for="(img, i) in screenshots" :key="img">
             <image :src="img" mode="aspectFill" @click="previewImage(i)" />
             <view class="thumb-delete" @click.stop="removeScreenshot(i)">
               <text class="thumb-delete-icon">✕</text>
@@ -215,6 +213,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import { onLoad } from "@dcloudio/uni-app";
 
 const STORAGE_KEY = "asset_snapshots";
 
@@ -231,28 +230,46 @@ const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "�
 
 const today = new Date();
 const formDate = ref(today.toISOString().slice(0, 10));
-const platforms = ref([]);
+let platformIdCounter = 0;
+const platforms = ref([
+  {
+    id: ++platformIdCounter,
+    name: "支付宝",
+    desc: "数字钱包",
+    icon: "支",
+    cls: "alipay",
+    amount: "",
+  },
+  {
+    id: ++platformIdCounter,
+    name: "招商银行",
+    desc: "主卡银行",
+    icon: "招",
+    cls: "cmb",
+    amount: "",
+  },
+]);
 const screenshots = ref([]);
 const note = ref("");
 const pickerOpen = ref(false);
 const customName = ref("");
 const lastTotal = ref(0);
-let platformIdCounter = 0;
 
-// Load last total
-try {
-  const raw = uni.getStorageSync(STORAGE_KEY);
-  if (raw) {
-    const arr = JSON.parse(raw);
-    if (arr.length > 0) {
-      arr.sort((a, b) => b.date.localeCompare(a.date));
-      lastTotal.value = (arr[0].platforms || []).reduce(
+function loadLastTotal() {
+  try {
+    const raw = uni.getStorageSync(STORAGE_KEY);
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      parsed.sort((a, b) => b.date.localeCompare(a.date));
+      lastTotal.value = (parsed[0].platforms || []).reduce(
         (s, p) => s + (parseFloat(p.amount) || 0),
         0,
       );
     }
-  }
-} catch (e) {}
+  } catch (e) {}
+}
+
+onLoad(loadLastTotal);
 
 const dateDisplay = computed(() => {
   const d = new Date(formDate.value);
@@ -326,7 +343,7 @@ const totalAmount = computed(() => {
 
 const totalChange = computed(() => {
   const total = totalAmount.value;
-  if (total <= 0) return null;
+  if (platforms.value.length === 0) return null;
   const diff = total - lastTotal.value;
   const pct = lastTotal.value > 0 ? (diff / lastTotal.value) * 100 : 0;
   return { diff, pct };
@@ -349,15 +366,7 @@ function chooseImage() {
     sourceType: ["album", "camera"],
     success: (res) => {
       res.tempFilePaths.forEach(function (tempPath) {
-        uni.saveFile({
-          tempFilePath: tempPath,
-          success: function (saveRes) {
-            screenshots.value.push(saveRes.savedFilePath);
-          },
-          fail: function () {
-            screenshots.value.push(tempPath);
-          },
-        });
+        screenshots.value.push(tempPath);
       });
     },
   });
@@ -406,7 +415,8 @@ function saveSnapshot() {
 
   try {
     const raw = uni.getStorageSync(STORAGE_KEY);
-    const arr = raw ? JSON.parse(raw) : [];
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    const arr = Array.isArray(parsed) ? parsed : [];
     arr.push(snapshot);
     uni.setStorageSync(STORAGE_KEY, JSON.stringify(arr));
     uni.showToast({ title: "已保存", icon: "success" });
@@ -420,8 +430,6 @@ function saveSnapshot() {
 </script>
 
 <style scoped>
-@import url("../../static/css2.css");
-
 /* ===== Base ===== */
 .page {
   min-height: 100vh;
@@ -470,7 +478,7 @@ function saveSnapshot() {
 .main {
   max-width: 640px;
   margin: 0 auto;
-  padding: 48px 24px 160px;
+  padding: 20px 24px 160px;
 }
 .page-header {
   margin-bottom: 48px;
@@ -582,7 +590,7 @@ function saveSnapshot() {
   border-radius: 14px;
 }
 .platform-row .platform-icon {
-  margin-right: 14px;
+  margin-right: 10px;
 }
 .platform-icon {
   width: 40px;
@@ -615,12 +623,18 @@ function saveSnapshot() {
 }
 .platform-info {
   flex: 1;
+  min-width: 0;
+  margin-right: 10px;
 }
 .platform-name {
   display: block;
   font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
 }
 .platform-desc {
   display: block;
@@ -644,7 +658,7 @@ function saveSnapshot() {
   z-index: 1;
 }
 .amount-input {
-  width: 140px;
+  width: 90px;
   padding: 10px 14px 10px 32px;
   font-family: "JetBrains Mono", monospace;
   font-size: 17px;
@@ -1062,7 +1076,7 @@ function saveSnapshot() {
     font-size: 28px;
   }
   .amount-input {
-    width: 110px;
+    width: 80px;
     font-size: 15px;
   }
   .date-display {

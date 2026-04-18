@@ -32,13 +32,7 @@ if (uni.restoreGlobal) {
 (function(vue) {
   "use strict";
   const ON_SHOW = "onShow";
-  function formatAppLog(type, filename, ...args) {
-    if (uni.__log__) {
-      uni.__log__(type, filename, ...args);
-    } else {
-      console[type].apply(console, [...args, filename]);
-    }
-  }
+  const ON_LOAD = "onLoad";
   function resolveEasycom(component, easycom) {
     return typeof component === "string" ? easycom : component;
   }
@@ -46,6 +40,7 @@ if (uni.restoreGlobal) {
     !vue.isInSSRComponentSetup && vue.injectHook(lifecycle, hook, target);
   };
   const onShow = /* @__PURE__ */ createHook(ON_SHOW);
+  const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
   const _export_sfc = (sfc, props) => {
     const target = sfc.__vccOpts || sfc;
     for (const [key, val] of props) {
@@ -62,12 +57,12 @@ if (uni.restoreGlobal) {
       function loadSnapshots() {
         try {
           const raw = uni.getStorageSync(STORAGE_KEY$1);
-          rawSnapshots.value = raw ? JSON.parse(raw) : [];
+          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+          rawSnapshots.value = Array.isArray(parsed) ? parsed : [];
         } catch (e) {
           rawSnapshots.value = [];
         }
       }
-      vue.onMounted(loadSnapshots);
       onShow(loadSnapshots);
       const computedSnapshots = vue.computed(() => {
         const sorted = [...rawSnapshots.value].sort(
@@ -94,11 +89,11 @@ if (uni.restoreGlobal) {
       });
       const groupedSnapshots = vue.computed(() => {
         const groups = [];
-        let currentYear = null;
+        let currentYear2 = null;
         computedSnapshots.value.forEach((item) => {
           const year = item.date ? item.date.substring(0, 4) : "未知";
-          if (year !== currentYear) {
-            currentYear = year;
+          if (year !== currentYear2) {
+            currentYear2 = year;
             groups.push({ year, items: [] });
           }
           groups[groups.length - 1].items.push(item);
@@ -112,6 +107,52 @@ if (uni.restoreGlobal) {
         const decPart = parts[1];
         return decPart === "00" ? intPart : intPart + "." + decPart.replace(/0+$/, "");
       }
+      function formatNumCN(n) {
+        const cnNums = ["零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"];
+        const cnUnits = ["", "拾", "佰", "仟"];
+        const cnBigUnits = ["", "万", "亿"];
+        const num = Math.abs(parseFloat(n) || 0);
+        const parts = num.toFixed(2).split(".");
+        let intStr = parts[0];
+        let result = "";
+        let zero = false;
+        for (let i = 0; i < intStr.length; i++) {
+          const digit = parseInt(intStr[i]);
+          const pos = intStr.length - 1 - i;
+          const unit = cnUnits[pos % 4];
+          const bigUnit = cnBigUnits[Math.floor(pos / 4)];
+          if (digit === 0) {
+            zero = true;
+            if (pos % 4 === 0 && bigUnit)
+              result += bigUnit;
+          } else {
+            if (zero) {
+              result += "零";
+              zero = false;
+            }
+            result += cnNums[digit] + unit;
+            if (pos % 4 === 0)
+              result += bigUnit;
+          }
+        }
+        if (!result)
+          result = "零";
+        result += "元";
+        const jiao = parseInt(parts[1][0]);
+        const fen = parseInt(parts[1][1]);
+        if (jiao === 0 && fen === 0) {
+          result += "整";
+        } else {
+          if (jiao > 0)
+            result += cnNums[jiao] + "角";
+          else if (result.indexOf("元") < result.length - 1)
+            result += "零";
+          if (fen > 0)
+            result += cnNums[fen] + "分";
+        }
+        return result;
+      }
+      const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
       const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
       function formatDate(dateStr) {
         if (!dateStr)
@@ -148,7 +189,7 @@ if (uni.restoreGlobal) {
       function goAdd() {
         uni.navigateTo({ url: "/pages/add/index" });
       }
-      const __returned__ = { STORAGE_KEY: STORAGE_KEY$1, rawSnapshots, loadSnapshots, computedSnapshots, groupedSnapshots, formatNum, weekdays, formatDate, previewImage, confirmDelete, goAdd, ref: vue.ref, computed: vue.computed, onMounted: vue.onMounted, get onShow() {
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$1, rawSnapshots, loadSnapshots, computedSnapshots, groupedSnapshots, formatNum, formatNumCN, currentYear, weekdays, formatDate, previewImage, confirmDelete, goAdd, ref: vue.ref, computed: vue.computed, get onShow() {
         return onShow;
       } };
       Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
@@ -157,88 +198,101 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
-      vue.createCommentVNode(" HEADER "),
-      vue.createElementVNode("view", { class: "header" }, [
-        vue.createElementVNode("view", { class: "header-inner" }, [
-          vue.createElementVNode("view", { class: "logo" }, [
-            vue.createElementVNode("text", { class: "logo-mark" }, "A·A"),
-            vue.createElementVNode("text", { class: "logo-sub" }, "资产年鉴")
-          ])
-        ])
-      ]),
       vue.createCommentVNode(" HERO "),
       vue.createElementVNode("view", { class: "hero" }, [
-        vue.createElementVNode("text", { class: "hero-eyebrow" }, "Portfolio Snapshot"),
-        vue.createElementVNode("view", { class: "hero-title" }, [
-          vue.createElementVNode("text", { class: "hero-title-main" }, "资产快照"),
-          vue.createElementVNode("text", { class: "hero-title-sub" }, "不定期记录，看见真实的变化")
-        ]),
-        $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
-          key: 0,
-          class: "hero-stats"
-        }, [
-          vue.createElementVNode("view", { class: "stat-block" }, [
-            vue.createElementVNode("text", { class: "stat-label" }, "最新总资产"),
-            vue.createElementVNode(
-              "text",
-              { class: "stat-value" },
-              " ¥" + vue.toDisplayString($setup.formatNum($setup.computedSnapshots[0].total)),
-              1
-              /* TEXT */
-            )
+        vue.createElementVNode("view", { class: "hero-card" }, [
+          vue.createElementVNode(
+            "view",
+            { class: "hero-watermark" },
+            vue.toDisplayString($setup.currentYear),
+            1
+            /* TEXT */
+          ),
+          vue.createElementVNode("view", { class: "hero-left" }, [
+            vue.createElementVNode("text", { class: "hero-eyebrow" }, "Portfolio Snapshot"),
+            vue.createElementVNode("view", { class: "hero-title" }, [
+              vue.createElementVNode("text", { class: "hero-title-main" }, "资产快照")
+            ])
           ]),
-          vue.createElementVNode("view", { class: "stat-block" }, [
-            vue.createElementVNode("text", { class: "stat-label" }, "较上次变动"),
-            $setup.computedSnapshots[0].change ? (vue.openBlock(), vue.createElementBlock(
-              "view",
-              {
-                key: 0,
-                class: vue.normalizeClass([
-                  "stat-change",
-                  $setup.computedSnapshots[0].change.pct >= 0 ? "up" : "down"
-                ])
-              },
-              [
+          $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+            key: 0,
+            class: "hero-right"
+          }, [
+            vue.createElementVNode("view", { class: "stat-block" }, [
+              vue.createElementVNode("text", { class: "stat-label" }, "最新总资产"),
+              vue.createElementVNode(
+                "text",
+                { class: "stat-value" },
+                " ¥" + vue.toDisplayString($setup.formatNum($setup.computedSnapshots[0].total)),
+                1
+                /* TEXT */
+              ),
+              vue.createElementVNode(
+                "text",
+                { class: "stat-value-cn" },
+                vue.toDisplayString($setup.formatNumCN($setup.computedSnapshots[0].total)),
+                1
+                /* TEXT */
+              )
+            ]),
+            vue.createElementVNode("view", { class: "stat-row" }, [
+              vue.createElementVNode("view", { class: "stat-block" }, [
+                vue.createElementVNode("text", { class: "stat-label" }, "较上次变动"),
+                $setup.computedSnapshots[0].change ? (vue.openBlock(), vue.createElementBlock(
+                  "view",
+                  {
+                    key: 0,
+                    class: vue.normalizeClass([
+                      "stat-change",
+                      $setup.computedSnapshots[0].change.pct >= 0 ? "up" : "down"
+                    ])
+                  },
+                  [
+                    vue.createElementVNode(
+                      "text",
+                      { class: "arrow-icon" },
+                      vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"),
+                      1
+                      /* TEXT */
+                    ),
+                    vue.createElementVNode(
+                      "text",
+                      null,
+                      vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.computedSnapshots[0].change.pct.toFixed(1)) + "%",
+                      1
+                      /* TEXT */
+                    )
+                  ],
+                  2
+                  /* CLASS */
+                )) : (vue.openBlock(), vue.createElementBlock("view", {
+                  key: 1,
+                  class: "stat-change neutral"
+                }, [
+                  vue.createElementVNode("text", null, "—")
+                ]))
+              ]),
+              vue.createElementVNode("view", { class: "stat-block stat-divider" }, [
+                vue.createElementVNode("text", { class: "stat-label" }, "记录次数"),
                 vue.createElementVNode(
                   "text",
-                  { class: "arrow-icon" },
-                  vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"),
-                  1
-                  /* TEXT */
-                ),
-                vue.createElementVNode(
-                  "text",
-                  null,
-                  vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.computedSnapshots[0].change.pct.toFixed(1)) + "%",
+                  { class: "stat-value stat-value-sm" },
+                  vue.toDisplayString($setup.computedSnapshots.length),
                   1
                   /* TEXT */
                 )
-              ],
-              2
-              /* CLASS */
-            )) : (vue.openBlock(), vue.createElementBlock("view", {
-              key: 1,
-              class: "stat-change neutral"
-            }, [
-              vue.createElementVNode("text", null, "—")
-            ]))
-          ]),
-          vue.createElementVNode("view", { class: "stat-block" }, [
-            vue.createElementVNode("text", { class: "stat-label" }, "记录次数"),
-            vue.createElementVNode(
-              "text",
-              { class: "stat-value stat-value-sm" },
-              vue.toDisplayString($setup.computedSnapshots.length),
-              1
-              /* TEXT */
-            )
+              ])
+            ])
+          ])) : (vue.openBlock(), vue.createElementBlock("view", {
+            key: 1,
+            class: "hero-right hero-empty"
+          }, [
+            vue.createElementVNode("text", { class: "empty-hint" }, "还没有快照记录，点击右下角 + 开始记录")
+          ])),
+          vue.createElementVNode("view", { class: "hero-bottom" }, [
+            vue.createElementVNode("text", { class: "hero-sub" }, "不定期记录，看见真实的变化")
           ])
-        ])) : (vue.openBlock(), vue.createElementBlock("view", {
-          key: 1,
-          class: "hero-stats hero-empty"
-        }, [
-          vue.createElementVNode("text", { class: "empty-hint" }, "还没有快照记录，点击右下角 + 开始记录")
-        ]))
+        ])
       ]),
       vue.createCommentVNode(" TIMELINE "),
       $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
@@ -401,7 +455,7 @@ if (uni.restoreGlobal) {
                             vue.renderList(item.screenshots, (s, si) => {
                               return vue.openBlock(), vue.createElementBlock("view", {
                                 class: "screenshot-thumb",
-                                key: si,
+                                key: s,
                                 onClick: ($event) => $setup.previewImage(item.screenshots, si)
                               }, [
                                 vue.createElementVNode("image", {
@@ -1187,27 +1241,45 @@ if (uni.restoreGlobal) {
       const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
       const today = /* @__PURE__ */ new Date();
       const formDate = vue.ref(today.toISOString().slice(0, 10));
-      const platforms = vue.ref([]);
+      let platformIdCounter = 0;
+      const platforms = vue.ref([
+        {
+          id: ++platformIdCounter,
+          name: "支付宝",
+          desc: "数字钱包",
+          icon: "支",
+          cls: "alipay",
+          amount: ""
+        },
+        {
+          id: ++platformIdCounter,
+          name: "招商银行",
+          desc: "主卡银行",
+          icon: "招",
+          cls: "cmb",
+          amount: ""
+        }
+      ]);
       const screenshots = vue.ref([]);
       const note = vue.ref("");
       const pickerOpen = vue.ref(false);
       const customName = vue.ref("");
       const lastTotal = vue.ref(0);
-      let platformIdCounter = 0;
-      try {
-        const raw = uni.getStorageSync(STORAGE_KEY);
-        if (raw) {
-          const arr = JSON.parse(raw);
-          if (arr.length > 0) {
-            arr.sort((a, b) => b.date.localeCompare(a.date));
-            lastTotal.value = (arr[0].platforms || []).reduce(
+      function loadLastTotal() {
+        try {
+          const raw = uni.getStorageSync(STORAGE_KEY);
+          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            parsed.sort((a, b) => b.date.localeCompare(a.date));
+            lastTotal.value = (parsed[0].platforms || []).reduce(
               (s, p) => s + (parseFloat(p.amount) || 0),
               0
             );
           }
+        } catch (e) {
         }
-      } catch (e) {
       }
+      onLoad(loadLastTotal);
       const dateDisplay = vue.computed(() => {
         const d = new Date(formDate.value);
         const y = d.getFullYear();
@@ -1272,7 +1344,7 @@ if (uni.restoreGlobal) {
       });
       const totalChange = vue.computed(() => {
         const total = totalAmount.value;
-        if (total <= 0)
+        if (platforms.value.length === 0)
           return null;
         const diff = total - lastTotal.value;
         const pct = lastTotal.value > 0 ? diff / lastTotal.value * 100 : 0;
@@ -1292,15 +1364,7 @@ if (uni.restoreGlobal) {
           sourceType: ["album", "camera"],
           success: (res) => {
             res.tempFilePaths.forEach(function(tempPath) {
-              uni.saveFile({
-                tempFilePath: tempPath,
-                success: function(saveRes) {
-                  screenshots.value.push(saveRes.savedFilePath);
-                },
-                fail: function() {
-                  screenshots.value.push(tempPath);
-                }
-              });
+              screenshots.value.push(tempPath);
             });
           }
         });
@@ -1343,7 +1407,8 @@ if (uni.restoreGlobal) {
         };
         try {
           const raw = uni.getStorageSync(STORAGE_KEY);
-          const arr = raw ? JSON.parse(raw) : [];
+          const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+          const arr = Array.isArray(parsed) ? parsed : [];
           arr.push(snapshot);
           uni.setStorageSync(STORAGE_KEY, JSON.stringify(arr));
           uni.showToast({ title: "已保存", icon: "success" });
@@ -1354,11 +1419,13 @@ if (uni.restoreGlobal) {
           uni.showToast({ title: "保存失败", icon: "none" });
         }
       }
-      const __returned__ = { STORAGE_KEY, defaultPlatforms, weekdays, today, formDate, platforms, screenshots, note, pickerOpen, customName, lastTotal, get platformIdCounter() {
+      const __returned__ = { STORAGE_KEY, defaultPlatforms, weekdays, today, formDate, get platformIdCounter() {
         return platformIdCounter;
       }, set platformIdCounter(v) {
         platformIdCounter = v;
-      }, dateDisplay, weekdayDisplay, onDateChange, addedPlatformNames, openPicker, closePicker, selectDefaultPlatform, addCustomPlatform, removePlatform, totalAmount, totalChange, formatNum, chooseImage, removeScreenshot, previewImage, goBack, saveSnapshot, ref: vue.ref, computed: vue.computed };
+      }, platforms, screenshots, note, pickerOpen, customName, lastTotal, loadLastTotal, dateDisplay, weekdayDisplay, onDateChange, addedPlatformNames, openPicker, closePicker, selectDefaultPlatform, addCustomPlatform, removePlatform, totalAmount, totalChange, formatNum, chooseImage, removeScreenshot, previewImage, goBack, saveSnapshot, ref: vue.ref, computed: vue.computed, get onLoad() {
+        return onLoad;
+      } };
       Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
       return __returned__;
     }
@@ -1377,8 +1444,7 @@ if (uni.restoreGlobal) {
               vue.createVNode(_component_uni_icons, { type: "arrow-left" })
             ]),
             vue.createElementVNode("text", { class: "back-text" }, "返回")
-          ]),
-          vue.createElementVNode("text", { class: "logo-mark" }, "A·A")
+          ])
         ])
       ]),
       vue.createCommentVNode(" MAIN "),
@@ -1475,9 +1541,8 @@ if (uni.restoreGlobal) {
                       type: "digit",
                       class: "amount-input",
                       placeholder: "0.00",
-                      "onUpdate:modelValue": ($event) => p.amount = $event,
-                      onInput: _cache[0] || (_cache[0] = (...args) => _ctx.updateTotal && _ctx.updateTotal(...args))
-                    }, null, 40, ["onUpdate:modelValue"]), [
+                      "onUpdate:modelValue": ($event) => p.amount = $event
+                    }, null, 8, ["onUpdate:modelValue"]), [
                       [vue.vModelText, p.amount]
                     ])
                   ]),
@@ -1606,7 +1671,7 @@ if (uni.restoreGlobal) {
               vue.renderList($setup.screenshots, (img, i) => {
                 return vue.openBlock(), vue.createElementBlock("view", {
                   class: "upload-thumb",
-                  key: i
+                  key: img
                 }, [
                   vue.createElementVNode("image", {
                     src: img,
@@ -1636,7 +1701,7 @@ if (uni.restoreGlobal) {
             "textarea",
             {
               class: "note-input",
-              "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.note = $event),
+              "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.note = $event),
               placeholder: "记录一下这次的变化原因…"
             },
             null,
@@ -1733,7 +1798,7 @@ if (uni.restoreGlobal) {
               "input",
               {
                 class: "picker-custom-input",
-                "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $setup.customName = $event),
+                "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $setup.customName = $event),
                 placeholder: "自定义平台名称…",
                 onConfirm: $setup.addCustomPlatform
               },
@@ -1765,40 +1830,7 @@ if (uni.restoreGlobal) {
   const PagesAddIndex = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-89f6901d"], ["__file", "E:/A0MyCodes/记账本App/app/pages/add/index.vue"]]);
   __definePage("pages/index/index", PagesIndexIndex);
   __definePage("pages/add/index", PagesAddIndex);
-  const _sfc_main = {
-    onLaunch: function() {
-      try {
-        var canvas = document.createElement("canvas");
-        canvas.width = 256;
-        canvas.height = 256;
-        var ctx = canvas.getContext("2d");
-        var imageData = ctx.createImageData(256, 256);
-        var data = imageData.data;
-        for (var i = 0; i < data.length; i += 4) {
-          var v = Math.floor(Math.random() * 256);
-          data[i] = v;
-          data[i + 1] = v;
-          data[i + 2] = v;
-          data[i + 3] = 40;
-        }
-        ctx.putImageData(imageData, 0, 0);
-        var url = canvas.toDataURL("image/png");
-        var style = document.createElement("style");
-        style.textContent = ".grain-overlay{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9999;opacity:0.35;background-image:url(" + url + ");background-repeat:repeat;background-size:256px 256px;}";
-        document.head.appendChild(style);
-        var el = document.createElement("div");
-        el.className = "grain-overlay";
-        document.body.appendChild(el);
-      } catch (e) {
-      }
-    },
-    onShow: function() {
-      formatAppLog("log", "at App.vue:37", "App Show");
-    },
-    onHide: function() {
-      formatAppLog("log", "at App.vue:40", "App Hide");
-    }
-  };
+  const _sfc_main = {};
   const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "E:/A0MyCodes/记账本App/app/App.vue"]]);
   function createApp() {
     const app = vue.createVueApp(App);
