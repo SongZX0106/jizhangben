@@ -70,13 +70,21 @@ if (uni.restoreGlobal) {
       vue.onMounted(loadSnapshots);
       onShow(loadSnapshots);
       const computedSnapshots = vue.computed(() => {
-        const sorted = [...rawSnapshots.value].sort((a, b) => b.date.localeCompare(a.date));
+        const sorted = [...rawSnapshots.value].sort(
+          (a, b) => b.date.localeCompare(a.date)
+        );
         return sorted.map((item, i) => {
-          const total = (item.platforms || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+          const total = (item.platforms || []).reduce(
+            (s, p) => s + (parseFloat(p.amount) || 0),
+            0
+          );
           let change = null;
           if (i < sorted.length - 1) {
             const prev = sorted[i + 1];
-            const prevTotal = (prev.platforms || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+            const prevTotal = (prev.platforms || []).reduce(
+              (s, p) => s + (parseFloat(p.amount) || 0),
+              0
+            );
             const diff = total - prevTotal;
             const pct = prevTotal > 0 ? diff / prevTotal * 100 : 0;
             change = { diff, pct };
@@ -98,7 +106,11 @@ if (uni.restoreGlobal) {
         return groups;
       });
       function formatNum(n) {
-        return (parseFloat(n) || 0).toLocaleString("zh-CN");
+        const num = parseFloat(n) || 0;
+        const parts = num.toFixed(2).split(".");
+        const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const decPart = parts[1];
+        return decPart === "00" ? intPart : intPart + "." + decPart.replace(/0+$/, "");
       }
       const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
       function formatDate(dateStr) {
@@ -146,88 +158,90 @@ if (uni.restoreGlobal) {
   function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
       vue.createCommentVNode(" HEADER "),
-      vue.createElementVNode("header", { class: "header" }, [
-        vue.createElementVNode("div", { class: "header-inner" }, [
-          vue.createElementVNode("div", { class: "logo" }, [
-            vue.createElementVNode("span", { class: "logo-mark" }, "A·A"),
-            vue.createElementVNode("span", { class: "logo-sub" }, "资产年鉴")
+      vue.createElementVNode("view", { class: "header" }, [
+        vue.createElementVNode("view", { class: "header-inner" }, [
+          vue.createElementVNode("view", { class: "logo" }, [
+            vue.createElementVNode("text", { class: "logo-mark" }, "A·A"),
+            vue.createElementVNode("text", { class: "logo-sub" }, "资产年鉴")
           ])
         ])
       ]),
       vue.createCommentVNode(" HERO "),
-      vue.createElementVNode("section", { class: "hero" }, [
-        vue.createElementVNode("div", { class: "hero-eyebrow" }, "Portfolio Snapshot"),
-        vue.createElementVNode("h1", { class: "hero-title" }, [
-          vue.createTextVNode(" 资产快照 "),
-          vue.createElementVNode("span", { style: { "padding-top": "8px" } }, "不定期记录，看见真实的变化")
+      vue.createElementVNode("view", { class: "hero" }, [
+        vue.createElementVNode("text", { class: "hero-eyebrow" }, "Portfolio Snapshot"),
+        vue.createElementVNode("view", { class: "hero-title" }, [
+          vue.createElementVNode("text", { class: "hero-title-main" }, "资产快照"),
+          vue.createElementVNode("text", { class: "hero-title-sub" }, "不定期记录，看见真实的变化")
         ]),
-        $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("div", {
+        $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
           key: 0,
           class: "hero-stats"
         }, [
-          vue.createElementVNode("div", { class: "stat-block" }, [
-            vue.createElementVNode("div", { class: "stat-label" }, "最新总资产"),
+          vue.createElementVNode("view", { class: "stat-block" }, [
+            vue.createElementVNode("text", { class: "stat-label" }, "最新总资产"),
             vue.createElementVNode(
-              "div",
+              "text",
               { class: "stat-value" },
-              "¥" + vue.toDisplayString($setup.formatNum($setup.computedSnapshots[0].total)),
+              " ¥" + vue.toDisplayString($setup.formatNum($setup.computedSnapshots[0].total)),
               1
               /* TEXT */
             )
           ]),
-          vue.createElementVNode("div", { class: "stat-block" }, [
-            vue.createElementVNode("div", { class: "stat-label" }, "较上次变动"),
+          vue.createElementVNode("view", { class: "stat-block" }, [
+            vue.createElementVNode("text", { class: "stat-label" }, "较上次变动"),
             $setup.computedSnapshots[0].change ? (vue.openBlock(), vue.createElementBlock(
-              "div",
+              "view",
               {
                 key: 0,
-                class: vue.normalizeClass(["stat-change", $setup.computedSnapshots[0].change.pct >= 0 ? "up" : "down"])
+                class: vue.normalizeClass([
+                  "stat-change",
+                  $setup.computedSnapshots[0].change.pct >= 0 ? "up" : "down"
+                ])
               },
               [
-                (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-                  $setup.computedSnapshots[0].change.pct >= 0 ? (vue.openBlock(), vue.createElementBlock("polyline", {
-                    key: 0,
-                    points: "18 15 12 9 6 15"
-                  })) : (vue.openBlock(), vue.createElementBlock("polyline", {
-                    key: 1,
-                    points: "6 9 12 15 18 9"
-                  }))
-                ])),
-                vue.createTextVNode(
-                  " " + vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.computedSnapshots[0].change.pct.toFixed(1)) + "% ",
+                vue.createElementVNode(
+                  "text",
+                  { class: "arrow-icon" },
+                  vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "▲" : "▼"),
+                  1
+                  /* TEXT */
+                ),
+                vue.createElementVNode(
+                  "text",
+                  null,
+                  vue.toDisplayString($setup.computedSnapshots[0].change.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.computedSnapshots[0].change.pct.toFixed(1)) + "%",
                   1
                   /* TEXT */
                 )
               ],
               2
               /* CLASS */
-            )) : (vue.openBlock(), vue.createElementBlock("div", {
+            )) : (vue.openBlock(), vue.createElementBlock("view", {
               key: 1,
               class: "stat-change neutral"
-            }, "—"))
+            }, [
+              vue.createElementVNode("text", null, "—")
+            ]))
           ]),
-          vue.createElementVNode("div", { class: "stat-block" }, [
-            vue.createElementVNode("div", { class: "stat-label" }, "记录次数"),
+          vue.createElementVNode("view", { class: "stat-block" }, [
+            vue.createElementVNode("text", { class: "stat-label" }, "记录次数"),
             vue.createElementVNode(
-              "div",
-              {
-                class: "stat-value",
-                style: { "font-size": "22px" }
-              },
+              "text",
+              { class: "stat-value stat-value-sm" },
               vue.toDisplayString($setup.computedSnapshots.length),
               1
               /* TEXT */
             )
           ])
-        ])) : (vue.openBlock(), vue.createElementBlock("div", {
+        ])) : (vue.openBlock(), vue.createElementBlock("view", {
           key: 1,
           class: "hero-stats hero-empty"
         }, [
-          vue.createElementVNode("div", { class: "empty-hint" }, "还没有快照记录，点击右下角 + 开始记录")
+          vue.createElementVNode("text", { class: "empty-hint" }, "还没有快照记录，点击右下角 + 开始记录")
         ]))
       ]),
       vue.createCommentVNode(" TIMELINE "),
-      $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("div", {
+      $setup.computedSnapshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
         key: 0,
         class: "timeline"
       }, [
@@ -241,10 +255,10 @@ if (uni.restoreGlobal) {
                 key: group.year
               },
               [
-                vue.createElementVNode("div", { class: "year-divider" }, [
+                vue.createElementVNode("view", { class: "year-divider" }, [
                   vue.createElementVNode(
-                    "span",
-                    null,
+                    "text",
+                    { class: "year-text" },
                     vue.toDisplayString(group.year),
                     1
                     /* TEXT */
@@ -254,13 +268,13 @@ if (uni.restoreGlobal) {
                   vue.Fragment,
                   null,
                   vue.renderList(group.items, (item, idx) => {
-                    return vue.openBlock(), vue.createElementBlock("article", {
-                      class: "snapshot visible",
+                    return vue.openBlock(), vue.createElementBlock("view", {
+                      class: "snapshot",
                       key: item.id
                     }, [
-                      vue.createElementVNode("div", { class: "snapshot-header" }, [
+                      vue.createElementVNode("view", { class: "snapshot-header" }, [
                         vue.createElementVNode(
-                          "div",
+                          "text",
                           { class: "snapshot-date" },
                           vue.toDisplayString($setup.formatDate(item.date)),
                           1
@@ -269,42 +283,47 @@ if (uni.restoreGlobal) {
                         vue.createElementVNode("text", {
                           class: "snapshot-delete",
                           onClick: ($event) => $setup.confirmDelete(item)
-                        }, "删除", 8, ["onClick"])
+                        }, " 删除 ", 8, ["onClick"])
                       ]),
-                      vue.createElementVNode("div", { class: "snapshot-card" }, [
-                        vue.createElementVNode("div", { class: "card-header" }, [
-                          vue.createElementVNode("div", null, [
-                            vue.createElementVNode("div", { class: "card-total-label" }, "总资产"),
-                            vue.createElementVNode("div", { class: "card-total" }, [
-                              vue.createTextVNode(
+                      vue.createElementVNode("view", { class: "snapshot-card" }, [
+                        vue.createElementVNode("view", { class: "card-header" }, [
+                          vue.createElementVNode("view", { class: "card-total-area" }, [
+                            vue.createElementVNode("text", { class: "card-total-label" }, "总资产"),
+                            vue.createElementVNode("view", { class: "card-total-row" }, [
+                              vue.createElementVNode(
+                                "text",
+                                { class: "card-total-amount" },
                                 vue.toDisplayString($setup.formatNum(item.total)),
                                 1
                                 /* TEXT */
                               ),
-                              vue.createElementVNode("span", { class: "currency" }, "CNY")
+                              vue.createElementVNode("text", { class: "currency" }, "CNY")
                             ])
                           ]),
-                          item.change ? (vue.openBlock(), vue.createElementBlock("div", {
+                          item.change ? (vue.openBlock(), vue.createElementBlock("view", {
                             key: 0,
                             class: "card-change"
                           }, [
                             vue.createElementVNode(
-                              "div",
+                              "view",
                               {
-                                class: vue.normalizeClass(["change-badge", item.change.pct >= 0 ? "up" : "down"])
+                                class: vue.normalizeClass([
+                                  "change-badge",
+                                  item.change.pct >= 0 ? "up" : "down"
+                                ])
                               },
                               [
-                                (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-                                  item.change.pct >= 0 ? (vue.openBlock(), vue.createElementBlock("polyline", {
-                                    key: 0,
-                                    points: "18 15 12 9 6 15"
-                                  })) : (vue.openBlock(), vue.createElementBlock("polyline", {
-                                    key: 1,
-                                    points: "6 9 12 15 18 9"
-                                  }))
-                                ])),
-                                vue.createTextVNode(
-                                  " " + vue.toDisplayString(item.change.pct >= 0 ? "+" : "") + vue.toDisplayString(item.change.pct.toFixed(1)) + "% ",
+                                vue.createElementVNode(
+                                  "text",
+                                  { class: "arrow-icon" },
+                                  vue.toDisplayString(item.change.pct >= 0 ? "▲" : "▼"),
+                                  1
+                                  /* TEXT */
+                                ),
+                                vue.createElementVNode(
+                                  "text",
+                                  null,
+                                  vue.toDisplayString(item.change.pct >= 0 ? "+" : "") + vue.toDisplayString(item.change.pct.toFixed(1)) + "%",
                                   1
                                   /* TEXT */
                                 )
@@ -313,7 +332,7 @@ if (uni.restoreGlobal) {
                               /* CLASS */
                             ),
                             vue.createElementVNode(
-                              "div",
+                              "text",
                               { class: "change-amount" },
                               vue.toDisplayString(item.change.diff >= 0 ? "+" : "") + "¥" + vue.toDisplayString($setup.formatNum(item.change.diff)),
                               1
@@ -321,7 +340,7 @@ if (uni.restoreGlobal) {
                             )
                           ])) : vue.createCommentVNode("v-if", true)
                         ]),
-                        item.platforms && item.platforms.length > 0 ? (vue.openBlock(), vue.createElementBlock("div", {
+                        item.platforms && item.platforms.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
                           key: 0,
                           class: "platforms"
                         }, [
@@ -329,29 +348,37 @@ if (uni.restoreGlobal) {
                             vue.Fragment,
                             null,
                             vue.renderList(item.platforms, (p) => {
-                              return vue.openBlock(), vue.createElementBlock("div", {
+                              return vue.openBlock(), vue.createElementBlock("view", {
                                 class: "platform-chip",
                                 key: p.name
                               }, [
                                 vue.createElementVNode(
-                                  "div",
+                                  "view",
                                   {
                                     class: vue.normalizeClass(["platform-icon", p.cls || "default"])
                                   },
-                                  vue.toDisplayString(p.icon || p.name[0]),
-                                  3
-                                  /* TEXT, CLASS */
+                                  [
+                                    vue.createElementVNode(
+                                      "text",
+                                      { class: "platform-icon-text" },
+                                      vue.toDisplayString(p.icon || p.name[0]),
+                                      1
+                                      /* TEXT */
+                                    )
+                                  ],
+                                  2
+                                  /* CLASS */
                                 ),
-                                vue.createElementVNode("div", null, [
+                                vue.createElementVNode("view", { class: "platform-info" }, [
                                   vue.createElementVNode(
-                                    "div",
+                                    "text",
                                     { class: "platform-name" },
                                     vue.toDisplayString(p.name),
                                     1
                                     /* TEXT */
                                   ),
                                   vue.createElementVNode(
-                                    "div",
+                                    "text",
                                     { class: "platform-amount" },
                                     "¥" + vue.toDisplayString($setup.formatNum(p.amount)),
                                     1
@@ -364,7 +391,7 @@ if (uni.restoreGlobal) {
                             /* KEYED_FRAGMENT */
                           ))
                         ])) : vue.createCommentVNode("v-if", true),
-                        item.screenshots && item.screenshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("div", {
+                        item.screenshots && item.screenshots.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
                           key: 1,
                           class: "screenshots"
                         }, [
@@ -372,7 +399,7 @@ if (uni.restoreGlobal) {
                             vue.Fragment,
                             null,
                             vue.renderList(item.screenshots, (s, si) => {
-                              return vue.openBlock(), vue.createElementBlock("div", {
+                              return vue.openBlock(), vue.createElementBlock("view", {
                                 class: "screenshot-thumb",
                                 key: si,
                                 onClick: ($event) => $setup.previewImage(item.screenshots, si)
@@ -387,16 +414,18 @@ if (uni.restoreGlobal) {
                             /* KEYED_FRAGMENT */
                           ))
                         ])) : vue.createCommentVNode("v-if", true),
-                        item.note ? (vue.openBlock(), vue.createElementBlock(
-                          "div",
-                          {
-                            key: 2,
-                            class: "card-note"
-                          },
-                          vue.toDisplayString(item.note),
-                          1
-                          /* TEXT */
-                        )) : vue.createCommentVNode("v-if", true)
+                        item.note ? (vue.openBlock(), vue.createElementBlock("view", {
+                          key: 2,
+                          class: "card-note"
+                        }, [
+                          vue.createElementVNode(
+                            "text",
+                            { class: "note-text" },
+                            vue.toDisplayString(item.note),
+                            1
+                            /* TEXT */
+                          )
+                        ])) : vue.createCommentVNode("v-if", true)
                       ])
                     ]);
                   }),
@@ -413,28 +442,15 @@ if (uni.restoreGlobal) {
         ))
       ])) : vue.createCommentVNode("v-if", true),
       vue.createCommentVNode(" FAB "),
-      vue.createElementVNode("button", {
+      vue.createElementVNode("view", {
         class: "fab",
         onClick: $setup.goAdd
       }, [
-        (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-          vue.createElementVNode("line", {
-            x1: "12",
-            y1: "5",
-            x2: "12",
-            y2: "19"
-          }),
-          vue.createElementVNode("line", {
-            x1: "5",
-            y1: "12",
-            x2: "19",
-            y2: "12"
-          })
-        ]))
+        vue.createElementVNode("text", { class: "fab-icon" }, "+")
       ])
     ]);
   }
-  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-1cf27b2a"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/index/index.vue"]]);
+  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-1cf27b2a"], ["__file", "E:/A0MyCodes/记账本App/app/pages/index/index.vue"]]);
   const fontData = [
     {
       "font_class": "arrow-down",
@@ -1154,7 +1170,7 @@ if (uni.restoreGlobal) {
       /* CLASS, STYLE */
     );
   }
-  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
+  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-d31e1c47"], ["__file", "E:/A0MyCodes/记账本App/app/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
   const STORAGE_KEY = "asset_snapshots";
   const _sfc_main$1 = {
     __name: "index",
@@ -1184,7 +1200,10 @@ if (uni.restoreGlobal) {
           const arr = JSON.parse(raw);
           if (arr.length > 0) {
             arr.sort((a, b) => b.date.localeCompare(a.date));
-            lastTotal.value = (arr[0].platforms || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+            lastTotal.value = (arr[0].platforms || []).reduce(
+              (s, p) => s + (parseFloat(p.amount) || 0),
+              0
+            );
           }
         }
       } catch (e) {
@@ -1260,7 +1279,11 @@ if (uni.restoreGlobal) {
         return { diff, pct };
       });
       function formatNum(n) {
-        return (parseFloat(n) || 0).toLocaleString("zh-CN");
+        const num = parseFloat(n) || 0;
+        const parts = num.toFixed(2).split(".");
+        const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        const decPart = parts[1];
+        return decPart === "00" ? intPart : intPart + "." + decPart.replace(/0+$/, "");
       }
       function chooseImage() {
         uni.chooseImage({
@@ -1344,68 +1367,45 @@ if (uni.restoreGlobal) {
     const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0);
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
       vue.createCommentVNode(" HEADER "),
-      vue.createElementVNode("header", { class: "header" }, [
-        vue.createElementVNode("div", { class: "header-inner" }, [
+      vue.createElementVNode("view", { class: "header" }, [
+        vue.createElementVNode("view", { class: "header-inner" }, [
           vue.createElementVNode("view", {
             class: "header-back",
             onClick: $setup.goBack
           }, [
-            (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-              vue.createElementVNode("polyline", { points: "15 18 9 12 15 6" })
-            ])),
-            vue.createElementVNode("text", null, "返回")
+            vue.createElementVNode("text", { class: "back-arrow" }, [
+              vue.createVNode(_component_uni_icons, { type: "arrow-left" })
+            ]),
+            vue.createElementVNode("text", { class: "back-text" }, "返回")
           ]),
-          vue.createElementVNode("span", { class: "logo-mark" }, "A·A")
+          vue.createElementVNode("text", { class: "logo-mark" }, "A·A")
         ])
       ]),
       vue.createCommentVNode(" MAIN "),
       vue.createElementVNode("view", { class: "main" }, [
         vue.createElementVNode("view", { class: "page-header" }, [
-          vue.createElementVNode("view", { class: "page-eyebrow" }, "New Entry"),
-          vue.createElementVNode("h1", { class: "page-title" }, "新增快照"),
-          vue.createElementVNode("p", { class: "page-subtitle" }, "记录此刻，未来回看时会感谢现在的自己")
+          vue.createElementVNode("text", { class: "page-eyebrow" }, "New Entry"),
+          vue.createElementVNode("text", { class: "page-title" }, "新增快照"),
+          vue.createElementVNode("text", { class: "page-subtitle" }, "记录此刻，未来回看时会感谢现在的自己")
         ]),
         vue.createCommentVNode(" Date "),
         vue.createElementVNode("view", { class: "section" }, [
-          vue.createElementVNode("view", { class: "section-label" }, "快照日期"),
+          vue.createElementVNode("view", { class: "section-label" }, [
+            vue.createElementVNode("text", { class: "section-label-text" }, "快照日期"),
+            vue.createElementVNode("view", { class: "section-label-line" })
+          ]),
           vue.createElementVNode("view", { class: "date-wrapper" }, [
             vue.createElementVNode("view", { class: "date-display" }, [
-              (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-                vue.createElementVNode("rect", {
-                  x: "3",
-                  y: "4",
-                  width: "18",
-                  height: "18",
-                  rx: "2"
-                }),
-                vue.createElementVNode("line", {
-                  x1: "16",
-                  y1: "2",
-                  x2: "16",
-                  y2: "6"
-                }),
-                vue.createElementVNode("line", {
-                  x1: "8",
-                  y1: "2",
-                  x2: "8",
-                  y2: "6"
-                }),
-                vue.createElementVNode("line", {
-                  x1: "3",
-                  y1: "10",
-                  x2: "21",
-                  y2: "10"
-                })
-              ])),
+              vue.createElementVNode("text", { class: "date-icon" }, "📅"),
               vue.createElementVNode(
-                "span",
+                "text",
                 { class: "date-text" },
                 vue.toDisplayString($setup.dateDisplay),
                 1
                 /* TEXT */
               ),
               vue.createElementVNode(
-                "span",
+                "text",
                 { class: "date-weekday" },
                 vue.toDisplayString($setup.weekdayDisplay),
                 1
@@ -1423,7 +1423,10 @@ if (uni.restoreGlobal) {
         ]),
         vue.createCommentVNode(" Platforms "),
         vue.createElementVNode("view", { class: "section" }, [
-          vue.createElementVNode("view", { class: "section-label" }, "平台资产"),
+          vue.createElementVNode("view", { class: "section-label" }, [
+            vue.createElementVNode("text", { class: "section-label-text" }, "平台资产"),
+            vue.createElementVNode("view", { class: "section-label-line" })
+          ]),
           vue.createElementVNode("view", { class: "platform-list" }, [
             (vue.openBlock(true), vue.createElementBlock(
               vue.Fragment,
@@ -1438,20 +1441,28 @@ if (uni.restoreGlobal) {
                     {
                       class: vue.normalizeClass(["platform-icon", p.cls])
                     },
-                    vue.toDisplayString(p.icon),
-                    3
-                    /* TEXT, CLASS */
+                    [
+                      vue.createElementVNode(
+                        "text",
+                        { class: "platform-icon-text" },
+                        vue.toDisplayString(p.icon),
+                        1
+                        /* TEXT */
+                      )
+                    ],
+                    2
+                    /* CLASS */
                   ),
                   vue.createElementVNode("view", { class: "platform-info" }, [
                     vue.createElementVNode(
-                      "view",
+                      "text",
                       { class: "platform-name" },
                       vue.toDisplayString(p.name),
                       1
                       /* TEXT */
                     ),
                     vue.createElementVNode(
-                      "view",
+                      "text",
                       { class: "platform-desc" },
                       vue.toDisplayString(p.desc),
                       1
@@ -1459,7 +1470,7 @@ if (uni.restoreGlobal) {
                     )
                   ]),
                   vue.createElementVNode("view", { class: "amount-input-wrapper" }, [
-                    vue.createElementVNode("span", { class: "amount-prefix" }, "¥"),
+                    vue.createElementVNode("text", { class: "amount-prefix" }, "¥"),
                     vue.withDirectives(vue.createElementVNode("input", {
                       type: "digit",
                       class: "amount-input",
@@ -1470,53 +1481,44 @@ if (uni.restoreGlobal) {
                       [vue.vModelText, p.amount]
                     ])
                   ]),
-                  vue.createVNode(_component_uni_icons, {
-                    type: "closeempty",
-                    size: "16",
-                    color: "red",
+                  vue.createElementVNode("view", {
                     class: "platform-delete",
                     onClick: ($event) => $setup.removePlatform(i)
-                  }, null, 8, ["onClick"])
+                  }, [
+                    vue.createElementVNode("text", { class: "delete-icon" }, "✕")
+                  ], 8, ["onClick"])
                 ]);
               }),
               128
               /* KEYED_FRAGMENT */
             ))
           ]),
-          vue.createElementVNode("button", {
+          vue.createElementVNode("view", {
             class: "add-platform-btn",
             onClick: $setup.openPicker
           }, [
-            (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-              vue.createElementVNode("line", {
-                x1: "12",
-                y1: "5",
-                x2: "12",
-                y2: "19"
-              }),
-              vue.createElementVNode("line", {
-                x1: "5",
-                y1: "12",
-                x2: "19",
-                y2: "12"
-              })
-            ])),
-            vue.createTextVNode(" 添加平台 ")
+            vue.createElementVNode("text", { class: "add-icon" }, "+"),
+            vue.createElementVNode("text", { class: "add-text" }, "添加平台")
           ])
         ]),
         vue.createCommentVNode(" Total Preview "),
         vue.createElementVNode("view", { class: "section" }, [
-          vue.createElementVNode("view", { class: "section-label" }, "资产汇总"),
+          vue.createElementVNode("view", { class: "section-label" }, [
+            vue.createElementVNode("text", { class: "section-label-text" }, "资产汇总"),
+            vue.createElementVNode("view", { class: "section-label-line" })
+          ]),
           vue.createElementVNode("view", { class: "total-preview" }, [
-            vue.createElementVNode("view", null, [
-              vue.createElementVNode("view", { class: "total-label" }, "本次总资产"),
-              vue.createElementVNode("view", { class: "total-amount" }, [
-                vue.createTextVNode(
+            vue.createElementVNode("view", { class: "total-left" }, [
+              vue.createElementVNode("text", { class: "total-label" }, "本次总资产"),
+              vue.createElementVNode("view", { class: "total-row" }, [
+                vue.createElementVNode(
+                  "text",
+                  { class: "total-amount" },
                   vue.toDisplayString($setup.formatNum($setup.totalAmount)),
                   1
                   /* TEXT */
                 ),
-                vue.createElementVNode("span", { class: "currency" }, "CNY")
+                vue.createElementVNode("text", { class: "currency" }, "CNY")
               ])
             ]),
             vue.createElementVNode("view", { class: "total-change" }, [
@@ -1530,17 +1532,17 @@ if (uni.restoreGlobal) {
                       class: vue.normalizeClass(["change-badge", $setup.totalChange.pct >= 0 ? "up" : "down"])
                     },
                     [
-                      (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-                        $setup.totalChange.pct >= 0 ? (vue.openBlock(), vue.createElementBlock("polyline", {
-                          key: 0,
-                          points: "18 15 12 9 6 15"
-                        })) : (vue.openBlock(), vue.createElementBlock("polyline", {
-                          key: 1,
-                          points: "6 9 12 15 18 9"
-                        }))
-                      ])),
-                      vue.createTextVNode(
-                        " " + vue.toDisplayString($setup.totalChange.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.totalChange.pct.toFixed(1)) + "% ",
+                      vue.createElementVNode(
+                        "text",
+                        { class: "arrow-icon" },
+                        vue.toDisplayString($setup.totalChange.pct >= 0 ? "▲" : "▼"),
+                        1
+                        /* TEXT */
+                      ),
+                      vue.createElementVNode(
+                        "text",
+                        null,
+                        vue.toDisplayString($setup.totalChange.pct >= 0 ? "+" : "") + vue.toDisplayString($setup.totalChange.pct.toFixed(1)) + "%",
                         1
                         /* TEXT */
                       )
@@ -1549,7 +1551,7 @@ if (uni.restoreGlobal) {
                     /* CLASS */
                   ),
                   vue.createElementVNode(
-                    "view",
+                    "text",
                     { class: "change-amount" },
                     vue.toDisplayString($setup.totalChange.diff >= 0 ? "+" : "") + vue.toDisplayString($setup.formatNum($setup.totalChange.diff)) + " CNY ",
                     1
@@ -1563,18 +1565,10 @@ if (uni.restoreGlobal) {
                 { key: 1 },
                 [
                   vue.createElementVNode("view", { class: "change-badge neutral" }, [
-                    (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-                      vue.createElementVNode("line", {
-                        x1: "5",
-                        y1: "12",
-                        x2: "19",
-                        y2: "12"
-                      })
-                    ])),
-                    vue.createTextVNode(" — ")
+                    vue.createElementVNode("text", null, "—")
                   ]),
                   vue.createElementVNode(
-                    "view",
+                    "text",
                     { class: "change-amount" },
                     "上次 ¥" + vue.toDisplayString($setup.formatNum($setup.lastTotal)),
                     1
@@ -1589,23 +1583,22 @@ if (uni.restoreGlobal) {
         ]),
         vue.createCommentVNode(" Screenshots "),
         vue.createElementVNode("view", { class: "section" }, [
-          vue.createElementVNode("view", { class: "section-label" }, "截图凭证"),
+          vue.createElementVNode("view", { class: "section-label" }, [
+            vue.createElementVNode("text", { class: "section-label-text" }, "截图凭证"),
+            vue.createElementVNode("view", { class: "section-label-line" })
+          ]),
           vue.createElementVNode("view", { class: "upload-grid" }, [
             vue.createElementVNode("view", {
               class: "upload-trigger",
               onClick: $setup.chooseImage
             }, [
-              (vue.openBlock(), vue.createElementBlock("svg", { viewBox: "0 0 24 24" }, [
-                vue.createElementVNode("path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" }),
-                vue.createElementVNode("polyline", { points: "17 8 12 3 7 8" }),
-                vue.createElementVNode("line", {
-                  x1: "12",
-                  y1: "3",
-                  x2: "12",
-                  y2: "15"
+              vue.createElementVNode("text", { class: "upload-icon" }, [
+                vue.createVNode(_component_uni_icons, {
+                  type: "cloud-upload",
+                  size: "25"
                 })
-              ])),
-              vue.createElementVNode("text", null, "上传")
+              ]),
+              vue.createElementVNode("text", { class: "upload-text" }, "上传")
             ]),
             (vue.openBlock(true), vue.createElementBlock(
               vue.Fragment,
@@ -1624,11 +1617,7 @@ if (uni.restoreGlobal) {
                     class: "thumb-delete",
                     onClick: vue.withModifiers(($event) => $setup.removeScreenshot(i), ["stop"])
                   }, [
-                    vue.createVNode(_component_uni_icons, {
-                      type: "closeempty",
-                      size: "10",
-                      color: "#fff"
-                    })
+                    vue.createElementVNode("text", { class: "thumb-delete-icon" }, "✕")
                   ], 8, ["onClick"])
                 ]);
               }),
@@ -1639,7 +1628,10 @@ if (uni.restoreGlobal) {
         ]),
         vue.createCommentVNode(" Note "),
         vue.createElementVNode("view", { class: "section" }, [
-          vue.createElementVNode("view", { class: "section-label" }, "备注"),
+          vue.createElementVNode("view", { class: "section-label" }, [
+            vue.createElementVNode("text", { class: "section-label-text" }, "备注"),
+            vue.createElementVNode("view", { class: "section-label-line" })
+          ]),
           vue.withDirectives(vue.createElementVNode(
             "textarea",
             {
@@ -1653,20 +1645,24 @@ if (uni.restoreGlobal) {
           ), [
             [vue.vModelText, $setup.note]
           ]),
-          vue.createElementVNode("view", { class: "note-hint" }, "可选。方便未来回顾时了解当时的情况")
+          vue.createElementVNode("text", { class: "note-hint" }, "可选。方便未来回顾时了解当时的情况")
         ])
       ]),
       vue.createCommentVNode(" SUBMIT FOOTER "),
-      vue.createElementVNode("footer", { class: "submit-footer" }, [
+      vue.createElementVNode("view", { class: "submit-footer" }, [
         vue.createElementVNode("view", { class: "submit-inner" }, [
-          vue.createElementVNode("button", {
+          vue.createElementVNode("view", {
             class: "btn-cancel",
             onClick: $setup.goBack
-          }, "取消"),
-          vue.createElementVNode("button", {
+          }, [
+            vue.createElementVNode("text", { class: "btn-cancel-text" }, "取消")
+          ]),
+          vue.createElementVNode("view", {
             class: "btn-submit",
             onClick: $setup.saveSnapshot
-          }, "保存快照")
+          }, [
+            vue.createElementVNode("text", { class: "btn-submit-text" }, "保存快照")
+          ])
         ])
       ]),
       vue.createCommentVNode(" PLATFORM PICKER MODAL "),
@@ -1687,15 +1683,18 @@ if (uni.restoreGlobal) {
         },
         [
           vue.createElementVNode("view", { class: "picker-handle" }),
-          vue.createElementVNode("view", { class: "picker-title" }, "选择平台"),
-          vue.createElementVNode("view", { class: "picker-subtitle" }, "点击添加，或输入自定义平台名称"),
+          vue.createElementVNode("text", { class: "picker-title" }, "选择平台"),
+          vue.createElementVNode("text", { class: "picker-subtitle" }, "点击添加，或输入自定义平台名称"),
           vue.createElementVNode("view", { class: "picker-grid" }, [
             (vue.openBlock(), vue.createElementBlock(
               vue.Fragment,
               null,
               vue.renderList($setup.defaultPlatforms, (p) => {
                 return vue.createElementVNode("view", {
-                  class: vue.normalizeClass(["picker-option", $setup.addedPlatformNames.has(p.name) ? "selected" : ""]),
+                  class: vue.normalizeClass([
+                    "picker-option",
+                    $setup.addedPlatformNames.has(p.name) ? "selected" : ""
+                  ]),
                   key: p.name,
                   onClick: ($event) => $setup.selectDefaultPlatform(p)
                 }, [
@@ -1704,13 +1703,21 @@ if (uni.restoreGlobal) {
                     {
                       class: vue.normalizeClass(["icon", "platform-icon", p.cls])
                     },
-                    vue.toDisplayString(p.icon),
-                    3
-                    /* TEXT, CLASS */
+                    [
+                      vue.createElementVNode(
+                        "text",
+                        { class: "platform-icon-text" },
+                        vue.toDisplayString(p.icon),
+                        1
+                        /* TEXT */
+                      )
+                    ],
+                    2
+                    /* CLASS */
                   ),
                   vue.createElementVNode(
-                    "view",
-                    { class: "label" },
+                    "text",
+                    { class: "picker-label" },
                     vue.toDisplayString(p.name) + vue.toDisplayString($setup.addedPlatformNames.has(p.name) ? " ✓" : ""),
                     1
                     /* TEXT */
@@ -1736,36 +1743,63 @@ if (uni.restoreGlobal) {
             ), [
               [vue.vModelText, $setup.customName]
             ]),
-            vue.createElementVNode("button", {
+            vue.createElementVNode("view", {
               class: "picker-custom-btn",
               onClick: $setup.addCustomPlatform
-            }, "添加")
+            }, [
+              vue.createElementVNode("text", { class: "picker-custom-btn-text" }, "添加")
+            ])
           ]),
-          vue.createElementVNode("button", {
+          vue.createElementVNode("view", {
             class: "picker-cancel",
             onClick: $setup.closePicker
-          }, "取消")
+          }, [
+            vue.createElementVNode("text", { class: "picker-cancel-text" }, "取消")
+          ])
         ],
         2
         /* CLASS */
       )
     ]);
   }
-  const PagesAddIndex = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-89f6901d"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/add/index.vue"]]);
+  const PagesAddIndex = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-89f6901d"], ["__file", "E:/A0MyCodes/记账本App/app/pages/add/index.vue"]]);
   __definePage("pages/index/index", PagesIndexIndex);
   __definePage("pages/add/index", PagesAddIndex);
   const _sfc_main = {
     onLaunch: function() {
-      formatAppLog("log", "at App.vue:4", "App Launch");
+      try {
+        var canvas = document.createElement("canvas");
+        canvas.width = 256;
+        canvas.height = 256;
+        var ctx = canvas.getContext("2d");
+        var imageData = ctx.createImageData(256, 256);
+        var data = imageData.data;
+        for (var i = 0; i < data.length; i += 4) {
+          var v = Math.floor(Math.random() * 256);
+          data[i] = v;
+          data[i + 1] = v;
+          data[i + 2] = v;
+          data[i + 3] = 40;
+        }
+        ctx.putImageData(imageData, 0, 0);
+        var url = canvas.toDataURL("image/png");
+        var style = document.createElement("style");
+        style.textContent = ".grain-overlay{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9999;opacity:0.35;background-image:url(" + url + ");background-repeat:repeat;background-size:256px 256px;}";
+        document.head.appendChild(style);
+        var el = document.createElement("div");
+        el.className = "grain-overlay";
+        document.body.appendChild(el);
+      } catch (e) {
+      }
     },
     onShow: function() {
-      formatAppLog("log", "at App.vue:7", "App Show");
+      formatAppLog("log", "at App.vue:37", "App Show");
     },
     onHide: function() {
-      formatAppLog("log", "at App.vue:10", "App Hide");
+      formatAppLog("log", "at App.vue:40", "App Hide");
     }
   };
-  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/App.vue"]]);
+  const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "E:/A0MyCodes/记账本App/app/App.vue"]]);
   function createApp() {
     const app = vue.createVueApp(App);
     return {

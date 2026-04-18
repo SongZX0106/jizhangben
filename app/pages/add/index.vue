@@ -1,1151 +1,1080 @@
 <template>
-    <view class="page">
-        <!-- HEADER -->
-        <header class="header">
-            <div class="header-inner">
-                <view class="header-back" @click="goBack">
-                    <svg viewBox="0 0 24 24">
-                        <polyline points="15 18 9 12 15 6" />
-                    </svg>
-                    <text>返回</text>
-                </view>
-                <span class="logo-mark">A·A</span>
-            </div>
-        </header>
-
-        <!-- MAIN -->
-        <view class="main">
-            <view class="page-header">
-                <view class="page-eyebrow">New Entry</view>
-                <h1 class="page-title">新增快照</h1>
-                <p class="page-subtitle">记录此刻，未来回看时会感谢现在的自己</p>
-            </view>
-
-            <!-- Date -->
-            <view class="section">
-                <view class="section-label">快照日期</view>
-                <view class="date-wrapper">
-                    <view class="date-display">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="4" width="18" height="18" rx="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                        <span class="date-text">{{ dateDisplay }}</span>
-                        <span class="date-weekday">{{ weekdayDisplay }}</span>
-                        <picker mode="date" :value="formDate" @change="onDateChange">
-                            <view class="date-input-cover"></view>
-                        </picker>
-                    </view>
-                </view>
-            </view>
-
-            <!-- Platforms -->
-            <view class="section">
-                <view class="section-label">平台资产</view>
-                <view class="platform-list">
-                    <view class="platform-row" v-for="(p, i) in platforms" :key="p.id">
-                        <view :class="['platform-icon', p.cls]">{{ p.icon }}</view>
-                        <view class="platform-info">
-                            <view class="platform-name">{{ p.name }}</view>
-                            <view class="platform-desc">{{ p.desc }}</view>
-                        </view>
-                        <view class="amount-input-wrapper">
-                            <span class="amount-prefix">¥</span>
-                            <input type="digit" class="amount-input" placeholder="0.00" v-model="p.amount"
-                                @input="updateTotal" />
-                        </view>
-                        <uni-icons type="closeempty" size="16" color="red" class="platform-delete"
-                            @click="removePlatform(i)" />
-                    </view>
-                </view>
-                <button class="add-platform-btn" @click="openPicker">
-                    <svg viewBox="0 0 24 24">
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    添加平台
-                </button>
-            </view>
-
-            <!-- Total Preview -->
-            <view class="section">
-                <view class="section-label">资产汇总</view>
-                <view class="total-preview">
-                    <view>
-                        <view class="total-label">本次总资产</view>
-                        <view class="total-amount">{{ formatNum(totalAmount) }}<span class="currency">CNY</span></view>
-                    </view>
-                    <view class="total-change">
-                        <template v-if="totalChange">
-                            <view :class="['change-badge', totalChange.pct >= 0 ? 'up' : 'down']">
-                                <svg viewBox="0 0 24 24">
-                                    <polyline v-if="totalChange.pct >= 0" points="18 15 12 9 6 15" />
-                                    <polyline v-else points="6 9 12 15 18 9" />
-                                </svg>
-                                {{ totalChange.pct >= 0 ? '+' : '' }}{{ totalChange.pct.toFixed(1) }}%
-                            </view>
-                            <view class="change-amount">
-                                {{ totalChange.diff >= 0 ? '+' : '' }}{{ formatNum(totalChange.diff) }} CNY
-                            </view>
-                        </template>
-                        <template v-else>
-                            <view class="change-badge neutral">
-                                <svg viewBox="0 0 24 24">
-                                    <line x1="5" y1="12" x2="19" y2="12" />
-                                </svg>
-                                —
-                            </view>
-                            <view class="change-amount">上次 ¥{{ formatNum(lastTotal) }}</view>
-                        </template>
-                    </view>
-                </view>
-            </view>
-
-            <!-- Screenshots -->
-            <view class="section">
-                <view class="section-label">截图凭证</view>
-                <view class="upload-grid">
-                    <view class="upload-trigger" @click="chooseImage">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="17 8 12 3 7 8" />
-                            <line x1="12" y1="3" x2="12" y2="15" />
-                        </svg>
-                        <text>上传</text>
-                    </view>
-                    <view class="upload-thumb" v-for="(img, i) in screenshots" :key="i">
-                        <image :src="img" mode="aspectFill" @click="previewImage(i)" />
-                        <view class="thumb-delete" @click.stop="removeScreenshot(i)">
-                            <uni-icons type="closeempty" size="10" color="#fff" />
-                        </view>
-                    </view>
-                </view>
-            </view>
-
-            <!-- Note -->
-            <view class="section">
-                <view class="section-label">备注</view>
-                <textarea class="note-input" v-model="note" placeholder="记录一下这次的变化原因…" />
-                <view class="note-hint">可选。方便未来回顾时了解当时的情况</view>
-            </view>
+  <view class="page">
+    <!-- HEADER -->
+    <view class="header">
+      <view class="header-inner">
+        <view class="header-back" @click="goBack">
+          <text class="back-arrow">
+            <uni-icons type="arrow-left"></uni-icons>
+          </text>
+          <text class="back-text">返回</text>
         </view>
-
-        <!-- SUBMIT FOOTER -->
-        <footer class="submit-footer">
-            <view class="submit-inner">
-                <button class="btn-cancel" @click="goBack">取消</button>
-                <button class="btn-submit" @click="saveSnapshot">保存快照</button>
-            </view>
-        </footer>
-
-        <!-- PLATFORM PICKER MODAL -->
-        <view :class="['picker-overlay', pickerOpen ? 'open' : '']" @click="closePicker"></view>
-        <view :class="['picker-sheet', pickerOpen ? 'open' : '']">
-            <view class="picker-handle"></view>
-            <view class="picker-title">选择平台</view>
-            <view class="picker-subtitle">点击添加，或输入自定义平台名称</view>
-            <view class="picker-grid">
-                <view :class="['picker-option', addedPlatformNames.has(p.name) ? 'selected' : '']"
-                    v-for="p in defaultPlatforms" :key="p.name" @click="selectDefaultPlatform(p)">
-                    <view :class="['icon', 'platform-icon', p.cls]">{{ p.icon }}</view>
-                    <view class="label">{{ p.name }}{{ addedPlatformNames.has(p.name) ? ' ✓' : '' }}</view>
-                </view>
-            </view>
-            <view class="picker-custom-row">
-                <input class="picker-custom-input" v-model="customName" placeholder="自定义平台名称…"
-                    @confirm="addCustomPlatform" />
-                <button class="picker-custom-btn" @click="addCustomPlatform">添加</button>
-            </view>
-            <button class="picker-cancel" @click="closePicker">取消</button>
-        </view>
+        <text class="logo-mark">A·A</text>
+      </view>
     </view>
+
+    <!-- MAIN -->
+    <view class="main">
+      <view class="page-header">
+        <text class="page-eyebrow">New Entry</text>
+        <text class="page-title">新增快照</text>
+        <text class="page-subtitle">记录此刻，未来回看时会感谢现在的自己</text>
+      </view>
+
+      <!-- Date -->
+      <view class="section">
+        <view class="section-label">
+          <text class="section-label-text">快照日期</text>
+          <view class="section-label-line"></view>
+        </view>
+        <view class="date-wrapper">
+          <view class="date-display">
+            <text class="date-icon">📅</text>
+            <text class="date-text">{{ dateDisplay }}</text>
+            <text class="date-weekday">{{ weekdayDisplay }}</text>
+            <picker mode="date" :value="formDate" @change="onDateChange">
+              <view class="date-input-cover"></view>
+            </picker>
+          </view>
+        </view>
+      </view>
+
+      <!-- Platforms -->
+      <view class="section">
+        <view class="section-label">
+          <text class="section-label-text">平台资产</text>
+          <view class="section-label-line"></view>
+        </view>
+        <view class="platform-list">
+          <view class="platform-row" v-for="(p, i) in platforms" :key="p.id">
+            <view :class="['platform-icon', p.cls]">
+              <text class="platform-icon-text">{{ p.icon }}</text>
+            </view>
+            <view class="platform-info">
+              <text class="platform-name">{{ p.name }}</text>
+              <text class="platform-desc">{{ p.desc }}</text>
+            </view>
+            <view class="amount-input-wrapper">
+              <text class="amount-prefix">¥</text>
+              <input
+                type="digit"
+                class="amount-input"
+                placeholder="0.00"
+                v-model="p.amount"
+                @input="updateTotal"
+              />
+            </view>
+            <view class="platform-delete" @click="removePlatform(i)">
+              <text class="delete-icon">✕</text>
+            </view>
+          </view>
+        </view>
+        <view class="add-platform-btn" @click="openPicker">
+          <text class="add-icon">+</text>
+          <text class="add-text">添加平台</text>
+        </view>
+      </view>
+
+      <!-- Total Preview -->
+      <view class="section">
+        <view class="section-label">
+          <text class="section-label-text">资产汇总</text>
+          <view class="section-label-line"></view>
+        </view>
+        <view class="total-preview">
+          <view class="total-left">
+            <text class="total-label">本次总资产</text>
+            <view class="total-row">
+              <text class="total-amount">{{ formatNum(totalAmount) }}</text>
+              <text class="currency">CNY</text>
+            </view>
+          </view>
+          <view class="total-change">
+            <template v-if="totalChange">
+              <view
+                :class="['change-badge', totalChange.pct >= 0 ? 'up' : 'down']"
+              >
+                <text class="arrow-icon">{{
+                  totalChange.pct >= 0 ? "▲" : "▼"
+                }}</text>
+                <text
+                  >{{ totalChange.pct >= 0 ? "+" : ""
+                  }}{{ totalChange.pct.toFixed(1) }}%</text
+                >
+              </view>
+              <text class="change-amount">
+                {{ totalChange.diff >= 0 ? "+" : ""
+                }}{{ formatNum(totalChange.diff) }} CNY
+              </text>
+            </template>
+            <template v-else>
+              <view class="change-badge neutral">
+                <text>—</text>
+              </view>
+              <text class="change-amount"
+                >上次 ¥{{ formatNum(lastTotal) }}</text
+              >
+            </template>
+          </view>
+        </view>
+      </view>
+
+      <!-- Screenshots -->
+      <view class="section">
+        <view class="section-label">
+          <text class="section-label-text">截图凭证</text>
+          <view class="section-label-line"></view>
+        </view>
+        <view class="upload-grid">
+          <view class="upload-trigger" @click="chooseImage">
+            <text class="upload-icon">
+              <uni-icons type="cloud-upload" size="25"></uni-icons>
+            </text>
+            <text class="upload-text">上传</text>
+          </view>
+          <view class="upload-thumb" v-for="(img, i) in screenshots" :key="i">
+            <image :src="img" mode="aspectFill" @click="previewImage(i)" />
+            <view class="thumb-delete" @click.stop="removeScreenshot(i)">
+              <text class="thumb-delete-icon">✕</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- Note -->
+      <view class="section">
+        <view class="section-label">
+          <text class="section-label-text">备注</text>
+          <view class="section-label-line"></view>
+        </view>
+        <textarea
+          class="note-input"
+          v-model="note"
+          placeholder="记录一下这次的变化原因…"
+        />
+        <text class="note-hint">可选。方便未来回顾时了解当时的情况</text>
+      </view>
+    </view>
+
+    <!-- SUBMIT FOOTER -->
+    <view class="submit-footer">
+      <view class="submit-inner">
+        <view class="btn-cancel" @click="goBack">
+          <text class="btn-cancel-text">取消</text>
+        </view>
+        <view class="btn-submit" @click="saveSnapshot">
+          <text class="btn-submit-text">保存快照</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- PLATFORM PICKER MODAL -->
+    <view
+      :class="['picker-overlay', pickerOpen ? 'open' : '']"
+      @click="closePicker"
+    ></view>
+    <view :class="['picker-sheet', pickerOpen ? 'open' : '']">
+      <view class="picker-handle"></view>
+      <text class="picker-title">选择平台</text>
+      <text class="picker-subtitle">点击添加，或输入自定义平台名称</text>
+      <view class="picker-grid">
+        <view
+          :class="[
+            'picker-option',
+            addedPlatformNames.has(p.name) ? 'selected' : '',
+          ]"
+          v-for="p in defaultPlatforms"
+          :key="p.name"
+          @click="selectDefaultPlatform(p)"
+        >
+          <view :class="['icon', 'platform-icon', p.cls]">
+            <text class="platform-icon-text">{{ p.icon }}</text>
+          </view>
+          <text class="picker-label"
+            >{{ p.name }}{{ addedPlatformNames.has(p.name) ? " ✓" : "" }}</text
+          >
+        </view>
+      </view>
+      <view class="picker-custom-row">
+        <input
+          class="picker-custom-input"
+          v-model="customName"
+          placeholder="自定义平台名称…"
+          @confirm="addCustomPlatform"
+        />
+        <view class="picker-custom-btn" @click="addCustomPlatform">
+          <text class="picker-custom-btn-text">添加</text>
+        </view>
+      </view>
+      <view class="picker-cancel" @click="closePicker">
+        <text class="picker-cancel-text">取消</text>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
 
-const STORAGE_KEY = 'asset_snapshots';
+const STORAGE_KEY = "asset_snapshots";
 
 const defaultPlatforms = [
-    { name: '微信', desc: '社交支付', icon: '微', cls: 'wechat' },
-    { name: '支付宝', desc: '数字钱包', icon: '支', cls: 'alipay' },
-    { name: '招商银行', desc: '主卡银行', icon: '招', cls: 'cmb' },
-    { name: '同花顺', desc: '证券交易', icon: '花', cls: 'cmb' },
-    { name: '雪球', desc: '投资社区', icon: '雪', cls: 'icbc' },
-    { name: '涨乐通', desc: '华泰证券', icon: '涨', cls: 'cmb' },
+  { name: "微信", desc: "社交支付", icon: "微", cls: "wechat" },
+  { name: "支付宝", desc: "数字钱包", icon: "支", cls: "alipay" },
+  { name: "招商银行", desc: "主卡银行", icon: "招", cls: "cmb" },
+  { name: "同花顺", desc: "证券交易", icon: "花", cls: "cmb" },
+  { name: "雪球", desc: "投资社区", icon: "雪", cls: "icbc" },
+  { name: "涨乐通", desc: "华泰证券", icon: "涨", cls: "cmb" },
 ];
 
-const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
 
 const today = new Date();
 const formDate = ref(today.toISOString().slice(0, 10));
 const platforms = ref([]);
 const screenshots = ref([]);
-const note = ref('');
+const note = ref("");
 const pickerOpen = ref(false);
-const customName = ref('');
+const customName = ref("");
 const lastTotal = ref(0);
 let platformIdCounter = 0;
 
 // Load last total
 try {
-    const raw = uni.getStorageSync(STORAGE_KEY);
-    if (raw) {
-        const arr = JSON.parse(raw);
-        if (arr.length > 0) {
-            arr.sort((a, b) => b.date.localeCompare(a.date));
-            lastTotal.value = (arr[0].platforms || []).reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
-        }
+  const raw = uni.getStorageSync(STORAGE_KEY);
+  if (raw) {
+    const arr = JSON.parse(raw);
+    if (arr.length > 0) {
+      arr.sort((a, b) => b.date.localeCompare(a.date));
+      lastTotal.value = (arr[0].platforms || []).reduce(
+        (s, p) => s + (parseFloat(p.amount) || 0),
+        0,
+      );
     }
-} catch (e) { }
+  }
+} catch (e) {}
 
 const dateDisplay = computed(() => {
-    const d = new Date(formDate.value);
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y} · ${m} · ${day}`;
+  const d = new Date(formDate.value);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y} · ${m} · ${day}`;
 });
 
 const weekdayDisplay = computed(() => {
-    const d = new Date(formDate.value);
-    return weekdays[d.getDay()];
+  const d = new Date(formDate.value);
+  return weekdays[d.getDay()];
 });
 
 function onDateChange(e) {
-    formDate.value = e.detail.value;
+  formDate.value = e.detail.value;
 }
 
 const addedPlatformNames = computed(() => {
-    const set = new Set();
-    platforms.value.forEach(p => set.add(p.name));
-    return set;
+  const set = new Set();
+  platforms.value.forEach((p) => set.add(p.name));
+  return set;
 });
 
 function openPicker() {
-    customName.value = '';
-    pickerOpen.value = true;
+  customName.value = "";
+  pickerOpen.value = true;
 }
 
 function closePicker() {
-    pickerOpen.value = false;
+  pickerOpen.value = false;
 }
 
 function selectDefaultPlatform(p) {
-    if (addedPlatformNames.value.has(p.name)) return;
-    platforms.value.push({
-        id: ++platformIdCounter,
+  if (addedPlatformNames.value.has(p.name)) return;
+  platforms.value.push({
+    id: ++platformIdCounter,
+    name: p.name,
+    desc: p.desc,
+    icon: p.icon,
+    cls: p.cls,
+    amount: "",
+  });
+  closePicker();
+}
+
+function addCustomPlatform() {
+  const name = customName.value.trim();
+  if (!name || addedPlatformNames.value.has(name)) return;
+  const colors = ["wechat", "alipay", "cmb", "icbc"];
+  const cls = colors[Math.floor(Math.random() * colors.length)];
+  platforms.value.push({
+    id: ++platformIdCounter,
+    name: name,
+    desc: "自定义",
+    icon: name[0],
+    cls: cls,
+    amount: "",
+  });
+  customName.value = "";
+  closePicker();
+}
+
+function removePlatform(index) {
+  platforms.value.splice(index, 1);
+}
+
+const totalAmount = computed(() => {
+  return platforms.value.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+});
+
+const totalChange = computed(() => {
+  const total = totalAmount.value;
+  if (total <= 0) return null;
+  const diff = total - lastTotal.value;
+  const pct = lastTotal.value > 0 ? (diff / lastTotal.value) * 100 : 0;
+  return { diff, pct };
+});
+
+function formatNum(n) {
+  const num = parseFloat(n) || 0;
+  const parts = num.toFixed(2).split(".");
+  const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const decPart = parts[1];
+  return decPart === "00"
+    ? intPart
+    : intPart + "." + decPart.replace(/0+$/, "");
+}
+
+function chooseImage() {
+  uni.chooseImage({
+    count: 5 - screenshots.value.length,
+    sizeType: ["compressed"],
+    sourceType: ["album", "camera"],
+    success: (res) => {
+      res.tempFilePaths.forEach(function (tempPath) {
+        uni.saveFile({
+          tempFilePath: tempPath,
+          success: function (saveRes) {
+            screenshots.value.push(saveRes.savedFilePath);
+          },
+          fail: function () {
+            screenshots.value.push(tempPath);
+          },
+        });
+      });
+    },
+  });
+}
+
+function removeScreenshot(index) {
+  screenshots.value.splice(index, 1);
+}
+
+function previewImage(index) {
+  uni.previewImage({
+    urls: screenshots.value,
+    current: screenshots.value[index],
+  });
+}
+
+function goBack() {
+  uni.navigateBack();
+}
+
+function saveSnapshot() {
+  if (platforms.value.length === 0) {
+    uni.showToast({
+      title: "请添加记录",
+      mask: true,
+      icon: "none",
+    });
+    return;
+  }
+
+  const snapshot = {
+    id: Date.now().toString(),
+    date: formDate.value,
+    platforms: platforms.value.map(function (p) {
+      return {
         name: p.name,
         desc: p.desc,
         icon: p.icon,
         cls: p.cls,
-        amount: ''
-    });
-    closePicker();
-}
+        amount: parseFloat(p.amount) || 0,
+      };
+    }),
+    screenshots: screenshots.value,
+    note: note.value.trim(),
+  };
 
-function addCustomPlatform() {
-    const name = customName.value.trim();
-    if (!name || addedPlatformNames.value.has(name)) return;
-    const colors = ['wechat', 'alipay', 'cmb', 'icbc'];
-    const cls = colors[Math.floor(Math.random() * colors.length)];
-    platforms.value.push({
-        id: ++platformIdCounter,
-        name: name,
-        desc: '自定义',
-        icon: name[0],
-        cls: cls,
-        amount: ''
-    });
-    customName.value = '';
-    closePicker();
-}
-
-function removePlatform(index) {
-    platforms.value.splice(index, 1);
-}
-
-const totalAmount = computed(() => {
-    return platforms.value.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
-});
-
-const totalChange = computed(() => {
-    const total = totalAmount.value;
-    if (total <= 0) return null;
-    const diff = total - lastTotal.value;
-    const pct = lastTotal.value > 0 ? (diff / lastTotal.value) * 100 : 0;
-    return { diff, pct };
-});
-
-function formatNum(n) {
-    return (parseFloat(n) || 0).toLocaleString('zh-CN');
-}
-
-function chooseImage() {
-    uni.chooseImage({
-        count: 5 - screenshots.value.length,
-        sizeType: ['compressed'],
-        sourceType: ['album', 'camera'],
-        success: (res) => {
-            res.tempFilePaths.forEach(function(tempPath) {
-                uni.saveFile({
-                    tempFilePath: tempPath,
-                    success: function(saveRes) {
-                        screenshots.value.push(saveRes.savedFilePath);
-                    },
-                    fail: function() {
-                        screenshots.value.push(tempPath);
-                    }
-                });
-            });
-        }
-    });
-}
-
-function removeScreenshot(index) {
-    screenshots.value.splice(index, 1);
-}
-
-function previewImage(index) {
-    uni.previewImage({
-        urls: screenshots.value,
-        current: screenshots.value[index]
-    });
-}
-
-function goBack() {
-    uni.navigateBack();
-}
-
-function saveSnapshot() {
-    if(platforms.value.length === 0){
-        uni.showToast({
-            title:"请添加记录",
-            mask:true,
-            icon:"none"
-        })
-        return
-    }
-
-    const snapshot = {
-        id: Date.now().toString(),
-        date: formDate.value,
-        platforms: platforms.value.map(function (p) {
-            return {
-                name: p.name,
-                desc: p.desc,
-                icon: p.icon,
-                cls: p.cls,
-                amount: parseFloat(p.amount) || 0
-            };
-        }),
-        screenshots: screenshots.value,
-        note: note.value.trim()
-    };
-
-    try {
-        const raw = uni.getStorageSync(STORAGE_KEY);
-        const arr = raw ? JSON.parse(raw) : [];
-        arr.push(snapshot);
-        uni.setStorageSync(STORAGE_KEY, JSON.stringify(arr));
-        uni.showToast({ title: '已保存', icon: 'success' });
-        setTimeout(function () { uni.navigateBack(); }, 800);
-    } catch (e) {
-        uni.showToast({ title: '保存失败', icon: 'none' });
-    }
+  try {
+    const raw = uni.getStorageSync(STORAGE_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(snapshot);
+    uni.setStorageSync(STORAGE_KEY, JSON.stringify(arr));
+    uni.showToast({ title: "已保存", icon: "success" });
+    setTimeout(function () {
+      uni.navigateBack();
+    }, 800);
+  } catch (e) {
+    uni.showToast({ title: "保存失败", icon: "none" });
+  }
 }
 </script>
 
 <style scoped>
 @import url("../../static/css2.css");
+
+/* ===== Base ===== */
 .page {
-    min-height: 100vh;
-    background: var(--paper);
+  min-height: 100vh;
+  background-color: #f5f2ed;
 }
 
-:root,
-.page {
-    --ink: #1a1a1a;
-    --ink-light: #6b6b6b;
-    --ink-muted: #a0a0a0;
-    --paper: #f5f2ed;
-    --paper-warm: #ebe6de;
-    --paper-card: #fffdf9;
-    --accent: #c45d3e;
-    --up: #c43e3e;
-    --up-bg: #fdf0ef;
-    --down: #2e7d5b;
-    --down-bg: #eef7f2;
-    --border: rgba(26, 26, 26, 0.08);
-    --shadow: rgba(26, 26, 26, 0.04);
-}
-
-/* ===== HEADER ===== */
+/* ===== Header ===== */
 .header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: rgba(245, 242, 237, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(245, 242, 237, 0.95);
+  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+  padding: 30px 24px 0;
 }
-
 .header-inner {
-    max-width: 640px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
 }
-
 .header-back {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--ink-light);
-    font-size: 13px;
-    font-weight: 500;
+  display: flex;
+  align-items: center;
 }
-
-.header-back svg {
-    width: 18px;
-    height: 18px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.back-arrow {
+  font-size: 18px;
+  color: #6b6b6b;
+  margin-right: 8px;
 }
-
+.back-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b6b6b;
+}
 .logo-mark {
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-size: 18px;
-    letter-spacing: -0.5px;
-    color: var(--ink);
+  font-family: "Playfair Display", serif;
+  font-weight: 900;
+  font-size: 18px;
+  color: #1a1a1a;
 }
 
-/* ===== MAIN ===== */
+/* ===== Main ===== */
 .main {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 48px 24px 160px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px 160px;
 }
-
 .page-header {
-    margin-bottom: 48px;
+  margin-bottom: 48px;
 }
-
 .page-eyebrow {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: #c45d3e;
+  margin-bottom: 12px;
 }
-
-.page-eyebrow::before {
-    content: '';
-    width: 24px;
-    height: 1.5px;
-    background: var(--accent);
-}
-
 .page-title {
-    font-family: 'Playfair Display', 'Noto Serif SC', serif;
-    font-size: 40px;
-    font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -1.5px;
-    color: var(--ink);
-    margin-bottom: 8px;
+  display: block;
+  font-family: "Playfair Display", "Noto Serif SC", serif;
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #1a1a1a;
+  margin-bottom: 8px;
 }
-
 .page-subtitle {
-    font-size: 14px;
-    color: var(--ink-muted);
-    font-weight: 400;
+  display: block;
+  font-size: 14px;
+  color: #a0a0a0;
 }
 
-/* ===== SECTIONS ===== */
+/* ===== Sections ===== */
 .section {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
-
 .section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.section-label-text {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #a0a0a0;
+  flex-shrink: 0;
+}
+.section-label-line {
+  flex: 1;
+  height: 1px;
+  background-color: rgba(26, 26, 26, 0.08);
+  margin-left: 16px;
 }
 
-.section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-    margin-left: 8px;
-}
-
-/* ===== DATE INPUT ===== */
+/* ===== Date Input ===== */
 .date-wrapper {
-    position: relative;
+  position: relative;
 }
-
 .date-display {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -1px;
-    color: var(--ink);
-    padding: 20px 24px;
-    background: var(--paper-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-    flex-wrap: nowrap;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  padding: 20px 24px;
+  background-color: #fffdf9;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 14px;
+  overflow: hidden;
 }
-
-.date-display svg {
-    width: 22px;
-    height: 22px;
-    stroke: var(--accent);
-    fill: none;
-    stroke-width: 1.8;
-    flex-shrink: 0;
+.date-icon {
+  font-size: 18px;
+  margin-right: 16px;
+  flex-shrink: 0;
 }
-
+.date-text {
+  flex: 1;
+}
 .date-input-cover {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
 }
-
 .date-weekday {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ink-muted);
-    letter-spacing: 1px;
-    margin-left: auto;
-    flex-shrink: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a0a0a0;
+  letter-spacing: 1px;
+  margin-left: 12px;
+  flex-shrink: 0;
 }
 
-/* ===== PLATFORM INPUT ===== */
+/* ===== Platform Input ===== */
 .platform-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+  display: flex;
+  flex-direction: column;
 }
-
+.platform-list .platform-row {
+  margin-bottom: 12px;
+}
 .platform-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 16px 20px;
-    background: var(--paper-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    transition: border-color 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background-color: #fffdf9;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 14px;
 }
-
+.platform-row .platform-icon {
+  margin-right: 14px;
+}
 .platform-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-weight: 700;
-    font-size: 13px;
-    letter-spacing: -0.5px;
-    color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
-
+.platform-icon-text {
+  font-weight: 700;
+  font-size: 13px;
+  color: #ffffff;
+}
 .platform-icon.alipay {
-    background: #1677ff;
+  background-color: #1677ff;
 }
-
 .platform-icon.cmb {
-    background: #e60012;
+  background-color: #e60012;
 }
-
 .platform-icon.wechat {
-    background: #07c160;
+  background-color: #07c160;
 }
-
 .platform-icon.icbc {
-    background: #c4122f;
+  background-color: #c4122f;
 }
-
 .platform-icon.default {
-    background: var(--ink);
+  background-color: #1a1a1a;
 }
-
 .platform-info {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
 }
-
 .platform-name {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ink);
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
 }
-
 .platform-desc {
-    font-size: 11px;
-    color: var(--ink-muted);
-    margin-top: 2px;
+  display: block;
+  font-size: 11px;
+  color: #a0a0a0;
+  margin-top: 2px;
 }
-
 .amount-input-wrapper {
-    position: relative;
-    flex-shrink: 0;
+  position: relative;
+  flex-shrink: 0;
 }
-
 .amount-prefix {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink-muted);
-    pointer-events: none;
-    z-index: 1;
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 15px;
+  font-weight: 600;
+  color: #a0a0a0;
+  z-index: 1;
 }
-
 .amount-input {
-    width: 140px;
-    padding: 10px 14px 10px 32px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    text-align: right;
-    height: auto;
+  width: 140px;
+  padding: 10px 14px 10px 32px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  background-color: #f5f2ed;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 10px;
+  text-align: right;
+  height: auto;
 }
-
-.amount-input::placeholder {
-    color: var(--ink-muted);
-    font-weight: 400;
-    font-size: 14px;
-}
-
-/* Delete button */
 .platform-delete {
-    flex-shrink: 0;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
 }
-
-/* Add platform button */
+.delete-icon {
+  font-size: 14px;
+  color: #c43e3e;
+}
 .add-platform-btn {
-    width: 100%;
-    padding: 8px;
-    border: 1.5px dashed rgba(26, 26, 26, 0.12);
-    border-radius: 14px;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink-muted);
-    margin-top: 12px;
+  width: 100%;
+  padding: 12px 0;
+  border: 1.5px dashed rgba(26, 26, 26, 0.12);
+  border-radius: 14px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+}
+.add-icon {
+  font-size: 16px;
+  color: #a0a0a0;
+  margin-right: 8px;
+}
+.add-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a0a0a0;
 }
 
-.add-platform-btn:active {
-    border-color: rgba(196, 93, 62, 0.3);
-    color: var(--accent);
-}
-
-.add-platform-btn svg {
-    width: 18px;
-    height: 18px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-}
-
-/* ===== TOTAL PREVIEW ===== */
+/* ===== Total Preview ===== */
 .total-preview {
-    background: var(--paper-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
+  background-color: #fffdf9;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 14px;
 }
-
+.total-left {
+  flex: 1;
+}
 .total-label {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    margin-bottom: 4px;
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #a0a0a0;
+  margin-bottom: 4px;
 }
-
+.total-row {
+  display: flex;
+  align-items: baseline;
+}
 .total-amount {
-    font-family: 'Playfair Display', serif;
-    font-size: 36px;
-    font-weight: 900;
-    letter-spacing: -1.5px;
-    color: var(--ink);
+  font-family: "Playfair Display", serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: #1a1a1a;
 }
-
-.total-amount .currency {
-    font-size: 16px;
-    font-weight: 400;
-    color: var(--ink-muted);
-    margin-left: 4px;
+.currency {
+  font-size: 16px;
+  color: #a0a0a0;
+  margin-left: 4px;
 }
-
 .total-change {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
 }
-
 .change-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 6px 14px;
-    border-radius: 8px;
+  display: flex;
+  align-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
 }
-
 .change-badge.up {
-    color: var(--up);
-    background: var(--up-bg);
+  color: #c43e3e;
+  background-color: #fdf0ef;
 }
-
 .change-badge.down {
-    color: var(--down);
-    background: var(--down-bg);
+  color: #2e7d5b;
+  background-color: #eef7f2;
 }
-
 .change-badge.neutral {
-    color: var(--ink-muted);
-    background: var(--paper);
+  color: #a0a0a0;
+  background-color: #f5f2ed;
 }
-
-.change-badge svg {
-    width: 14px;
-    height: 14px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.arrow-icon {
+  margin-right: 5px;
+  font-size: 10px;
 }
-
 .change-amount {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-muted);
-    font-weight: 500;
-    margin-top: 4px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a0a0a0;
+  margin-top: 4px;
 }
 
-/* ===== SCREENSHOTS ===== */
+/* ===== Screenshots ===== */
 .upload-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
 .upload-trigger {
-    aspect-ratio: 1;
-    border: 1.5px dashed rgba(26, 26, 26, 0.12);
-    border-radius: 10px;
-    background: var(--paper-card);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  border: 1.5px dashed rgba(26, 26, 26, 0.12);
+  border-radius: 10px;
+  background-color: #fffdf9;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-
-.upload-trigger svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--ink-muted);
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.upload-icon {
+  position: absolute;
+  top: 35%;
+  font-size: 20px;
+  color: #a0a0a0;
 }
-
-.upload-trigger text {
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: var(--ink-muted);
+.upload-text {
+  position: absolute;
+  top: 60%;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #a0a0a0;
 }
-
 .upload-thumb {
-    aspect-ratio: 1;
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid var(--border);
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
 }
-
 .upload-thumb image {
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
-
 .thumb-delete {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.thumb-delete-icon {
+  font-size: 10px;
+  color: #ffffff;
 }
 
-/* ===== NOTE ===== */
+/* ===== Note ===== */
 .note-input {
-    width: 100%;
-    padding: 16px 20px;
-    font-family: 'DM Sans', 'Noto Serif SC', sans-serif;
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--ink);
-    background: var(--paper-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    min-height: 80px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 16px 20px;
+  font-family: "DM Sans", "Noto Serif SC", sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  background-color: #fffdf9;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 14px;
+  min-height: 80px;
 }
-
-.note-input::placeholder {
-    color: var(--ink-muted);
-}
-
 .note-hint {
-    font-size: 11px;
-    color: var(--ink-muted);
-    margin-top: 8px;
-    font-weight: 500;
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a0a0a0;
+  margin-top: 8px;
 }
 
-/* ===== SUBMIT FOOTER ===== */
+/* ===== Submit Footer ===== */
 .submit-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    background: rgba(245, 242, 237, 0.9);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
-    padding: 16px 24px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(245, 242, 237, 0.95);
+  border-top: 1px solid rgba(26, 26, 26, 0.08);
+  padding: 16px 24px;
 }
-
 .submit-inner {
-    max-width: 640px;
-    margin: 0 auto;
-    display: flex;
-    gap: 12px;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
 }
-
+.submit-inner .btn-cancel {
+  margin-right: 12px;
+}
 .btn-cancel {
-    flex: 1;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--ink-light);
-    height: 50px;
-    line-height: 50px;
+  flex: 1;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 12px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
 }
-
+.btn-cancel-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
 .btn-submit {
-    flex: 2;
-    border: none;
-    border-radius: 12px;
-    background: var(--ink);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--paper);
-    box-shadow: 0 4px 20px rgba(26, 26, 26, 0.15);
-    height: 50px;
-    line-height: 50px;
+  flex: 2;
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(26, 26, 26, 0.15);
+  height: 50px;
+}
+.btn-submit-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #f5f2ed;
 }
 
-.btn-submit:active {
-    transform: scale(0.98);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 480px) {
-    .page-title {
-        font-size: 32px;
-    }
-
-    .total-amount {
-        font-size: 28px;
-    }
-
-    .amount-input {
-        width: 110px;
-        font-size: 15px;
-    }
-
-    .upload-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .date-display {
-        font-size: 20px;
-        gap: 8px;
-        padding: 14px 16px;
-    }
-
-    .date-display svg {
-        width: 18px;
-        height: 18px;
-        flex-shrink: 0;
-    }
-
-    .date-weekday {
-        font-size: 10px;
-    }
-}
-
-/* ===== PLATFORM PICKER MODAL ===== */
+/* ===== Platform Picker Modal ===== */
 .picker-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    background: rgba(26, 26, 26, 0.3);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.25s, visibility 0.25s;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 200;
+  background-color: rgba(26, 26, 26, 0.3);
+  opacity: 0;
+  visibility: hidden;
 }
-
 .picker-overlay.open {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
-
 .picker-sheet {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 210;
-    background: var(--paper-card);
-    border-radius: 20px 20px 0 0;
-    padding: 12px 24px 32px;
-    max-height: 70vh;
-    overflow-y: auto;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 210;
+  background-color: #fffdf9;
+  border-radius: 20px 20px 0 0;
+  padding: 12px 24px 32px;
+  max-height: 70vh;
+  overflow-y: auto;
+  transform: translateY(100%);
 }
-
 .picker-sheet.open {
-    transform: translateY(0);
+  transform: translateY(0);
 }
-
 .picker-handle {
-    width: 36px;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--ink-muted);
-    opacity: 0.3;
-    margin: 0 auto 20px;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: #a0a0a0;
+  margin: 0 auto 20px;
 }
-
 .picker-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 6px;
-    color: var(--ink);
+  display: block;
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 6px;
 }
-
 .picker-subtitle {
-    font-size: 12px;
-    color: var(--ink-muted);
-    margin-bottom: 20px;
+  display: block;
+  font-size: 12px;
+  color: #a0a0a0;
+  margin-bottom: 20px;
 }
-
 .picker-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 16px;
 }
-
 .picker-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 16px 8px;
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    background: var(--paper);
-    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 8px;
+  border: 1.5px solid rgba(26, 26, 26, 0.08);
+  border-radius: 14px;
+  background-color: #f5f2ed;
+  margin: 5px;
 }
-
-.picker-option:active {
-    transform: scale(0.96);
-}
-
-.picker-option.selected {
-    border-color: var(--accent);
-    background: rgba(196, 93, 62, 0.04);
-}
-
 .picker-option .icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
-    color: white;
-    flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
 }
-
-.picker-option .label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--ink);
-    text-align: center;
-    line-height: 1.3;
+.picker-option .platform-icon-text {
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
 }
-
+.picker-option.selected {
+  border-color: #c45d3e;
+  background-color: rgba(196, 93, 62, 0.04);
+}
+.picker-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.3;
+}
 .picker-custom-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 4px;
+  display: flex;
+  margin-top: 4px;
 }
-
+.picker-custom-row .picker-custom-input {
+  margin-right: 10px;
+}
 .picker-custom-input {
-    flex: 1;
-    padding: 12px 16px;
-    font-family: 'DM Sans', 'Noto Serif SC', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    height: auto;
+  flex: 1;
+  padding: 12px 16px;
+  font-family: "DM Sans", "Noto Serif SC", sans-serif;
+  font-size: 14px;
+  color: #1a1a1a;
+  background-color: #f5f2ed;
+  border: 1.5px solid rgba(26, 26, 26, 0.08);
+  border-radius: 12px;
+  height: auto;
 }
-
-.picker-custom-input::placeholder {
-    color: var(--ink-muted);
-}
-
 .picker-custom-btn {
-    padding: 5px 20px;
-    border: none;
-    border-radius: 12px;
-    background: var(--ink);
-    color: var(--paper);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
+  padding: 0 20px;
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.picker-custom-btn:active {
-    opacity: 0.8;
+.picker-custom-btn-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #f5f2ed;
 }
-
 .picker-cancel {
-    width: 100%;
-    padding: 5px 14px;
-    margin-top: 12px;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: transparent;
-    font-family: 'DM Sans', sans-serif;
+  width: 100%;
+  padding: 12px 0;
+  margin-top: 12px;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 12px;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.picker-cancel-text {
+  font-family: "DM Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 32px;
+  }
+  .total-amount {
+    font-size: 28px;
+  }
+  .amount-input {
+    width: 110px;
+    font-size: 15px;
+  }
+  .date-display {
+    font-size: 20px;
+    padding: 14px 16px;
+  }
+  .date-icon {
     font-size: 14px;
-    font-weight: 600;
-    color: var(--ink-light);
-}
-
-/* ===== ANIMATIONS ===== */
-.section {
-    opacity: 0;
-    transform: translateY(16px);
-    animation: fadeUp 0.5s ease-out forwards;
-}
-
-.section:nth-child(2) {
-    animation-delay: 0.08s;
-}
-
-.section:nth-child(3) {
-    animation-delay: 0.16s;
-}
-
-.section:nth-child(4) {
-    animation-delay: 0.24s;
-}
-
-.section:nth-child(5) {
-    animation-delay: 0.32s;
-}
-
-.section:nth-child(6) {
-    animation-delay: 0.40s;
-}
-
-@keyframes fadeUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    margin-right: 8px;
+  }
+  .date-weekday {
+    font-size: 10px;
+  }
 }
 </style>
