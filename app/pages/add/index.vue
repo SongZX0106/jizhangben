@@ -38,41 +38,6 @@
         </view>
       </view>
 
-      <!-- Platforms -->
-      <view class="section">
-        <view class="section-label">
-          <text class="section-label-text">平台资产</text>
-          <view class="section-label-line"></view>
-        </view>
-        <view class="platform-list">
-          <view class="platform-row" v-for="(p, i) in platforms" :key="p.id">
-            <view :class="['platform-icon', p.cls]">
-              <text class="platform-icon-text">{{ p.icon }}</text>
-            </view>
-            <view class="platform-info">
-              <text class="platform-name">{{ p.name }}</text>
-              <text class="platform-desc">{{ p.desc }}</text>
-            </view>
-            <view class="amount-input-wrapper">
-              <text class="amount-prefix">¥</text>
-              <input
-                type="digit"
-                class="amount-input"
-                placeholder="0.00"
-                v-model="p.amount"
-              />
-            </view>
-            <view class="platform-delete" @click="removePlatform(i)">
-              <text class="delete-icon">✕</text>
-            </view>
-          </view>
-        </view>
-        <view class="add-platform-btn" @click="openPicker">
-          <text class="add-icon">+</text>
-          <text class="add-text">添加平台</text>
-        </view>
-      </view>
-
       <!-- Total Preview -->
       <view class="section">
         <view class="section-label">
@@ -114,6 +79,41 @@
               >
             </template>
           </view>
+        </view>
+      </view>
+
+      <!-- Platforms -->
+      <view class="section">
+        <view class="section-label">
+          <text class="section-label-text">平台资产</text>
+          <view class="section-label-line"></view>
+        </view>
+        <view class="platform-list">
+          <view class="platform-row" v-for="(p, i) in platforms" :key="p.id">
+            <view :class="['platform-icon', p.cls]">
+              <text class="platform-icon-text">{{ p.icon }}</text>
+            </view>
+            <view class="platform-info">
+              <text class="platform-name">{{ p.name }}</text>
+              <text class="platform-desc">{{ p.desc }}</text>
+            </view>
+            <view class="amount-input-wrapper">
+              <text class="amount-prefix">¥</text>
+              <input
+                type="digit"
+                class="amount-input"
+                placeholder="0.00"
+                v-model="p.amount"
+              />
+            </view>
+            <view class="platform-delete" @click="removePlatform(i)">
+              <text class="delete-icon">✕</text>
+            </view>
+          </view>
+        </view>
+        <view class="add-platform-btn" @click="openPicker">
+          <text class="add-icon">+</text>
+          <text class="add-text">添加平台</text>
         </view>
       </view>
 
@@ -254,6 +254,7 @@ const note = ref("");
 const pickerOpen = ref(false);
 const customName = ref("");
 const lastTotal = ref(0);
+const savingImages = ref(false);
 
 function loadLastTotal() {
   try {
@@ -365,6 +366,8 @@ function chooseImage() {
     sizeType: ["compressed"],
     sourceType: ["album", "camera"],
     success: (res) => {
+      savingImages.value = true;
+      let pending = res.tempFilePaths.length;
       res.tempFilePaths.forEach(function (tempPath) {
         uni.saveFile({
           tempFilePath: tempPath,
@@ -373,6 +376,10 @@ function chooseImage() {
           },
           fail: function () {
             screenshots.value.push(tempPath);
+          },
+          complete: function () {
+            pending--;
+            if (pending <= 0) savingImages.value = false;
           },
         });
       });
@@ -396,6 +403,14 @@ function goBack() {
 }
 
 function saveSnapshot() {
+  if (savingImages.value) {
+    uni.showToast({
+      title: "图片保存中，请稍候",
+      mask: true,
+      icon: "none",
+    });
+    return;
+  }
   if (platforms.value.length === 0) {
     uni.showToast({
       title: "请添加记录",

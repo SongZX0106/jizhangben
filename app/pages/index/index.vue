@@ -1,5 +1,11 @@
 <template>
   <view class="page">
+    <!-- APP BAR -->
+    <view class="app-bar">
+      <text class="app-logo">时迹</text>
+      <text class="app-tagline">ShiJi</text>
+    </view>
+
     <!-- HERO -->
     <view class="hero">
       <view
@@ -352,7 +358,31 @@ function goAdd() {
 .page {
   min-height: 100vh;
   background-color: #f5f2ed;
-  padding-top: 50px;
+}
+
+/* ===== App Bar ===== */
+.app-bar {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 56px 24px 16px;
+  display: flex;
+  align-items: baseline;
+}
+.app-logo {
+  font-family: "Noto Serif SC", "Playfair Display", serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: #1a1a1a;
+  letter-spacing: 6px;
+}
+.app-tagline {
+  font-family: "Playfair Display", serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a0a0a0;
+  letter-spacing: 3px;
+  margin-left: 12px;
+  text-transform: uppercase;
 }
 
 /* ===== Header ===== */

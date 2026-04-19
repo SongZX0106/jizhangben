@@ -203,6 +203,11 @@ if (uni.restoreGlobal) {
   };
   function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
+      vue.createCommentVNode(" APP BAR "),
+      vue.createElementVNode("view", { class: "app-bar" }, [
+        vue.createElementVNode("text", { class: "app-logo" }, "时迹"),
+        vue.createElementVNode("text", { class: "app-tagline" }, "ShiJi")
+      ]),
       vue.createCommentVNode(" HERO "),
       vue.createElementVNode("view", { class: "hero" }, [
         vue.createElementVNode(
@@ -1320,6 +1325,7 @@ if (uni.restoreGlobal) {
       const pickerOpen = vue.ref(false);
       const customName = vue.ref("");
       const lastTotal = vue.ref(0);
+      const savingImages = vue.ref(false);
       function loadLastTotal() {
         try {
           const raw = uni.getStorageSync(STORAGE_KEY);
@@ -1418,6 +1424,8 @@ if (uni.restoreGlobal) {
           sizeType: ["compressed"],
           sourceType: ["album", "camera"],
           success: (res) => {
+            savingImages.value = true;
+            let pending = res.tempFilePaths.length;
             res.tempFilePaths.forEach(function(tempPath) {
               uni.saveFile({
                 tempFilePath: tempPath,
@@ -1426,6 +1434,11 @@ if (uni.restoreGlobal) {
                 },
                 fail: function() {
                   screenshots.value.push(tempPath);
+                },
+                complete: function() {
+                  pending--;
+                  if (pending <= 0)
+                    savingImages.value = false;
                 }
               });
             });
@@ -1445,6 +1458,14 @@ if (uni.restoreGlobal) {
         uni.navigateBack();
       }
       function saveSnapshot() {
+        if (savingImages.value) {
+          uni.showToast({
+            title: "图片保存中，请稍候",
+            mask: true,
+            icon: "none"
+          });
+          return;
+        }
         if (platforms.value.length === 0) {
           uni.showToast({
             title: "请添加记录",
@@ -1486,7 +1507,7 @@ if (uni.restoreGlobal) {
         return platformIdCounter;
       }, set platformIdCounter(v) {
         platformIdCounter = v;
-      }, platforms, screenshots, note, pickerOpen, customName, lastTotal, loadLastTotal, dateDisplay, weekdayDisplay, onDateChange, addedPlatformNames, openPicker, closePicker, selectDefaultPlatform, addCustomPlatform, removePlatform, totalAmount, totalChange, formatNum, chooseImage, removeScreenshot, previewImage, goBack, saveSnapshot, ref: vue.ref, computed: vue.computed, get onLoad() {
+      }, platforms, screenshots, note, pickerOpen, customName, lastTotal, savingImages, loadLastTotal, dateDisplay, weekdayDisplay, onDateChange, addedPlatformNames, openPicker, closePicker, selectDefaultPlatform, addCustomPlatform, removePlatform, totalAmount, totalChange, formatNum, chooseImage, removeScreenshot, previewImage, goBack, saveSnapshot, ref: vue.ref, computed: vue.computed, get onLoad() {
         return onLoad;
       } };
       Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
@@ -1548,85 +1569,6 @@ if (uni.restoreGlobal) {
                 vue.createElementVNode("view", { class: "date-input-cover" })
               ], 40, ["value"])
             ])
-          ])
-        ]),
-        vue.createCommentVNode(" Platforms "),
-        vue.createElementVNode("view", { class: "section" }, [
-          vue.createElementVNode("view", { class: "section-label" }, [
-            vue.createElementVNode("text", { class: "section-label-text" }, "平台资产"),
-            vue.createElementVNode("view", { class: "section-label-line" })
-          ]),
-          vue.createElementVNode("view", { class: "platform-list" }, [
-            (vue.openBlock(true), vue.createElementBlock(
-              vue.Fragment,
-              null,
-              vue.renderList($setup.platforms, (p, i) => {
-                return vue.openBlock(), vue.createElementBlock("view", {
-                  class: "platform-row",
-                  key: p.id
-                }, [
-                  vue.createElementVNode(
-                    "view",
-                    {
-                      class: vue.normalizeClass(["platform-icon", p.cls])
-                    },
-                    [
-                      vue.createElementVNode(
-                        "text",
-                        { class: "platform-icon-text" },
-                        vue.toDisplayString(p.icon),
-                        1
-                        /* TEXT */
-                      )
-                    ],
-                    2
-                    /* CLASS */
-                  ),
-                  vue.createElementVNode("view", { class: "platform-info" }, [
-                    vue.createElementVNode(
-                      "text",
-                      { class: "platform-name" },
-                      vue.toDisplayString(p.name),
-                      1
-                      /* TEXT */
-                    ),
-                    vue.createElementVNode(
-                      "text",
-                      { class: "platform-desc" },
-                      vue.toDisplayString(p.desc),
-                      1
-                      /* TEXT */
-                    )
-                  ]),
-                  vue.createElementVNode("view", { class: "amount-input-wrapper" }, [
-                    vue.createElementVNode("text", { class: "amount-prefix" }, "¥"),
-                    vue.withDirectives(vue.createElementVNode("input", {
-                      type: "digit",
-                      class: "amount-input",
-                      placeholder: "0.00",
-                      "onUpdate:modelValue": ($event) => p.amount = $event
-                    }, null, 8, ["onUpdate:modelValue"]), [
-                      [vue.vModelText, p.amount]
-                    ])
-                  ]),
-                  vue.createElementVNode("view", {
-                    class: "platform-delete",
-                    onClick: ($event) => $setup.removePlatform(i)
-                  }, [
-                    vue.createElementVNode("text", { class: "delete-icon" }, "✕")
-                  ], 8, ["onClick"])
-                ]);
-              }),
-              128
-              /* KEYED_FRAGMENT */
-            ))
-          ]),
-          vue.createElementVNode("view", {
-            class: "add-platform-btn",
-            onClick: $setup.openPicker
-          }, [
-            vue.createElementVNode("text", { class: "add-icon" }, "+"),
-            vue.createElementVNode("text", { class: "add-text" }, "添加平台")
           ])
         ]),
         vue.createCommentVNode(" Total Preview "),
@@ -1707,6 +1649,85 @@ if (uni.restoreGlobal) {
                 /* STABLE_FRAGMENT */
               ))
             ])
+          ])
+        ]),
+        vue.createCommentVNode(" Platforms "),
+        vue.createElementVNode("view", { class: "section" }, [
+          vue.createElementVNode("view", { class: "section-label" }, [
+            vue.createElementVNode("text", { class: "section-label-text" }, "平台资产"),
+            vue.createElementVNode("view", { class: "section-label-line" })
+          ]),
+          vue.createElementVNode("view", { class: "platform-list" }, [
+            (vue.openBlock(true), vue.createElementBlock(
+              vue.Fragment,
+              null,
+              vue.renderList($setup.platforms, (p, i) => {
+                return vue.openBlock(), vue.createElementBlock("view", {
+                  class: "platform-row",
+                  key: p.id
+                }, [
+                  vue.createElementVNode(
+                    "view",
+                    {
+                      class: vue.normalizeClass(["platform-icon", p.cls])
+                    },
+                    [
+                      vue.createElementVNode(
+                        "text",
+                        { class: "platform-icon-text" },
+                        vue.toDisplayString(p.icon),
+                        1
+                        /* TEXT */
+                      )
+                    ],
+                    2
+                    /* CLASS */
+                  ),
+                  vue.createElementVNode("view", { class: "platform-info" }, [
+                    vue.createElementVNode(
+                      "text",
+                      { class: "platform-name" },
+                      vue.toDisplayString(p.name),
+                      1
+                      /* TEXT */
+                    ),
+                    vue.createElementVNode(
+                      "text",
+                      { class: "platform-desc" },
+                      vue.toDisplayString(p.desc),
+                      1
+                      /* TEXT */
+                    )
+                  ]),
+                  vue.createElementVNode("view", { class: "amount-input-wrapper" }, [
+                    vue.createElementVNode("text", { class: "amount-prefix" }, "¥"),
+                    vue.withDirectives(vue.createElementVNode("input", {
+                      type: "digit",
+                      class: "amount-input",
+                      placeholder: "0.00",
+                      "onUpdate:modelValue": ($event) => p.amount = $event
+                    }, null, 8, ["onUpdate:modelValue"]), [
+                      [vue.vModelText, p.amount]
+                    ])
+                  ]),
+                  vue.createElementVNode("view", {
+                    class: "platform-delete",
+                    onClick: ($event) => $setup.removePlatform(i)
+                  }, [
+                    vue.createElementVNode("text", { class: "delete-icon" }, "✕")
+                  ], 8, ["onClick"])
+                ]);
+              }),
+              128
+              /* KEYED_FRAGMENT */
+            ))
+          ]),
+          vue.createElementVNode("view", {
+            class: "add-platform-btn",
+            onClick: $setup.openPicker
+          }, [
+            vue.createElementVNode("text", { class: "add-icon" }, "+"),
+            vue.createElementVNode("text", { class: "add-text" }, "添加平台")
           ])
         ]),
         vue.createCommentVNode(" Screenshots "),
