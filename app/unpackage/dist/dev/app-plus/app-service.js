@@ -33,6 +33,13 @@ if (uni.restoreGlobal) {
   "use strict";
   const ON_SHOW = "onShow";
   const ON_LOAD = "onLoad";
+  function formatAppLog(type, filename, ...args) {
+    if (uni.__log__) {
+      uni.__log__(type, filename, ...args);
+    } else {
+      console[type].apply(console, [...args, filename]);
+    }
+  }
   function resolveEasycom(component, easycom) {
     return typeof component === "string" ? easycom : component;
   }
@@ -1494,13 +1501,24 @@ if (uni.restoreGlobal) {
           const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
           const arr = Array.isArray(parsed) ? parsed : [];
           arr.push(snapshot);
-          uni.setStorageSync(STORAGE_KEY, JSON.stringify(arr));
-          uni.showToast({ title: "已保存", icon: "success" });
-          setTimeout(function() {
-            uni.navigateBack();
-          }, 800);
+          const dataStr = JSON.stringify(arr);
+          uni.setStorage({
+            key: STORAGE_KEY,
+            data: dataStr,
+            success: function() {
+              uni.showToast({ title: "已保存", icon: "success" });
+              setTimeout(function() {
+                uni.navigateBack();
+              }, 800);
+            },
+            fail: function(err) {
+              formatAppLog("error", "at pages/add/index.vue:455", "保存失败:", err);
+              uni.showToast({ title: "保存失败: " + (err.errMsg || "存储空间不足"), icon: "none", duration: 3e3 });
+            }
+          });
         } catch (e) {
-          uni.showToast({ title: "保存失败", icon: "none" });
+          formatAppLog("error", "at pages/add/index.vue:460", "保存异常:", e);
+          uni.showToast({ title: "保存失败: " + (e.message || "未知错误"), icon: "none", duration: 3e3 });
         }
       }
       const __returned__ = { STORAGE_KEY, defaultPlatforms, weekdays, today, formDate, get platformIdCounter() {

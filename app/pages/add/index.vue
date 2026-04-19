@@ -259,7 +259,7 @@ const savingImages = ref(false);
 function loadLastTotal() {
   try {
     const raw = uni.getStorageSync(STORAGE_KEY);
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
     if (Array.isArray(parsed) && parsed.length > 0) {
       parsed.sort((a, b) => b.date.localeCompare(a.date));
       lastTotal.value = (parsed[0].platforms || []).reduce(
@@ -438,16 +438,27 @@ function saveSnapshot() {
 
   try {
     const raw = uni.getStorageSync(STORAGE_KEY);
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
     const arr = Array.isArray(parsed) ? parsed : [];
     arr.push(snapshot);
-    uni.setStorageSync(STORAGE_KEY, JSON.stringify(arr));
-    uni.showToast({ title: "已保存", icon: "success" });
-    setTimeout(function () {
-      uni.navigateBack();
-    }, 800);
+    const dataStr = JSON.stringify(arr);
+    uni.setStorage({
+      key: STORAGE_KEY,
+      data: dataStr,
+      success: function () {
+        uni.showToast({ title: "已保存", icon: "success" });
+        setTimeout(function () {
+          uni.navigateBack();
+        }, 800);
+      },
+      fail: function (err) {
+        console.error("保存失败:", err);
+        uni.showToast({ title: "保存失败: " + (err.errMsg || "存储空间不足"), icon: "none", duration: 3000 });
+      },
+    });
   } catch (e) {
-    uni.showToast({ title: "保存失败", icon: "none" });
+    console.error("保存异常:", e);
+    uni.showToast({ title: "保存失败: " + (e.message || "未知错误"), icon: "none", duration: 3000 });
   }
 }
 </script>

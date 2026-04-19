@@ -207,7 +207,7 @@ const rawSnapshots = ref([]);
 function loadSnapshots() {
   try {
     const raw = uni.getStorageSync(STORAGE_KEY);
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
     rawSnapshots.value = Array.isArray(parsed) ? parsed : [];
   } catch (e) {
     rawSnapshots.value = [];
