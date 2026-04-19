@@ -9,77 +9,38 @@
           </text>
           <text class="back-text">返回</text>
         </view>
+        <view class="header-date">
+          <picker mode="date" :value="formDate" @change="onDateChange">
+            <view class="header-date-btn">
+              <text class="header-date-text">{{ dateDisplay }}</text>
+              <text class="header-date-weekday">{{ weekdayDisplay }}</text>
+              <text class="header-date-arrow">▸</text>
+            </view>
+          </picker>
+        </view>
       </view>
     </view>
 
     <!-- MAIN -->
     <view class="main">
-      <view class="page-header">
-        <text class="page-eyebrow">New Entry</text>
-        <text class="page-title">新增快照</text>
-        <text class="page-subtitle">记录此刻，未来回看时会感谢现在的自己</text>
-      </view>
-
-      <!-- Date -->
-      <view class="section">
-        <view class="section-label">
-          <text class="section-label-text">快照日期</text>
-          <view class="section-label-line"></view>
-        </view>
-        <view class="date-wrapper">
-          <view class="date-display">
-            <text class="date-icon">📅</text>
-            <text class="date-text">{{ dateDisplay }}</text>
-            <text class="date-weekday">{{ weekdayDisplay }}</text>
-            <picker mode="date" :value="formDate" @change="onDateChange">
-              <view class="date-input-cover"></view>
-            </picker>
+      <!-- Total Bar inline -->
+      <view class="total-inline">
+        <text class="total-inline-label">总计</text>
+        <text class="total-inline-amount">¥{{ formatNum(totalAmount) }}</text>
+        <template v-if="totalChange">
+          <view
+            :class="[
+              'total-inline-badge',
+              totalChange.pct >= 0 ? 'up' : 'down',
+            ]"
+          >
+            <text>{{ totalChange.pct >= 0 ? "▲" : "▼" }}</text>
+            <text
+              >{{ totalChange.pct >= 0 ? "+" : ""
+              }}{{ totalChange.pct.toFixed(1) }}%</text
+            >
           </view>
-        </view>
-      </view>
-
-      <!-- Total Preview -->
-      <view class="section">
-        <view class="section-label">
-          <text class="section-label-text">资产汇总</text>
-          <view class="section-label-line"></view>
-        </view>
-        <view class="total-preview">
-          <view class="total-left">
-            <text class="total-label">本次总资产</text>
-            <view class="total-row">
-              <text class="total-amount">{{ formatNum(totalAmount) }}</text>
-              <text class="currency">CNY</text>
-            </view>
-          </view>
-          <view class="total-change">
-            <template v-if="totalChange">
-              <view
-                :class="['change-badge', totalChange.pct >= 0 ? 'up' : 'down']"
-              >
-                <text class="arrow-icon">{{
-                  totalChange.pct >= 0 ? "▲" : "▼"
-                }}</text>
-                <text
-                  >{{ totalChange.pct >= 0 ? "+" : ""
-                  }}{{ totalChange.pct.toFixed(1) }}%</text
-                >
-              </view>
-              <text class="change-amount">
-                {{ totalChange.diff >= 0 ? "+" : ""
-                }}{{ formatNum(totalChange.diff) }} CNY
-              </text>
-            </template>
-            <template v-else>
-              <view class="change-badge neutral">
-                <text>—</text>
-              </view>
-              <text class="change-amount"
-                >上次 ¥{{ formatNum(lastTotal) }}</text
-              >
-            </template>
-          </view>
-        </view>
+        </template>
       </view>
 
       <!-- Platforms -->
@@ -93,10 +54,7 @@
             <view :class="['platform-icon', p.cls]">
               <text class="platform-icon-text">{{ p.icon }}</text>
             </view>
-            <view class="platform-info">
-              <text class="platform-name">{{ p.name }}</text>
-              <text class="platform-desc">{{ p.desc }}</text>
-            </view>
+            <text class="platform-name">{{ p.name }}</text>
             <view class="amount-input-wrapper">
               <text class="amount-prefix">¥</text>
               <input
@@ -111,46 +69,66 @@
             </view>
           </view>
         </view>
+        <view v-if="platforms.length === 0" class="empty-hint">
+          <text class="empty-hint-text">点击下方「+ 添加平台」开始记录</text>
+        </view>
         <view class="add-platform-btn" @click="openPicker">
           <text class="add-icon">+</text>
           <text class="add-text">添加平台</text>
         </view>
       </view>
 
-      <!-- Screenshots -->
+      <!-- Collapsible: Screenshots -->
       <view class="section">
-        <view class="section-label">
+        <view
+          class="collapse-header"
+          @click="showScreenshots = !showScreenshots"
+        >
           <text class="section-label-text">截图凭证</text>
+          <text v-if="screenshots.length > 0" class="collapse-count">{{
+            screenshots.length
+          }}</text>
           <view class="section-label-line"></view>
+          <text :class="['collapse-arrow', showScreenshots ? 'open' : '']"
+            >▾</text
+          >
         </view>
-        <view class="upload-grid">
-          <view class="upload-trigger" @click="chooseImage">
-            <text class="upload-icon">
-              <uni-icons type="cloud-upload" size="25"></uni-icons>
-            </text>
-            <text class="upload-text">上传</text>
-          </view>
-          <view class="upload-thumb" v-for="(img, i) in screenshots" :key="img">
-            <image :src="img" mode="aspectFill" @click="previewImage(i)" />
-            <view class="thumb-delete" @click.stop="removeScreenshot(i)">
-              <text class="thumb-delete-icon">✕</text>
+        <view v-show="showScreenshots" class="collapse-body">
+          <view class="upload-grid">
+            <view class="upload-trigger" @click="chooseImage">
+              <text class="upload-icon">
+                <uni-icons type="cloud-upload" size="25"></uni-icons>
+              </text>
+              <text class="upload-text">上传</text>
+            </view>
+            <view
+              class="upload-thumb"
+              v-for="(img, i) in screenshots"
+              :key="img"
+            >
+              <image :src="img" mode="aspectFill" @click="previewImage(i)" />
+              <view class="thumb-delete" @click.stop="removeScreenshot(i)">
+                <text class="thumb-delete-icon">✕</text>
+              </view>
             </view>
           </view>
         </view>
       </view>
 
-      <!-- Note -->
+      <!-- Collapsible: Note -->
       <view class="section">
-        <view class="section-label">
+        <view class="collapse-header" @click="showNote = !showNote">
           <text class="section-label-text">备注</text>
           <view class="section-label-line"></view>
+          <text :class="['collapse-arrow', showNote ? 'open' : '']">▾</text>
         </view>
-        <textarea
-          class="note-input"
-          v-model="note"
-          placeholder="记录一下这次的变化原因…"
-        />
-        <text class="note-hint">可选。方便未来回顾时了解当时的情况</text>
+        <view v-show="showNote" class="collapse-body">
+          <textarea
+            class="note-input"
+            v-model="note"
+            placeholder="记录一下这次的变化原因…"
+          />
+        </view>
       </view>
     </view>
 
@@ -255,6 +233,8 @@ const pickerOpen = ref(false);
 const customName = ref("");
 const lastTotal = ref(0);
 const savingImages = ref(false);
+const showScreenshots = ref(true);
+const showNote = ref(true);
 
 function loadLastTotal() {
   try {
@@ -453,12 +433,20 @@ function saveSnapshot() {
       },
       fail: function (err) {
         console.error("保存失败:", err);
-        uni.showToast({ title: "保存失败: " + (err.errMsg || "存储空间不足"), icon: "none", duration: 3000 });
+        uni.showToast({
+          title: "保存失败: " + (err.errMsg || "存储空间不足"),
+          icon: "none",
+          duration: 3000,
+        });
       },
     });
   } catch (e) {
     console.error("保存异常:", e);
-    uni.showToast({ title: "保存失败: " + (e.message || "未知错误"), icon: "none", duration: 3000 });
+    uni.showToast({
+      title: "保存失败: " + (e.message || "未知错误"),
+      icon: "none",
+      duration: 3000,
+    });
   }
 }
 </script>
@@ -477,7 +465,7 @@ function saveSnapshot() {
   z-index: 50;
   background: rgba(245, 242, 237, 0.95);
   border-bottom: 1px solid rgba(26, 26, 26, 0.08);
-  padding: 30px 24px 0;
+  padding: 40px 24px 0;
 }
 .header-inner {
   max-width: 640px;
@@ -485,11 +473,12 @@ function saveSnapshot() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  height: 52px;
 }
 .header-back {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 .back-arrow {
   font-size: 18px;
@@ -501,53 +490,52 @@ function saveSnapshot() {
   font-weight: 500;
   color: #6b6b6b;
 }
-.logo-mark {
-  font-family: "Playfair Display", serif;
-  font-weight: 900;
-  font-size: 18px;
+.header-date {
+  flex-shrink: 0;
+}
+.header-date-btn {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: #fffdf9;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 10px;
+}
+.header-date-text {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 600;
   color: #1a1a1a;
+}
+.header-date-weekday {
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  color: #a0a0a0;
+  margin-left: 8px;
+}
+.header-date-arrow {
+  font-size: 12px;
+  color: #a0a0a0;
+  margin-left: 6px;
+  margin-top: -1px;
 }
 
 /* ===== Main ===== */
 .main {
   max-width: 640px;
   margin: 0 auto;
-  padding: 20px 24px 160px;
-}
-.page-header {
-  margin-bottom: 48px;
-}
-.page-eyebrow {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 4px;
-  color: #c45d3e;
-  margin-bottom: 12px;
-}
-.page-title {
-  display: block;
-  font-family: "Playfair Display", "Noto Serif SC", serif;
-  font-size: 40px;
-  font-weight: 900;
-  line-height: 1.1;
-  color: #1a1a1a;
-  margin-bottom: 8px;
-}
-.page-subtitle {
-  display: block;
-  font-size: 14px;
-  color: #a0a0a0;
+  padding: 20px 20px 75px;
 }
 
 /* ===== Sections ===== */
 .section {
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 .section-label {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .section-label-text {
   font-size: 10px;
@@ -560,51 +548,7 @@ function saveSnapshot() {
   flex: 1;
   height: 1px;
   background-color: rgba(26, 26, 26, 0.08);
-  margin-left: 16px;
-}
-
-/* ===== Date Input ===== */
-.date-wrapper {
-  position: relative;
-}
-.date-display {
-  position: relative;
-  display: flex;
-  align-items: center;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 28px;
-  font-weight: 700;
-  color: #1a1a1a;
-  padding: 20px 24px;
-  background-color: #fffdf9;
-  border: 1px solid rgba(26, 26, 26, 0.08);
-  border-radius: 14px;
-  overflow: hidden;
-}
-.date-icon {
-  font-size: 18px;
-  margin-right: 16px;
-  flex-shrink: 0;
-}
-.date-text {
-  flex: 1;
-}
-.date-input-cover {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  opacity: 0;
-}
-.date-weekday {
-  font-family: "DM Sans", sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  color: #a0a0a0;
-  letter-spacing: 1px;
   margin-left: 12px;
-  flex-shrink: 0;
 }
 
 /* ===== Platform Input ===== */
@@ -613,23 +557,23 @@ function saveSnapshot() {
   flex-direction: column;
 }
 .platform-list .platform-row {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 .platform-row {
   display: flex;
   align-items: center;
-  padding: 16px 20px;
+  padding: 12px 16px;
   background-color: #fffdf9;
   border: 1px solid rgba(26, 26, 26, 0.08);
-  border-radius: 14px;
+  border-radius: 12px;
 }
 .platform-row .platform-icon {
   margin-right: 10px;
 }
 .platform-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -637,7 +581,7 @@ function saveSnapshot() {
 }
 .platform-icon-text {
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   color: #ffffff;
 }
 .platform-icon.alipay {
@@ -655,47 +599,37 @@ function saveSnapshot() {
 .platform-icon.default {
   background-color: #1a1a1a;
 }
-.platform-info {
+.platform-name {
   flex: 1;
   min-width: 0;
-  margin-right: 10px;
-}
-.platform-name {
-  display: block;
   font-size: 14px;
   font-weight: 600;
   color: #1a1a1a;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 100px;
-}
-.platform-desc {
-  display: block;
-  font-size: 11px;
-  color: #a0a0a0;
-  margin-top: 2px;
 }
 .amount-input-wrapper {
   position: relative;
   flex-shrink: 0;
+  margin-left: 8px;
 }
 .amount-prefix {
   position: absolute;
-  left: 14px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   font-family: "JetBrains Mono", monospace;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #a0a0a0;
   z-index: 1;
 }
 .amount-input {
-  width: 90px;
-  padding: 10px 14px 10px 32px;
+  width: 100px;
+  padding: 8px 12px 8px 28px;
   font-family: "JetBrains Mono", monospace;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: #1a1a1a;
   background-color: #f5f2ed;
@@ -706,27 +640,35 @@ function saveSnapshot() {
 }
 .platform-delete {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 8px;
+  margin-left: 6px;
 }
 .delete-icon {
-  font-size: 14px;
+  font-size: 13px;
   color: #c43e3e;
+}
+.empty-hint {
+  padding: 24px;
+  text-align: center;
+}
+.empty-hint-text {
+  font-size: 13px;
+  color: #a0a0a0;
 }
 .add-platform-btn {
   width: 100%;
   padding: 12px 0;
   border: 1.5px dashed rgba(26, 26, 26, 0.12);
-  border-radius: 14px;
+  border-radius: 12px;
   background-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .add-icon {
   font-size: 16px;
@@ -740,78 +682,35 @@ function saveSnapshot() {
   color: #a0a0a0;
 }
 
-/* ===== Total Preview ===== */
-.total-preview {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 24px;
-  background-color: #fffdf9;
-  border: 1px solid rgba(26, 26, 26, 0.08);
-  border-radius: 14px;
-}
-.total-left {
-  flex: 1;
-}
-.total-label {
-  display: block;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 3px;
-  color: #a0a0a0;
-  margin-bottom: 4px;
-}
-.total-row {
-  display: flex;
-  align-items: baseline;
-}
-.total-amount {
-  font-family: "Playfair Display", serif;
-  font-size: 36px;
-  font-weight: 900;
-  color: #1a1a1a;
-}
-.currency {
-  font-size: 16px;
-  color: #a0a0a0;
-  margin-left: 4px;
-}
-.total-change {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-.change-badge {
+/* ===== Collapsible Sections ===== */
+.collapse-header {
   display: flex;
   align-items: center;
+  margin-bottom: 0;
+  padding: 8px 0;
+}
+.collapse-count {
   font-family: "JetBrains Mono", monospace;
-  font-size: 14px;
+  font-size: 10px;
   font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 8px;
-}
-.change-badge.up {
-  color: #c43e3e;
-  background-color: #fdf0ef;
-}
-.change-badge.down {
-  color: #2e7d5b;
-  background-color: #eef7f2;
-}
-.change-badge.neutral {
   color: #a0a0a0;
-  background-color: #f5f2ed;
+  background-color: rgba(26, 26, 26, 0.06);
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 8px;
 }
-.arrow-icon {
-  margin-right: 5px;
-  font-size: 10px;
-}
-.change-amount {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 11px;
-  font-weight: 500;
+.collapse-arrow {
+  font-size: 12px;
   color: #a0a0a0;
-  margin-top: 4px;
+  margin-left: 8px;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.collapse-arrow.open {
+  transform: rotate(180deg);
+}
+.collapse-body {
+  padding-top: 8px;
 }
 
 /* ===== Screenshots ===== */
@@ -820,7 +719,6 @@ function saveSnapshot() {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-
 .upload-trigger {
   position: relative;
   width: 100%;
@@ -888,22 +786,58 @@ function saveSnapshot() {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 16px 20px;
+  padding: 14px 16px;
   font-family: "DM Sans", "Noto Serif SC", sans-serif;
   font-size: 14px;
   line-height: 1.7;
   color: #1a1a1a;
   background-color: #fffdf9;
   border: 1px solid rgba(26, 26, 26, 0.08);
-  border-radius: 14px;
-  min-height: 80px;
+  border-radius: 12px;
+  min-height: 72px;
 }
-.note-hint {
-  display: block;
+
+/* ===== Total Inline ===== */
+.total-inline {
+  display: flex;
+  align-items: center;
+  padding: 14px 20px;
+  background-color: #fffdf9;
+  border: 1px solid rgba(26, 26, 26, 0.08);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.total-inline-label {
+  font-family: "DM Sans", sans-serif;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   color: #a0a0a0;
-  margin-top: 8px;
+  letter-spacing: 2px;
+  margin-right: 10px;
+}
+.total-inline-amount {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  flex: 1;
+}
+.total-inline-badge {
+  display: flex;
+  align-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+.total-inline-badge.up {
+  color: #c43e3e;
+  background-color: #fdf0ef;
+}
+.total-inline-badge.down {
+  color: #2e7d5b;
+  background-color: #eef7f2;
 }
 
 /* ===== Submit Footer ===== */
@@ -915,7 +849,7 @@ function saveSnapshot() {
   z-index: 50;
   background: rgba(245, 242, 237, 0.95);
   border-top: 1px solid rgba(26, 26, 26, 0.08);
-  padding: 16px 24px;
+  padding: 12px 24px;
 }
 .submit-inner {
   max-width: 640px;
@@ -933,11 +867,11 @@ function saveSnapshot() {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 50px;
+  height: 46px;
 }
 .btn-cancel-text {
   font-family: "DM Sans", sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #6b6b6b;
 }
@@ -949,11 +883,11 @@ function saveSnapshot() {
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 20px rgba(26, 26, 26, 0.15);
-  height: 50px;
+  height: 46px;
 }
 .btn-submit-text {
   font-family: "DM Sans", sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #f5f2ed;
 }
@@ -1103,26 +1037,9 @@ function saveSnapshot() {
 
 /* ===== Responsive ===== */
 @media (max-width: 480px) {
-  .page-title {
-    font-size: 32px;
-  }
-  .total-amount {
-    font-size: 28px;
-  }
   .amount-input {
-    width: 80px;
-    font-size: 15px;
-  }
-  .date-display {
-    font-size: 20px;
-    padding: 14px 16px;
-  }
-  .date-icon {
+    width: 85px;
     font-size: 14px;
-    margin-right: 8px;
-  }
-  .date-weekday {
-    font-size: 10px;
   }
 }
 </style>
