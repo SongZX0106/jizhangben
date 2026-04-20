@@ -3,7 +3,7 @@
 # 时迹
 
 <p align="center">
-  <img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/logo.png" alt="logo" style="width:120px" />
+  <img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/logo.png" alt="logo" width=120 />
 </p>
 
 时间的轨迹，记录每一个节点的财富状态。
