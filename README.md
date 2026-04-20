@@ -1,10 +1,24 @@
+
+
 # 时迹
 
-> 时间的轨迹，记录每一个节点的财富状态。
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/logo.png" alt="logo" style="zoom:10%;" />
+
+时间的轨迹，记录每一个节点的财富状态。
 
 ## 简介
 
 **时迹** 是一款轻量级个人资产快照记录工具。不同于传统记账软件逐笔记录收支，它采用「定期快照」的方式——你只需在某个时刻将各个平台的资产总额记录下来，就能在时间线上清晰地看到自己的财富变化轨迹。
+
+## 应用截图
+
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174146789.png" alt="image-20260420174146789" style="zoom:50%;" />
+
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174157395.png" alt="image-20260420174157395" style="zoom:50%;" />
+
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174219060.png" alt="image-20260420174219060" style="zoom:50%;" />
+
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174230118.png" alt="image-20260420174230118" style="zoom:50%;" />
 
 ## 核心功能
 
@@ -47,9 +61,7 @@ app/
 └── manifest.json          # 应用配置
 ```
 
-## 代办
 
-- [ ] logo生成
-  - [ ] Minimalist rounded square app icon, warm ivory background #f5f2ed, center shows a simple bar chart with an upward trending arrow, one bar highlighted in terracotta red #c45d3e, others in light gray, the arrow curves gently upward symbolizing asset growth, a small timeline dot underneath. Flat vector design, no gradients, no text, no shadows, clean and elegant, suitable for a personal asset tracking finance app. --ar 1:1 --s 250 --v 6.1
-- [ ] 卡片增加第二页，可以左滑显示一个曲线折线图，记录资产变化情况，样式要好看
-- [ ] 把logo融入到首页中
+
+
+
