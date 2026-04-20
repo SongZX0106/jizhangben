@@ -2,7 +2,9 @@
 
 # 时迹
 
-<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/logo.png" alt="logo" style="zoom:10%;" />
+<p align="center">
+  <img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/logo.png" alt="logo" style="width:120px" />
+</p>
 
 时间的轨迹，记录每一个节点的财富状态。
 
@@ -12,13 +14,13 @@
 
 ## 应用截图
 
-<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174146789.png" alt="image-20260420174146789" style="zoom:50%;" />
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174146789.png" alt="image-20260420174146789" width="400"/>
 
-<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174157395.png" alt="image-20260420174157395" style="zoom:50%;" />
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174157395.png" alt="image-20260420174157395" width="400" />
 
-<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174219060.png" alt="image-20260420174219060" style="zoom:50%;" />
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174219060.png" alt="image-20260420174219060" width="400" />
 
-<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174230118.png" alt="image-20260420174230118" style="zoom:50%;" />
+<img src="https://szx-bucket1.oss-cn-hangzhou.aliyuncs.com/picgo/image-20260420174230118.png" alt="image-20260420174230118" width="400" />
 
 ## 核心功能
 
