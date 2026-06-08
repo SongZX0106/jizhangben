@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="7db959ec-d600-4e91-9a6a-57a504e51a2a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+    <list default="true" id="7db959ec-d600-4e91-9a6a-57a504e51a2a" name="Changes" comment="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_26_17_19_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2026_4_26_17_19__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -12,20 +17,43 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3CG2c0ia2VB2cuzdaL6q4joehrg" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "master",
+    "javascript.preferred.runtime.type.id": "node",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "E:\\Program Files\\WebStorm 2026.1.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.25134.101" />
+      </set>
+    </attachedChunks>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -36,7 +64,26 @@
       <updated>1775997663613</updated>
       <workItem from="1775997675988" duration="52000" />
       <workItem from="1776523137581" duration="8000" />
+      <workItem from="1777195149311" duration="121000" />
+      <workItem from="1780927864874" duration="206000" />
+      <workItem from="1780928124938" duration="132000" />
+      <workItem from="1780928269462" duration="833000" />
     </task>
+    <task id="LOCAL-00001" summary="chore(build): 更新uni-app构建文件&#10;&#10;- 更新了应用服务脚本以包含最新的编译优化&#10;- 重新生成了页面组件的打包配置&#10;- 优化了图标字体资源的加载方式&#10;- 改进了代码分割和模块引用机制&#10;- 更新了依赖注入和全局样式配置&#10;- 调整了页面渲染和挂载流程">
+      <created>1777195229610</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1777195229610</updated>
+    </task>
+    <task id="LOCAL-00002" summary="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置">
+      <created>1777195263802</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1777195263803</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -52,5 +99,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="chore(build): 更新uni-app构建文件&#10;&#10;- 更新了应用服务脚本以包含最新的编译优化&#10;- 重新生成了页面组件的打包配置&#10;- 优化了图标字体资源的加载方式&#10;- 改进了代码分割和模块引用机制&#10;- 更新了依赖注入和全局样式配置&#10;- 调整了页面渲染和挂载流程" />
+    <MESSAGE value="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置" />
   </component>
 </project>
