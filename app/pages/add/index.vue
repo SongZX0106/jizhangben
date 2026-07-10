@@ -209,24 +209,7 @@ const weekdays = ["周日", "周一", "周二", "周三", "周四", "周五", "�
 const today = new Date();
 const formDate = ref(today.toISOString().slice(0, 10));
 let platformIdCounter = 0;
-const platforms = ref([
-  {
-    id: ++platformIdCounter,
-    name: "支付宝",
-    desc: "数字钱包",
-    icon: "支",
-    cls: "alipay",
-    amount: "",
-  },
-  {
-    id: ++platformIdCounter,
-    name: "招商银行",
-    desc: "主卡银行",
-    icon: "招",
-    cls: "cmb",
-    amount: "",
-  },
-]);
+const platforms = ref([]);
 const screenshots = ref([]);
 const note = ref("");
 const pickerOpen = ref(false);
@@ -241,13 +224,69 @@ function loadLastTotal() {
     const raw = uni.getStorageSync(STORAGE_KEY);
     const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
     if (Array.isArray(parsed) && parsed.length > 0) {
-      parsed.sort((a, b) => b.date.localeCompare(a.date));
-      lastTotal.value = (parsed[0].platforms || []).reduce(
+      parsed.sort((a, b) => {
+        const dateCmp = b.date.localeCompare(a.date);
+        if (dateCmp !== 0) return dateCmp;
+        return (b.id || "").localeCompare(a.id || "");
+      });
+      const last = parsed[0];
+      lastTotal.value = (last.platforms || []).reduce(
         (s, p) => s + (parseFloat(p.amount) || 0),
         0,
       );
+      // 自动带入最近一次的平台名称（不含金额和截图）
+      if ((last.platforms || []).length > 0) {
+        platforms.value = last.platforms.map((p) => ({
+          id: ++platformIdCounter,
+          name: p.name,
+          desc: p.desc || "",
+          icon: p.icon || p.name[0],
+          cls: p.cls || "default",
+          amount: "",
+        }));
+        return;
+      }
     }
-  } catch (e) {}
+    // 无历史记录时使用默认平台
+    platforms.value = [
+      {
+        id: ++platformIdCounter,
+        name: "支付宝",
+        desc: "数字钱包",
+        icon: "支",
+        cls: "alipay",
+        amount: "",
+      },
+      {
+        id: ++platformIdCounter,
+        name: "招商银行",
+        desc: "主卡银行",
+        icon: "招",
+        cls: "cmb",
+        amount: "",
+      },
+    ];
+  } catch (e) {
+    // 异常时也使用默认平台
+    platforms.value = [
+      {
+        id: ++platformIdCounter,
+        name: "支付宝",
+        desc: "数字钱包",
+        icon: "支",
+        cls: "alipay",
+        amount: "",
+      },
+      {
+        id: ++platformIdCounter,
+        name: "招商银行",
+        desc: "主卡银行",
+        icon: "招",
+        cls: "cmb",
+        amount: "",
+      },
+    ];
+  }
 }
 
 onLoad(loadLastTotal);
@@ -342,7 +381,7 @@ function formatNum(n) {
 
 function chooseImage() {
   uni.chooseImage({
-    count: 5 - screenshots.value.length,
+    count: 9,
     sizeType: ["compressed"],
     sourceType: ["album", "camera"],
     success: (res) => {

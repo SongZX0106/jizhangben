@@ -2,8 +2,22 @@
   <view class="page">
     <!-- APP BAR -->
     <view class="app-bar">
-      <text class="app-logo">时迹</text>
-      <text class="app-tagline">ShiJi</text>
+      <view class="app-bar-left">
+        <text class="app-logo">时迹</text>
+        <text class="app-tagline">ShiJi</text>
+      </view>
+      <view class="app-bar-right">
+        <text
+          class="compare-btn"
+          v-if="!compareMode && computedSnapshots.length > 1"
+          @click="enterCompareMode"
+        >横向对比</text>
+        <text
+          class="compare-btn cancel"
+          v-if="compareMode"
+          @click="exitCompareMode"
+        >取消</text>
+      </view>
     </view>
 
     <!-- HERO -->
@@ -75,7 +89,10 @@
     </view>
 
     <!-- TIMELINE -->
-    <view class="timeline" v-if="computedSnapshots.length > 0">
+    <view
+      class="timeline"
+      :class="{ 'timeline-compare': compareMode }"
+      v-if="computedSnapshots.length > 0">
       <template v-for="(group, gi) in groupedSnapshots" :key="group.year">
         <view class="year-divider">
           <text class="year-text">{{ group.year }}</text>
@@ -85,6 +102,17 @@
           v-for="(item, idx) in group.items"
           :key="item.id"
         >
+          <view
+            class="snapshot-select"
+            v-if="compareMode"
+            @click="toggleSelect(item.id)"
+          >
+            <view
+              :class="['select-circle', isSelected(item.id) ? 'selected' : '']"
+            >
+              <text v-if="isSelected(item.id)" class="select-check">✓</text>
+            </view>
+          </view>
           <view class="snapshot-header">
             <text class="snapshot-date">{{ formatDate(item.date) }}</text>
             <text class="snapshot-delete" @click="confirmDelete(item)">
@@ -167,9 +195,93 @@
       </template>
     </view>
 
+    <!-- COMPARE BAR -->
+    <view class="compare-bar" v-if="compareMode">
+      <view class="compare-bar-inner">
+        <text class="compare-bar-hint">点击卡片多选，选择至少 2 项进行对比</text>
+        <view class="compare-bar-row">
+          <text class="compare-bar-count">已选 {{ selectedIds.length }} 项</text>
+          <view class="compare-bar-actions">
+            <text class="compare-bar-cancel" @click="exitCompareMode">退出</text>
+            <text
+              :class="['compare-bar-confirm', selectedIds.length < 2 ? 'disabled' : '']"
+              @click="startCompare"
+            >开始对比</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
     <!-- FAB -->
-    <view class="fab" @click="goAdd">
+    <view class="fab" @click="goAdd" v-if="!compareMode">
       <text class="fab-icon">+</text>
+    </view>
+
+    <!-- COMPARE OVERLAY -->
+    <view class="compare-overlay" v-if="showCompare" @click="closeCompare">
+      <view class="compare-panel" @click.stop>
+        <view class="compare-panel-header">
+          <text class="compare-panel-title">横向对比</text>
+          <text class="compare-panel-close" @click="closeCompare">✕</text>
+        </view>
+        <view class="compare-panel-body">
+          <view class="compare-table">
+            <view class="compare-row compare-header-row">
+              <view class="compare-cell compare-date-cell compare-header-cell">
+                <text class="compare-header-text">日期</text>
+              </view>
+              <view
+                class="compare-cell compare-header-cell"
+                v-for="name in allPlatformNames"
+                :key="name"
+              >
+                <text class="compare-header-text">{{ name }}</text>
+              </view>
+            </view>
+            <view
+              class="compare-row"
+              v-for="row in compareTableData"
+              :key="row.id"
+            >
+              <view class="compare-cell compare-date-cell">
+                <text class="compare-date-text">{{ formatDate(row.date) }}</text>
+              </view>
+              <view
+                class="compare-cell"
+                v-for="name in allPlatformNames"
+                :key="name"
+              >
+                <template
+                  v-if="row.cells[name] && row.cells[name].amount !== null"
+                >
+                  <view class="cell-inner">
+                    <text
+                      v-if="row.cells[name].change"
+                      :class="[
+                        'cell-arrow',
+                        row.cells[name].change.pct >= 0 ? 'up' : 'down',
+                      ]"
+                    >{{
+                      row.cells[name].change.pct >= 0 ? "▲" : "▼"
+                    }}</text>
+                    <text
+                      :class="[
+                        'cell-amount',
+                        row.cells[name].change
+                          ? row.cells[name].change.pct >= 0
+                            ? 'up'
+                            : 'down'
+                          : '',
+                      ]"
+                    >¥{{ formatNum(row.cells[name].amount) }}</text>
+                  </view>
+                </template>
+                <text v-else class="cell-empty">—</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
     </view>
 
     <!-- DELETE DIALOG -->
@@ -204,6 +316,11 @@ import { onShow } from "@dcloudio/uni-app";
 const STORAGE_KEY = "asset_snapshots";
 const rawSnapshots = ref([]);
 
+// ── Compare Mode ──
+const compareMode = ref(false);
+const selectedIds = ref([]);
+const showCompare = ref(false);
+
 function loadSnapshots() {
   try {
     const raw = uni.getStorageSync(STORAGE_KEY);
@@ -214,7 +331,12 @@ function loadSnapshots() {
   }
 }
 
-onShow(loadSnapshots);
+onShow(() => {
+  loadSnapshots();
+  compareMode.value = false;
+  selectedIds.value = [];
+  showCompare.value = false;
+});
 
 const computedSnapshots = computed(() => {
   const sorted = [...rawSnapshots.value].sort((a, b) => {
@@ -342,10 +464,93 @@ function doDelete() {
   const idx = rawSnapshots.value.findIndex((s) => s.id === item.id);
   if (idx > -1) {
     rawSnapshots.value.splice(idx, 1);
+    const selIdx = selectedIds.value.indexOf(item.id);
+    if (selIdx > -1) selectedIds.value.splice(selIdx, 1);
     uni.setStorageSync(STORAGE_KEY, JSON.stringify(rawSnapshots.value));
     uni.showToast({ title: "已删除", icon: "success" });
   }
   closeDelete();
+}
+
+// ── Compare Functions ──
+function enterCompareMode() {
+  selectedIds.value = [];
+  compareMode.value = true;
+}
+
+function exitCompareMode() {
+  compareMode.value = false;
+  selectedIds.value = [];
+}
+
+function isSelected(id) {
+  return selectedIds.value.includes(id);
+}
+
+function toggleSelect(id) {
+  const idx = selectedIds.value.indexOf(id);
+  if (idx > -1) {
+    selectedIds.value.splice(idx, 1);
+  } else {
+    selectedIds.value.push(id);
+  }
+}
+
+const selectedSnapshots = computed(() => {
+  return computedSnapshots.value
+    .filter((s) => selectedIds.value.includes(s.id))
+    .sort((a, b) => a.date.localeCompare(b.date));
+});
+
+const allPlatformNames = computed(() => {
+  const names = new Set();
+  selectedSnapshots.value.forEach((s) => {
+    (s.platforms || []).forEach((p) => names.add(p.name));
+  });
+  return [...names];
+});
+
+const compareTableData = computed(() => {
+  const snapshots = selectedSnapshots.value;
+  const names = allPlatformNames.value;
+  return snapshots.map((snapshot, rowIdx) => {
+    const row = { date: snapshot.date, id: snapshot.id, cells: {} };
+    names.forEach((name) => {
+      const platform = (snapshot.platforms || []).find(
+        (p) => p.name === name
+      );
+      const amount = platform ? parseFloat(platform.amount) || 0 : null;
+      let change = null;
+      if (rowIdx > 0 && amount !== null && amount > 0) {
+        const prevSnapshot = snapshots[rowIdx - 1];
+        const prevPlatform = (prevSnapshot.platforms || []).find(
+          (p) => p.name === name
+        );
+        const prevAmount = prevPlatform
+          ? parseFloat(prevPlatform.amount) || 0
+          : null;
+        if (prevAmount !== null && prevAmount > 0) {
+          const diff = amount - prevAmount;
+          const pct = (diff / prevAmount) * 100;
+          change = { diff, pct };
+        }
+      }
+      row.cells[name] = { amount, change };
+    });
+    return row;
+  });
+});
+
+function startCompare() {
+  if (selectedIds.value.length < 2) {
+    uni.showToast({ title: "请至少选择 2 项", icon: "none" });
+    return;
+  }
+  showCompare.value = true;
+}
+
+function closeCompare() {
+  showCompare.value = false;
 }
 
 function goAdd() {
@@ -367,6 +572,28 @@ function goAdd() {
   padding: 56px 24px 16px;
   display: flex;
   align-items: baseline;
+  justify-content: space-between;
+}
+.app-bar-left {
+  display: flex;
+  align-items: baseline;
+}
+.app-bar-right {
+  flex-shrink: 0;
+}
+.compare-btn {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #c45d3e;
+  padding: 6px 14px;
+  border: 1px solid rgba(196, 93, 62, 0.3);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.compare-btn.cancel {
+  color: #a0a0a0;
+  border-color: rgba(160, 160, 160, 0.3);
 }
 .app-logo {
   font-family: "Noto Serif SC", "Playfair Display", serif;
@@ -952,6 +1179,226 @@ function goAdd() {
   font-size: 28px;
   font-weight: 300;
   line-height: 28px;
+}
+
+/* ===== Compare Mode ===== */
+/* Selection */
+.snapshot-select {
+  position: absolute;
+  left: 12px;
+  top: 24px;
+  z-index: 5;
+  padding: 4px;
+}
+.select-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(26, 26, 26, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.select-circle.selected {
+  background-color: #c45d3e;
+  border-color: #c45d3e;
+}
+.select-check {
+  font-size: 12px;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Compare Bottom Bar */
+.compare-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: #fffdf9;
+  border-top: 1px solid rgba(26, 26, 26, 0.08);
+  padding: 16px 24px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+}
+.compare-bar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.compare-bar-hint {
+  display: block;
+  font-size: 11px;
+  color: #a0a0a0;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.compare-bar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.compare-bar-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6b6b;
+}
+.compare-bar-actions {
+  display: flex;
+  gap: 10px;
+}
+.compare-bar-cancel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b6b6b;
+  padding: 8px 20px;
+  background: #f5f2ed;
+  border-radius: 10px;
+}
+.compare-bar-confirm {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 8px 20px;
+  background: #1a1a1a;
+  border-radius: 10px;
+}
+.compare-bar-confirm.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* Timeline in compare mode */
+.timeline.timeline-compare {
+  padding-bottom: 160px;
+}
+
+/* Compare Overlay */
+.compare-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 110;
+  background: #f5f2ed;
+}
+.compare-panel {
+  width: 100%;
+  height: 100%;
+  background: #f5f2ed;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.compare-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 56px 24px 16px;
+  padding-top: calc(56px + env(safe-area-inset-top));
+  border-bottom: 1px solid rgba(26, 26, 26, 0.08);
+  flex-shrink: 0;
+  background: #fffdf9;
+}
+.compare-panel-title {
+  font-family: "Noto Serif SC", "Playfair Display", serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 2px;
+}
+.compare-panel-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(26, 26, 26, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #6b6b6b;
+  font-weight: 300;
+}
+.compare-panel-body {
+  overflow: auto;
+  flex: 1;
+  background: #fffdf9;
+}
+.compare-table {
+  min-width: 100%;
+  display: table;
+  border-collapse: collapse;
+}
+.compare-row {
+  display: table-row;
+}
+.compare-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.compare-cell {
+  display: table-cell;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(26, 26, 26, 0.06);
+  white-space: nowrap;
+  min-width: 120px;
+}
+.compare-header-cell {
+  background: #f5f2ed;
+  border-bottom: 1.5px solid rgba(26, 26, 26, 0.12);
+}
+.compare-header-text {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b6b6b;
+  letter-spacing: 1px;
+}
+.compare-date-cell {
+  min-width: 140px;
+  background: #fffdf9;
+}
+.compare-header-row .compare-date-cell {
+  background: #f5f2ed;
+}
+.compare-date-text {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: #a0a0a0;
+  letter-spacing: 1px;
+}
+.cell-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cell-arrow {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.cell-arrow.up {
+  color: #c43e3e;
+}
+.cell-arrow.down {
+  color: #2e7d5b;
+}
+.cell-amount {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.cell-amount.up {
+  color: #c43e3e;
+}
+.cell-amount.down {
+  color: #2e7d5b;
+}
+.cell-empty {
+  font-size: 14px;
+  color: #ccc;
 }
 
 /* ===== Responsive ===== */
