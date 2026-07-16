@@ -4,19 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7db959ec-d600-4e91-9a6a-57a504e51a2a" name="Changes" comment="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置">
-      <change beforePath="$PROJECT_DIR$/.idea/claudeCodeTabState.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/claudeCodeTabState.xml" afterDir="false" />
+    <list default="true" id="7db959ec-d600-4e91-9a6a-57a504e51a2a" name="Changes" comment="feat(snapshot): 添加资产快照横向对比功能&#10;&#10;- 实现快照对比模式，支持多选快照进行数据对比&#10;- 添加选择界面和对比表格展示功能&#10;- 新增对比模式下的状态管理和UI组件&#10;- 集成平台数据显示和变化率计算逻辑&#10;- 更新应用配置中的编译器版本号&#10;- 优化页面布局结构和样式设计">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pages/add/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/app/pages/add/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/pages/index/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/app/pages/index/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/__uniappview.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/__uniappview.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/app-config-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/app-config-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/app-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/app-service.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/app.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/pages/add/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/pages/add/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/pages/index/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/pages/index/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/uni-app-view.umd.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/dev/app-plus/uni-app-view.umd.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/unpackage/cache/wgt/__UNI__0A7D7D4/app-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/cache/wgt/__UNI__0A7D7D4/app-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/unpackage/cache/wgt/__UNI__0A7D7D4/pages/add/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/cache/wgt/__UNI__0A7D7D4/pages/add/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/unpackage/cache/wgt/__UNI__0A7D7D4/pages/index/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/cache/wgt/__UNI__0A7D7D4/pages/index/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/build/app-plus/app-service.js" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/build/app-plus/app-service.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/build/app-plus/pages/add/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/build/app-plus/pages/add/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/unpackage/dist/build/app-plus/pages/index/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/unpackage/dist/build/app-plus/pages/index/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +72,7 @@
       <workItem from="1780927864874" duration="206000" />
       <workItem from="1780928124938" duration="132000" />
       <workItem from="1780928269462" duration="833000" />
-      <workItem from="1783666367477" duration="1838000" />
+      <workItem from="1783666367477" duration="3584000" />
     </task>
     <task id="LOCAL-00001" summary="chore(build): 更新uni-app构建文件&#10;&#10;- 更新了应用服务脚本以包含最新的编译优化&#10;- 重新生成了页面组件的打包配置&#10;- 优化了图标字体资源的加载方式&#10;- 改进了代码分割和模块引用机制&#10;- 更新了依赖注入和全局样式配置&#10;- 调整了页面渲染和挂载流程">
       <created>1777195229610</created>
@@ -93,7 +88,15 @@
       <option name="project" value="LOCAL" />
       <updated>1777195263803</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat(snapshot): 添加资产快照横向对比功能&#10;&#10;- 实现快照对比模式，支持多选快照进行数据对比&#10;- 添加选择界面和对比表格展示功能&#10;- 新增对比模式下的状态管理和UI组件&#10;- 集成平台数据显示和变化率计算逻辑&#10;- 更新应用配置中的编译器版本号&#10;- 优化页面布局结构和样式设计">
+      <option name="closed" value="true" />
+      <created>1783668407832</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1783668407832</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -104,7 +107,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -113,6 +128,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="chore(build): 更新uni-app构建文件&#10;&#10;- 更新了应用服务脚本以包含最新的编译优化&#10;- 重新生成了页面组件的打包配置&#10;- 优化了图标字体资源的加载方式&#10;- 改进了代码分割和模块引用机制&#10;- 更新了依赖注入和全局样式配置&#10;- 调整了页面渲染和挂载流程" />
     <MESSAGE value="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore(ide): 配置 GitToolBox 提交消息验证&#10;&#10;- 启用提交消息问题键验证&#10;- 启用提交消息验证功能&#10;- 添加 IDE 项目配置文件&#10;- 配置 Git 工具箱项目设置" />
+    <MESSAGE value="feat(snapshot): 添加资产快照横向对比功能&#10;&#10;- 实现快照对比模式，支持多选快照进行数据对比&#10;- 添加选择界面和对比表格展示功能&#10;- 新增对比模式下的状态管理和UI组件&#10;- 集成平台数据显示和变化率计算逻辑&#10;- 更新应用配置中的编译器版本号&#10;- 优化页面布局结构和样式设计" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(snapshot): 添加资产快照横向对比功能&#10;&#10;- 实现快照对比模式，支持多选快照进行数据对比&#10;- 添加选择界面和对比表格展示功能&#10;- 新增对比模式下的状态管理和UI组件&#10;- 集成平台数据显示和变化率计算逻辑&#10;- 更新应用配置中的编译器版本号&#10;- 优化页面布局结构和样式设计" />
   </component>
 </project>
