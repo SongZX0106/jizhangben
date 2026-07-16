@@ -13,6 +13,34 @@
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "添加记录"
 			}
+		},
+		{
+			"path": "pages/gacha/list/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "抽卡活动"
+			}
+		},
+		{
+			"path": "pages/gacha/draw/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "幸运抽卡"
+			}
+		},
+		{
+			"path": "pages/gacha/create/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "创建活动"
+			}
+		},
+		{
+			"path": "pages/gacha/history/index",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "已抽取内容"
+			}
 		}
 	],
 	"globalStyle": {

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --gold-glow: rgba(255, 191, 0, 0.3);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fcf9f8;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            backdrop-filter: blur(20px);
+            background: var(--glass-bg);
+            border: 1.5px solid var(--glass-border);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+        .gold-pulse {
+            animation: pulse-glow 3s infinite;
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px var(--gold-glow); }
+            50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.6); }
+        }
+        .bokeh {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 0;
+            opacity: 0.6;
+        }
+        .draw-button-gradient {
+            background: linear-gradient(180deg, #FFD700 0%, #FFBF00 100%);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.5), 0 10px 20px rgba(121, 89, 0, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dcd9d9",
+                        "inverse-primary": "#e9c400",
+                        "primary-fixed-dim": "#e9c400",
+                        "on-background": "#1c1b1b",
+                        "on-tertiary-container": "#61613e",
+                        "primary-fixed": "#ffe16d",
+                        "background": "#fcf9f8",
+                        "secondary-fixed-dim": "#fbbc00",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eded",
+                        "primary-container": "#ffd700",
+                        "surface": "#fcf9f8",
+                        "secondary": "#795900",
+                        "on-primary-fixed": "#221b00",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-container": "#705e00",
+                        "primary": "#705d00",
+                        "on-surface-variant": "#4d4732",
+                        "on-error": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#484828",
+                        "outline-variant": "#d0c6ab",
+                        "inverse-surface": "#313030",
+                        "on-secondary-fixed": "#261a00",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed": "#1d1d03",
+                        "secondary-container": "#ffbf00",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#544600",
+                        "surface-tint": "#705d00",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#60603e",
+                        "tertiary-container": "#dedcb1",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed": "#ffdfa0",
+                        "on-secondary-fixed-variant": "#5c4300",
+                        "surface-container-high": "#eae7e7",
+                        "on-surface": "#1c1b1b",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#7e775f",
+                        "tertiary-fixed": "#e6e5b9",
+                        "on-secondary-container": "#6d5000",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-bright": "#fcf9f8",
+                        "inverse-on-surface": "#f3f0ef",
+                        "tertiary-fixed-dim": "#cac99f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "12px",
+                        "container-padding": "20px",
+                        "unit": "4px",
+                        "section-margin": "32px",
+                        "card-gap": "16px"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                        "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="flex flex-col min-h-screen">
+<!-- Background Atmospheric Elements -->
+<div class="fixed inset-0 overflow-hidden -z-10 pointer-events-none">
+<div class="bokeh bg-primary-fixed w-[400px] h-[400px] top-[-100px] left-[-100px]"></div>
+<div class="bokeh bg-secondary-container w-[300px] h-[300px] bottom-[10% ] right-[-50px]"></div>
+<div class="bokeh bg-tertiary-fixed w-[250px] h-[250px] top-[40%] left-[20%] opacity-30"></div>
+</div>
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-white/15 dark:bg-black/15 backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)] flex items-center justify-between px-container-padding h-16">
+<button class="p-2 hover:bg-white/10 transition-colors active:scale-95 duration-200 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" data-icon="menu">menu</span>
+</button>
+<h1 class="font-title-md text-title-md text-primary dark:text-primary-fixed">幸运抽卡</h1>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white/30 shadow-sm active:scale-95 transition-transform cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A stylish portrait of a young digital avatar with vibrant clothing, reflecting a modern tech-savvy personality. The lighting is soft and warm, complementing a gold and cream color scheme. The background is a clean, minimalist studio setting that emphasizes the character's friendly and energetic demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIxXwhhUuuZ3SPtdOawgOqQo3sxORaCrXhaiHcY2kWRisMgkYOr2pW414HrCVu6A1VqbHeAM-wbm22TmRGgZuyb9YgFud0Z2ETRnf8QLIiZ1T7Q32RSDSjDgYUje-bpN-SVwollC9a1vTejAsI7NnRWgoBcjESoZZXMGyEr3eHttlK_uBHKD4tY-sOEtvy23LVim26MXn_-5R55j-xDDlNBNY5dTuEtRAe5Z6pnmJlqti082JKtjMR"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center pt-24 pb-32 px-container-padding relative overflow-hidden">
+<!-- Activity Info -->
+<div class="text-center mb-8 space-y-2 z-10">
+<div class="inline-block px-4 py-1 rounded-full bg-primary-container/30 border border-primary/20 mb-2">
+<span class="font-label-sm text-label-sm text-on-primary-container">正在进行中</span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">新春至尊宝箱抽奖</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">有机会获得限量版数字藏品</p>
+</div>
+<!-- Central Mystery Box (Hero Element) -->
+<div class="relative w-full max-w-[320px] aspect-[3/4] flex items-center justify-center group z-10">
+<!-- Glow layers -->
+<div class="absolute inset-0 gold-pulse rounded-lg bg-primary-container/10 filter blur-3xl scale-110"></div>
+<!-- Floating Glass Card -->
+<div class="glass-card w-full h-full rounded-lg animate-float flex flex-col items-center justify-center p-8 relative overflow-hidden shadow-2xl">
+<!-- Inner decoration -->
+<div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/10 to-transparent pointer-events-none"></div>
+<div class="relative z-10 flex flex-col items-center">
+<!-- Gacha Orb Visual -->
+<div class="w-40 h-40 rounded-full bg-gradient-to-tr from-secondary-container to-primary-container relative shadow-inner mb-6">
+<div class="absolute inset-0 rounded-full" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6) 0%, transparent 60%);"></div>
+<div class="absolute top-4 left-6 w-12 h-6 bg-white/40 rounded-[100%] blur-[2px] rotate-[-25deg]"></div>
+<div class="w-full h-full flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-white drop-shadow-lg" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+</div>
+</div>
+<div class="text-center space-y-1">
+<p class="font-title-md text-title-md text-primary">幸运宝箱</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">LUCKY BOX #2024</p>
+</div>
+</div>
+<!-- Abstract particle-like elements -->
+<div class="absolute bottom-4 right-4 w-12 h-12 border border-white/20 rounded-full opacity-40"></div>
+<div class="absolute top-10 left-10 w-4 h-4 bg-white/30 rounded-full blur-sm"></div>
+</div>
+</div>
+<!-- Draw Button Section -->
+<div class="fixed bottom-24 left-0 w-full px-container-padding flex flex-col items-center gap-4 z-20">
+<button class="draw-button-gradient w-full max-w-sm py-4 rounded-full font-headline-lg-mobile text-headline-lg-mobile text-on-primary-fixed active:scale-90 transition-transform duration-200">
+                开始抽卡
+            </button>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-lg text-body-lg text-secondary font-bold">888 积分</span>
+<span class="text-on-surface-variant/40 mx-2">|</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">消耗 10 积分/次</span>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/10 dark:bg-black/20 backdrop-blur-2xl border-t border-white/30 shadow-[0_-8px_32px_rgba(255,191,0,0.15)] flex justify-around items-center px-4 py-3 pb-safe">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 transition-colors rounded-xl px-4 py-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home_app_logo">home_app_logo</span>
+<span class="font-label-sm text-label-sm">活动</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 transition-colors rounded-xl px-4 py-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="library_add">library_add</span>
+<span class="font-label-sm text-label-sm">奖池</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-6 py-1 active:scale-90 transition-transform cursor-pointer shadow-md">
+<span class="material-symbols-outlined" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="font-label-sm text-label-sm">抽卡</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 transition-colors rounded-xl px-4 py-1 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-sm text-label-sm">历史</span>
+</div>
+</nav>
+<!-- Micro-interaction Scripts -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const drawBtn = document.querySelector('.draw-button-gradient');
+            const box = document.querySelector('.animate-float');
+            
+            drawBtn.addEventListener('click', () => {
+                // Simulate draw animation
+                box.classList.remove('animate-float');
+                box.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                box.style.transform = 'scale(1.2) rotate(10deg)';
+                
+                setTimeout(() => {
+                    box.style.transform = 'scale(1) rotate(0deg)';
+                    setTimeout(() => {
+                        box.classList.add('animate-float');
+                        // Show result feedback (simple alert for demo)
+                        // In a real app, this would trigger the reward reveal UI
+                    }, 500);
+                }, 200);
+            });
+
+            // Random bokeh movement
+            const bokehs = document.querySelectorAll('.bokeh');
+            bokehs.forEach(bokeh => {
+                const animateBokeh = () => {
+                    const x = (Math.random() - 0.5) * 100;
+                    const y = (Math.random() - 0.5) * 100;
+                    bokeh.style.transition = 'transform 10s ease-in-out';
+                    bokeh.style.transform = `translate(${x}px, ${y}px)`;
+                };
+                setInterval(animateBokeh, 10000);
+                animateBokeh();
+            });
+        });
+    </script>
+</body></html>

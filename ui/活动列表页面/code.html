@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>幸运抽卡 - 探索惊喜</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#dcd9d9",
+                    "surface-tint": "#705d00",
+                    "outline": "#7e775f",
+                    "on-primary-fixed": "#221b00",
+                    "on-primary-container": "#705e00",
+                    "on-secondary-fixed": "#261a00",
+                    "surface-variant": "#e5e2e1",
+                    "on-tertiary-container": "#61613e",
+                    "on-secondary-fixed-variant": "#5c4300",
+                    "on-background": "#1c1b1b",
+                    "inverse-surface": "#313030",
+                    "surface-container-low": "#f6f3f2",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#484828",
+                    "on-tertiary-fixed": "#1d1d03",
+                    "secondary-fixed-dim": "#fbbc00",
+                    "primary-fixed-dim": "#e9c400",
+                    "on-surface-variant": "#4d4732",
+                    "inverse-primary": "#e9c400",
+                    "surface-container": "#f0eded",
+                    "secondary-fixed": "#ffdfa0",
+                    "on-surface": "#1c1b1b",
+                    "inverse-on-surface": "#f3f0ef",
+                    "on-primary-fixed-variant": "#544600",
+                    "secondary": "#795900",
+                    "tertiary": "#60603e",
+                    "surface-bright": "#fcf9f8",
+                    "outline-variant": "#d0c6ab",
+                    "on-primary": "#ffffff",
+                    "primary-fixed": "#ffe16d",
+                    "surface-container-high": "#eae7e7",
+                    "on-secondary-container": "#6d5000",
+                    "primary-container": "#ffd700",
+                    "tertiary-container": "#dedcb1",
+                    "on-secondary": "#ffffff",
+                    "background": "#fcf9f8",
+                    "secondary-container": "#ffbf00",
+                    "tertiary-fixed": "#e6e5b9",
+                    "surface": "#fcf9f8",
+                    "tertiary-fixed-dim": "#cac99f",
+                    "primary": "#705d00",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "gutter": "12px",
+                    "section-margin": "32px",
+                    "container-padding": "20px",
+                    "card-gap": "16px"
+            },
+            "fontFamily": {
+                    "title-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg-mobile": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "display-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "label-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-lg": [
+                            "Plus Jakarta Sans"
+                    ]
+            },
+            "fontSize": {
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at top right, #fff9e6, #fcf9f8);
+            min-height: 100vh;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(255, 191, 0, 0.05);
+        }
+
+        .pill-button-primary {
+            background: #FFD700;
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 215, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .pill-button-primary:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(255, 215, 0, 0.2);
+        }
+
+        .gacha-orb {
+            background: radial-gradient(circle at 30% 30%, #FFD700, #FFBF00);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gacha-orb::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 40%;
+            height: 20%;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transform: rotate(-25deg);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="text-on-background pb-24">
+<!-- Top App Bar -->
+<header class="fixed top-0 w-full z-50 bg-white/15 backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)] h-16 flex items-center justify-between px-container-padding">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-white/10 transition-colors active:scale-95 duration-200 rounded-full">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-title-md text-title-md text-primary">幸运抽卡</h1>
+</div>
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden active:scale-95 transition-transform duration-200 cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A stylized professional profile avatar of a young creative professional with a friendly smile. The person has modern, clean-cut features and is set against a soft, golden-yellow background that matches the warm glassmorphism aesthetic of the UI. The lighting is bright and airy, reflecting a light-mode color palette with high-key illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGIFl-YNazQ0pF2f85_y5XfxKajqElErRBCdBv6pEmA5hpwlZzEzuRTDFRwIut5JsuxW6fBEYne70RvaR5ACTsS2gvQ2r0rfFUKZHRg3ZgBob9SKP5YL9q0JMD3SzVKvZY9Kg09SvLhpnnZa4H-OZ7Ktircm_FWQ-c1JbICwrCM8D1IksdNaknlhC3GKyBbcD3gQfyK03SysNjwuTf4C8wWCcIlFLFvOVEO8hxuyFG_3AbzU1V3nXt"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-container-padding">
+<!-- Hero Welcome Section -->
+<section class="mb-section-margin">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-2">我的抽卡活动</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">探索正在进行的精彩抽卡</p>
+</section>
+<!-- Bento Grid Draw Events -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+<!-- Regular Event 1 -->
+<div class="glass-card p-5 rounded-lg flex flex-col gap-3 group hover:translate-y-[-4px] transition-transform">
+<div class="h-32 rounded-md overflow-hidden mb-2 relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A magical digital illustration of a glowing, mystical treasure chest overflowing with golden energy and floating star-shaped particles. The scene is set in a whimsical, semi-transparent glass world with soft warm lighting and a palette of ambers, golds, and whites. Modern digital art style with high-end finishing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfH9ln4E-_rbUAA2L0q9nLpuovR-Xd-twnUEq0v3PJyIev8x4V6XE3z5kPyZ_vHfDHiiokaB2ksSNPCgWkDakeRqm5C40G9no9wpQQOOd_rGWl_oqeEh1awCxMAbrlKtACS8YvD27PlYlbiYKBkhbRxgMZnFu4IxV9y7SoqGT9sWKiOH95UfrvZdI9gnxKDWUIKB19VzLEqHYKQkek_2gwtKa8hoINZIunj1gbaxqKNOaLCrFQ3k1x"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">每日幸运星</h3>
+<div class="w-full bg-white/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-secondary-container to-primary-container h-full w-[75%]"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-label-sm text-label-sm">进度 75%</span>
+<span class="font-label-sm text-label-sm">24 参加者</span>
+</div>
+</div>
+<!-- Regular Event 2 -->
+<div class="glass-card p-5 rounded-lg flex flex-col gap-3 group hover:translate-y-[-4px] transition-transform">
+<div class="h-32 rounded-md overflow-hidden mb-2 relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant conceptual 3D render of various prize capsules or 'gacha' balls floating in a soft, dreamy environment. Each capsule has a high-gloss finish and a crescent moon highlight. The color scheme is dominated by warm yellows and soft whites, matching a high-end glassmorphism design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjnd0fUTbTLLqpOTy4m_hf4jge4bruEWYi3qzB6TcTHmcQLUD7bVZP8oLd5z2EQX4F3h43K4iHAKc9BTOLaxX_qYW578P4tiItE5lhW5ic7MYuQWArYqnEuvLlAdHO9-5Y41tNJFZsfL3jqYjKgISM5TwoxgvgHTMONnX12syZ9-nhxwx3diFvq1e2QyCzfouJNDwEmxDvRjgk3Xh_6FFw5Qqm3VVsBTyDVhFcvVPZxRLMcp4QRW0y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+</div>
+<h3 class="font-title-md text-title-md text-on-surface">超级翻翻乐</h3>
+<div class="w-full bg-white/30 h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-secondary-container to-primary-container h-full w-[40%]"></div>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<span class="font-label-sm text-label-sm">进度 40%</span>
+<span class="font-label-sm text-label-sm">18 参加者</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Large Warm Yellow FAB -->
+<button class="fixed bottom-24 right-6 w-16 h-16 rounded-full bg-primary-container shadow-[0_8px_32px_rgba(255,215,0,0.4)] flex items-center justify-center active:scale-90 transition-transform duration-200 z-[60]">
+<span class="material-symbols-outlined text-on-primary-container text-3xl font-bold">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-white/10 backdrop-blur-2xl border-t border-white/30 shadow-[0_-8px_32px_rgba(255,191,0,0.15)] rounded-t-lg">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home_app_logo</span>
+<span class="font-label-sm text-label-sm">活动</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 p-1 rounded-xl active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">library_add</span>
+<span class="font-label-sm text-label-sm">奖池</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 p-1 rounded-xl active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">stars</span>
+<span class="font-label-sm text-label-sm">抽卡</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 p-1 rounded-xl active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-sm text-label-sm">历史</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                // Potential subtle haptic or sound trigger if on native bridge
+            });
+        });
+
+        // Simple smooth scroll and FAB toggle logic can be added here
+        let lastScrollY = window.scrollY;
+        const fab = document.querySelector('button.fixed.bottom-24');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                fab.style.transform = 'translateY(120px) scale(0.5)';
+                fab.style.opacity = '0';
+            } else {
+                fab.style.transform = 'translateY(0) scale(1)';
+                fab.style.opacity = '1';
+            }
+            lastScrollY = window.scrollY;
+        }, { passive: true });
+    </script>
+</body></html>

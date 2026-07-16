@@ -55,8 +55,8 @@ if (uni.restoreGlobal) {
     }
     return target;
   };
-  const STORAGE_KEY$1 = "asset_snapshots";
-  const _sfc_main$3 = {
+  const STORAGE_KEY$5 = "asset_snapshots";
+  const _sfc_main$8 = {
     __name: "index",
     setup(__props, { expose: __expose }) {
       __expose();
@@ -66,7 +66,7 @@ if (uni.restoreGlobal) {
       const showCompare = vue.ref(false);
       function loadSnapshots() {
         try {
-          const raw = uni.getStorageSync(STORAGE_KEY$1);
+          const raw = uni.getStorageSync(STORAGE_KEY$5);
           const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
           rawSnapshots.value = Array.isArray(parsed) ? parsed : [];
         } catch (e) {
@@ -204,7 +204,7 @@ if (uni.restoreGlobal) {
           const selIdx = selectedIds.value.indexOf(item.id);
           if (selIdx > -1)
             selectedIds.value.splice(selIdx, 1);
-          uni.setStorageSync(STORAGE_KEY$1, JSON.stringify(rawSnapshots.value));
+          uni.setStorageSync(STORAGE_KEY$5, JSON.stringify(rawSnapshots.value));
           uni.showToast({ title: "已删除", icon: "success" });
         }
         closeDelete();
@@ -279,14 +279,17 @@ if (uni.restoreGlobal) {
       function goAdd() {
         uni.navigateTo({ url: "/pages/add/index" });
       }
-      const __returned__ = { STORAGE_KEY: STORAGE_KEY$1, rawSnapshots, compareMode, selectedIds, showCompare, loadSnapshots, computedSnapshots, groupedSnapshots, formatNum, formatNumCN, currentYear, weekdays, formatDate, previewImage, deleteDialog, confirmDelete, closeDelete, doDelete, enterCompareMode, exitCompareMode, isSelected, toggleSelect, selectedSnapshots, allPlatformNames, compareTableData, startCompare, closeCompare, goAdd, ref: vue.ref, computed: vue.computed, get onShow() {
+      function goGacha() {
+        uni.navigateTo({ url: "/pages/gacha/list/index" });
+      }
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$5, rawSnapshots, compareMode, selectedIds, showCompare, loadSnapshots, computedSnapshots, groupedSnapshots, formatNum, formatNumCN, currentYear, weekdays, formatDate, previewImage, deleteDialog, confirmDelete, closeDelete, doDelete, enterCompareMode, exitCompareMode, isSelected, toggleSelect, selectedSnapshots, allPlatformNames, compareTableData, startCompare, closeCompare, goAdd, goGacha, ref: vue.ref, computed: vue.computed, get onShow() {
         return onShow;
       } };
       Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
       return __returned__;
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
       vue.createCommentVNode(" APP BAR "),
       vue.createElementVNode("view", { class: "app-bar" }, [
@@ -295,6 +298,10 @@ if (uni.restoreGlobal) {
           vue.createElementVNode("text", { class: "app-tagline" }, "ShiJi")
         ]),
         vue.createElementVNode("view", { class: "app-bar-right" }, [
+          vue.createElementVNode("text", {
+            class: "gacha-btn",
+            onClick: $setup.goGacha
+          }, "◆ 抽卡"),
           !$setup.compareMode && $setup.computedSnapshots.length > 1 ? (vue.openBlock(), vue.createElementBlock("text", {
             key: 0,
             class: "compare-btn",
@@ -841,7 +848,7 @@ if (uni.restoreGlobal) {
       ])) : vue.createCommentVNode("v-if", true)
     ]);
   }
-  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-1cf27b2a"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/index/index.vue"]]);
+  const PagesIndexIndex = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$7], ["__scopeId", "data-v-1cf27b2a"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/index/index.vue"]]);
   const fontData = [
     {
       "font_class": "arrow-down",
@@ -1492,7 +1499,7 @@ if (uni.restoreGlobal) {
     const reg = /^[0-9]*$/g;
     return typeof val === "number" || reg.test(val) ? val + "px" : val;
   };
-  const _sfc_main$2 = {
+  const _sfc_main$7 = {
     name: "UniIcons",
     emits: ["click"],
     props: {
@@ -1546,7 +1553,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(
       "text",
       {
@@ -1561,9 +1568,9 @@ if (uni.restoreGlobal) {
       /* CLASS, STYLE */
     );
   }
-  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
-  const STORAGE_KEY = "asset_snapshots";
-  const _sfc_main$1 = {
+  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$6], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
+  const STORAGE_KEY$4 = "asset_snapshots";
+  const _sfc_main$6 = {
     __name: "index",
     setup(__props, { expose: __expose }) {
       __expose();
@@ -1590,7 +1597,7 @@ if (uni.restoreGlobal) {
       const showNote = vue.ref(true);
       function loadLastTotal() {
         try {
-          const raw = uni.getStorageSync(STORAGE_KEY);
+          const raw = uni.getStorageSync(STORAGE_KEY$4);
           const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
           if (Array.isArray(parsed) && parsed.length > 0) {
             parsed.sort((a, b) => {
@@ -1805,13 +1812,13 @@ if (uni.restoreGlobal) {
           note: note.value.trim()
         };
         try {
-          const raw = uni.getStorageSync(STORAGE_KEY);
+          const raw = uni.getStorageSync(STORAGE_KEY$4);
           const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
           const arr = Array.isArray(parsed) ? parsed : [];
           arr.push(snapshot);
           const dataStr = JSON.stringify(arr);
           uni.setStorage({
-            key: STORAGE_KEY,
+            key: STORAGE_KEY$4,
             data: dataStr,
             success: function() {
               uni.showToast({ title: "已保存", icon: "success" });
@@ -1837,7 +1844,7 @@ if (uni.restoreGlobal) {
           });
         }
       }
-      const __returned__ = { STORAGE_KEY, defaultPlatforms, weekdays, today, formDate, get platformIdCounter() {
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$4, defaultPlatforms, weekdays, today, formDate, get platformIdCounter() {
         return platformIdCounter;
       }, set platformIdCounter(v) {
         platformIdCounter = v;
@@ -1848,7 +1855,7 @@ if (uni.restoreGlobal) {
       return __returned__;
     }
   };
-  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0);
     return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
       vue.createCommentVNode(" HEADER "),
@@ -2241,9 +2248,1307 @@ if (uni.restoreGlobal) {
       )
     ]);
   }
-  const PagesAddIndex = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-89f6901d"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/add/index.vue"]]);
+  const PagesAddIndex = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$5], ["__scopeId", "data-v-89f6901d"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/add/index.vue"]]);
+  const _sfc_main$5 = {
+    __name: "GachaNav",
+    props: {
+      active: { type: String, default: "" }
+    },
+    setup(__props, { expose: __expose }) {
+      __expose();
+      function goPage(url) {
+        uni.redirectTo({ url });
+      }
+      const __returned__ = { goPage };
+      Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+      return __returned__;
+    }
+  };
+  function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+    const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), __easycom_0);
+    return vue.openBlock(), vue.createElementBlock("view", { class: "bottom-nav" }, [
+      vue.createElementVNode(
+        "view",
+        {
+          class: vue.normalizeClass(["nav-item", $props.active === "list" ? "active" : ""]),
+          onClick: _cache[0] || (_cache[0] = ($event) => $props.active !== "list" && $setup.goPage("/pages/gacha/list/index"))
+        },
+        [
+          vue.createVNode(_component_uni_icons, {
+            type: "bars",
+            size: "20",
+            color: $props.active === "list" ? "#c45d3e" : "#a0a0a0"
+          }, null, 8, ["color"]),
+          vue.createElementVNode("text", { class: "nav-label" }, "活动")
+        ],
+        2
+        /* CLASS */
+      ),
+      vue.createElementVNode(
+        "view",
+        {
+          class: vue.normalizeClass(["nav-item", $props.active === "history" ? "active" : ""]),
+          onClick: _cache[1] || (_cache[1] = ($event) => $props.active !== "history" && $setup.goPage("/pages/gacha/history/index"))
+        },
+        [
+          vue.createVNode(_component_uni_icons, {
+            type: "refresh-filled",
+            size: "20",
+            color: $props.active === "history" ? "#c45d3e" : "#a0a0a0"
+          }, null, 8, ["color"]),
+          vue.createElementVNode("text", { class: "nav-label" }, "历史")
+        ],
+        2
+        /* CLASS */
+      )
+    ]);
+  }
+  const GachaNav = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$4], ["__scopeId", "data-v-8534a157"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/components/GachaNav.vue"]]);
+  const STORAGE_KEY$3 = "gacha_activities";
+  const _sfc_main$4 = {
+    __name: "index",
+    setup(__props, { expose: __expose }) {
+      __expose();
+      const DEMO_ACTIVITIES = [
+        {
+          id: "demo_1",
+          name: "每日幸运星",
+          description: "每日抽奖，赢取精彩好礼",
+          emoji: "⭐",
+          coverGradient: "linear-gradient(135deg, #fdf0ef 0%, #fde8e4 50%, #fbeee0 100%)",
+          createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+          prizes: [
+            { id: "d1p1", name: "限量版数字藏品", rarity: "LEGENDARY", emoji: "👑" },
+            { id: "d1p2", name: "星辰幻镜之球", rarity: "EPIC", emoji: "💎" },
+            { id: "d1p3", name: "远古密匣钥匙", rarity: "RARE", emoji: "🗝️" },
+            { id: "d1p4", name: "金币福袋", rarity: "COMMON", emoji: "🪙" },
+            { id: "d1p5", name: "碎星矿石", rarity: "COMMON", emoji: "✨" }
+          ],
+          drawnPrizeIds: ["d1p4"]
+        },
+        {
+          id: "demo_2",
+          name: "超级翻翻乐",
+          description: "翻转卡牌，惊喜不断",
+          emoji: "🎴",
+          coverGradient: "linear-gradient(135deg, #f0f9f4 0%, #e4f5eb 50%, #eef7f0 100%)",
+          createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+          prizes: [
+            { id: "d2p1", name: "不灭凤凰之魂", rarity: "LEGENDARY", emoji: "🔥" },
+            { id: "d2p2", name: "暗影刺客装备", rarity: "EPIC", emoji: "🗡️" },
+            { id: "d2p3", name: "神秘宝箱钥匙", rarity: "RARE", emoji: "🔑" },
+            { id: "d2p4", name: "经验药水", rarity: "COMMON", emoji: "🧪" }
+          ],
+          drawnPrizeIds: []
+        }
+      ];
+      const activities = vue.ref([]);
+      const delDialog = vue.ref({ show: false, id: "", name: "" });
+      const openMenuId = vue.ref(null);
+      function toggleMenu(id) {
+        openMenuId.value = openMenuId.value === id ? null : id;
+      }
+      function loadActivities() {
+        try {
+          const raw = uni.getStorageSync(STORAGE_KEY$3);
+          const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
+          activities.value = Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          activities.value = [];
+        }
+        if (activities.value.length === 0) {
+          activities.value = JSON.parse(JSON.stringify(DEMO_ACTIVITIES));
+          saveActivities();
+        }
+      }
+      function saveActivities() {
+        uni.setStorageSync(STORAGE_KEY$3, JSON.stringify(activities.value));
+      }
+      function getDrawnPrizeIds(arr) {
+        return (arr || []).map(
+          (item) => typeof item === "string" ? item : item.prizeId
+        );
+      }
+      function formatDate(iso) {
+        const d = new Date(iso);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+      }
+      function drawnCount(act) {
+        return getDrawnPrizeIds(act.drawnPrizeIds).length;
+      }
+      function actProgress(act) {
+        if (!act.prizes || act.prizes.length === 0)
+          return 0;
+        return Math.round(
+          getDrawnPrizeIds(act.drawnPrizeIds).length / act.prizes.length * 100
+        );
+      }
+      function goCreate() {
+        uni.navigateTo({ url: "/pages/gacha/create/index" });
+      }
+      function goEdit(id) {
+        uni.navigateTo({ url: "/pages/gacha/create/index?editId=" + id });
+      }
+      function goDraw(id) {
+        uni.navigateTo({ url: "/pages/gacha/draw/index?id=" + id });
+      }
+      function goBack() {
+        uni.navigateBack();
+      }
+      function confirmDelete(act) {
+        delDialog.value = { show: true, id: act.id, name: act.name };
+      }
+      function closeDel() {
+        delDialog.value = { show: false, id: "", name: "" };
+      }
+      function doDelete() {
+        const idx = activities.value.findIndex((a) => a.id === delDialog.value.id);
+        if (idx > -1) {
+          activities.value.splice(idx, 1);
+          saveActivities();
+          uni.showToast({ title: "已删除", icon: "success" });
+        }
+        closeDel();
+      }
+      onShow(() => {
+        loadActivities();
+      });
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$3, DEMO_ACTIVITIES, activities, delDialog, openMenuId, toggleMenu, loadActivities, saveActivities, getDrawnPrizeIds, formatDate, drawnCount, actProgress, goCreate, goEdit, goDraw, goBack, confirmDelete, closeDel, doDelete, ref: vue.ref, get onShow() {
+        return onShow;
+      }, GachaNav };
+      Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+      return __returned__;
+    }
+  };
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
+      vue.createCommentVNode(" Header "),
+      vue.createElementVNode("view", { class: "gacha-header" }, [
+        vue.createElementVNode("view", { class: "header-left" }, [
+          vue.createElementVNode("text", {
+            class: "back-btn",
+            onClick: $setup.goBack
+          }, "←"),
+          vue.createElementVNode("text", { class: "header-title" }, "抽卡活动")
+        ]),
+        vue.createElementVNode("view", { class: "header-right" })
+      ]),
+      vue.createCommentVNode(" Hero "),
+      vue.createElementVNode("view", { class: "hero-section" }, [
+        vue.createElementVNode("text", { class: "hero-heading" }, "我的抽卡活动"),
+        vue.createElementVNode("text", { class: "hero-desc" }, "探索正在进行的精彩抽卡")
+      ]),
+      vue.createCommentVNode(" Activity Grid "),
+      $setup.activities.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        class: "activity-grid"
+      }, [
+        (vue.openBlock(true), vue.createElementBlock(
+          vue.Fragment,
+          null,
+          vue.renderList($setup.activities, (act) => {
+            return vue.openBlock(), vue.createElementBlock("view", {
+              class: "activity-card",
+              key: act.id,
+              onClick: ($event) => $setup.goDraw(act.id)
+            }, [
+              vue.createElementVNode(
+                "view",
+                {
+                  class: "card-cover",
+                  style: vue.normalizeStyle(act.coverImage ? {} : { background: act.coverGradient || "#f5f2ed" })
+                },
+                [
+                  act.coverImage ? (vue.openBlock(), vue.createElementBlock("image", {
+                    key: 0,
+                    src: act.coverImage,
+                    mode: "aspectFill",
+                    class: "cover-img"
+                  }, null, 8, ["src"])) : (vue.openBlock(), vue.createElementBlock(
+                    "text",
+                    {
+                      key: 1,
+                      class: "cover-emoji"
+                    },
+                    vue.toDisplayString(act.emoji || "🎴"),
+                    1
+                    /* TEXT */
+                  ))
+                ],
+                4
+                /* STYLE */
+              ),
+              vue.createElementVNode("view", { class: "card-body" }, [
+                vue.createElementVNode("view", { class: "card-name-row" }, [
+                  vue.createElementVNode(
+                    "text",
+                    { class: "card-name" },
+                    vue.toDisplayString(act.name),
+                    1
+                    /* TEXT */
+                  ),
+                  vue.createElementVNode("text", {
+                    class: "card-menu-btn",
+                    onClick: vue.withModifiers(($event) => $setup.toggleMenu(act.id), ["stop"])
+                  }, "⋯", 8, ["onClick"])
+                ]),
+                vue.createElementVNode(
+                  "text",
+                  { class: "card-desc" },
+                  vue.toDisplayString(act.description),
+                  1
+                  /* TEXT */
+                ),
+                vue.createElementVNode("view", { class: "progress-wrap" }, [
+                  vue.createElementVNode("view", { class: "progress-track" }, [
+                    vue.createElementVNode(
+                      "view",
+                      {
+                        class: "progress-fill",
+                        style: vue.normalizeStyle({ width: $setup.actProgress(act) + "%" })
+                      },
+                      null,
+                      4
+                      /* STYLE */
+                    )
+                  ])
+                ]),
+                vue.createElementVNode("view", { class: "card-meta" }, [
+                  vue.createElementVNode(
+                    "text",
+                    { class: "meta-text" },
+                    "进度 " + vue.toDisplayString($setup.actProgress(act)) + "%",
+                    1
+                    /* TEXT */
+                  ),
+                  vue.createElementVNode(
+                    "text",
+                    { class: "meta-text" },
+                    vue.toDisplayString($setup.drawnCount(act)) + "/" + vue.toDisplayString(act.prizes.length) + " 已抽",
+                    1
+                    /* TEXT */
+                  )
+                ]),
+                act.createdAt ? (vue.openBlock(), vue.createElementBlock(
+                  "text",
+                  {
+                    key: 0,
+                    class: "card-date"
+                  },
+                  vue.toDisplayString($setup.formatDate(act.createdAt)),
+                  1
+                  /* TEXT */
+                )) : vue.createCommentVNode("v-if", true),
+                $setup.openMenuId === act.id ? (vue.openBlock(), vue.createElementBlock("view", {
+                  key: 1,
+                  class: "card-menu"
+                }, [
+                  vue.createElementVNode("text", {
+                    class: "card-edit",
+                    onClick: vue.withModifiers(($event) => $setup.goEdit(act.id), ["stop"])
+                  }, "编辑", 8, ["onClick"]),
+                  vue.createElementVNode("text", {
+                    class: "card-delete",
+                    onClick: vue.withModifiers(($event) => $setup.confirmDelete(act), ["stop"])
+                  }, "删除", 8, ["onClick"])
+                ])) : vue.createCommentVNode("v-if", true)
+              ])
+            ], 8, ["onClick"]);
+          }),
+          128
+          /* KEYED_FRAGMENT */
+        ))
+      ])) : (vue.openBlock(), vue.createElementBlock(
+        vue.Fragment,
+        { key: 1 },
+        [
+          vue.createCommentVNode(" Empty State "),
+          vue.createElementVNode("view", { class: "empty-state" }, [
+            vue.createElementVNode("text", { class: "empty-icon" }, "🎴"),
+            vue.createElementVNode("text", { class: "empty-text" }, "暂无抽卡活动"),
+            vue.createElementVNode("text", { class: "empty-hint" }, "点击右下角 + 创建新活动")
+          ])
+        ],
+        2112
+        /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */
+      )),
+      vue.createCommentVNode(" FAB "),
+      vue.createElementVNode("view", {
+        class: "fab",
+        onClick: $setup.goCreate
+      }, [
+        vue.createElementVNode("text", { class: "fab-icon" }, "+")
+      ]),
+      vue.createCommentVNode(" Delete Dialog "),
+      $setup.delDialog.show ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 2,
+        class: "del-overlay",
+        onClick: $setup.closeDel
+      }, [
+        vue.createElementVNode("view", {
+          class: "del-card",
+          onClick: _cache[0] || (_cache[0] = vue.withModifiers(() => {
+          }, ["stop"]))
+        }, [
+          vue.createElementVNode("view", { class: "del-icon-wrap" }, [
+            vue.createElementVNode("text", { class: "del-icon" }, "✕")
+          ]),
+          vue.createElementVNode("text", { class: "del-title" }, "确认删除"),
+          vue.createElementVNode(
+            "text",
+            { class: "del-msg" },
+            "确定要删除活动「" + vue.toDisplayString($setup.delDialog.name) + "」吗？",
+            1
+            /* TEXT */
+          ),
+          vue.createElementVNode("text", { class: "del-sub" }, "删除后无法恢复，已抽中的奖品记录将丢失"),
+          vue.createElementVNode("view", { class: "del-actions" }, [
+            vue.createElementVNode("view", {
+              class: "del-btn del-cancel",
+              onClick: $setup.closeDel
+            }, [
+              vue.createElementVNode("text", null, "取消")
+            ]),
+            vue.createElementVNode("view", {
+              class: "del-btn del-confirm",
+              onClick: $setup.doDelete
+            }, [
+              vue.createElementVNode("text", null, "删除")
+            ])
+          ])
+        ])
+      ])) : vue.createCommentVNode("v-if", true),
+      vue.createVNode($setup["GachaNav"], { active: "list" })
+    ]);
+  }
+  const PagesGachaListIndex = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$3], ["__scopeId", "data-v-889aeb45"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/gacha/list/index.vue"]]);
+  const STORAGE_KEY$2 = "gacha_activities";
+  const _sfc_main$3 = {
+    __name: "index",
+    setup(__props, { expose: __expose }) {
+      __expose();
+      const RARITY_LABELS = {
+        LEGENDARY: "传说",
+        EPIC: "史诗",
+        RARE: "稀有",
+        COMMON: "普通"
+      };
+      function getDrawnPrizeIds(arr) {
+        return (arr || []).map(
+          (item) => typeof item === "string" ? item : item.prizeId
+        );
+      }
+      function formatTime(iso) {
+        const d = new Date(iso);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
+          d.getHours()
+        )}:${pad(d.getMinutes())}`;
+      }
+      const activity = vue.ref(null);
+      const isDrawing = vue.ref(false);
+      const showResult = vue.ref(false);
+      const lastPrize = vue.ref(null);
+      const recentDrawn = vue.ref([]);
+      const remainingCount = vue.computed(() => {
+        if (!activity.value)
+          return 0;
+        const total = activity.value.prizes.length;
+        const drawn = getDrawnPrizeIds(activity.value.drawnPrizeIds).length;
+        return total - drawn;
+      });
+      function loadActivity(id) {
+        try {
+          const raw = uni.getStorageSync(STORAGE_KEY$2);
+          const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
+          const activities = Array.isArray(parsed) ? parsed : [];
+          activity.value = activities.find((a) => a.id === id) || null;
+          if (activity.value) {
+            const drawnRecords = activity.value.drawnPrizeIds || [];
+            const drawnIds = getDrawnPrizeIds(drawnRecords);
+            const idToRecord = {};
+            drawnRecords.forEach((r) => {
+              idToRecord[typeof r === "string" ? r : r.prizeId] = typeof r === "string" ? null : r;
+            });
+            recentDrawn.value = activity.value.prizes.filter((p) => drawnIds.includes(p.id)).slice(-5).reverse().map((p) => {
+              const record = idToRecord[p.id];
+              return { ...p, drawnAt: record ? record.drawnAt : null };
+            });
+          }
+        } catch (e) {
+          activity.value = null;
+        }
+      }
+      function saveActivity() {
+        try {
+          const raw = uni.getStorageSync(STORAGE_KEY$2);
+          const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
+          const activities = Array.isArray(parsed) ? parsed : [];
+          const idx = activities.findIndex((a) => a.id === activity.value.id);
+          if (idx > -1) {
+            activities[idx] = activity.value;
+            uni.setStorageSync(STORAGE_KEY$2, JSON.stringify(activities));
+          }
+        } catch (e) {
+        }
+      }
+      function doDraw() {
+        if (isDrawing.value)
+          return;
+        if (remainingCount.value <= 0) {
+          uni.showToast({ title: "奖品已全部抽完", icon: "none" });
+          return;
+        }
+        isDrawing.value = true;
+        const drawnRecords = activity.value.drawnPrizeIds || [];
+        const drawnIds = getDrawnPrizeIds(drawnRecords);
+        const available = activity.value.prizes.filter(
+          (p) => !drawnIds.includes(p.id)
+        );
+        const picked = available[Math.floor(Math.random() * available.length)];
+        setTimeout(() => {
+          const now = (/* @__PURE__ */ new Date()).toISOString();
+          activity.value.drawnPrizeIds.push({ prizeId: picked.id, drawnAt: now });
+          saveActivity();
+          lastPrize.value = picked;
+          showResult.value = true;
+          isDrawing.value = false;
+          recentDrawn.value.unshift({ ...picked, drawnAt: now });
+          if (recentDrawn.value.length > 5) {
+            recentDrawn.value = recentDrawn.value.slice(0, 5);
+          }
+        }, 600);
+      }
+      function previewPrizeImage() {
+        if (lastPrize.value && lastPrize.value.image) {
+          uni.previewImage({
+            urls: [lastPrize.value.image],
+            current: lastPrize.value.image
+          });
+        }
+      }
+      function closeResult() {
+        showResult.value = false;
+      }
+      function goBack() {
+        uni.navigateBack();
+      }
+      function rarityClass(rarity) {
+        const map = {
+          LEGENDARY: "rarity-legendary",
+          EPIC: "rarity-epic",
+          RARE: "rarity-rare",
+          COMMON: "rarity-common"
+        };
+        return map[rarity] || "";
+      }
+      onLoad((options) => {
+        if (options && options.id) {
+          loadActivity(options.id);
+        }
+      });
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$2, RARITY_LABELS, getDrawnPrizeIds, formatTime, activity, isDrawing, showResult, lastPrize, recentDrawn, remainingCount, loadActivity, saveActivity, doDraw, previewPrizeImage, closeResult, goBack, rarityClass, ref: vue.ref, computed: vue.computed, get onLoad() {
+        return onLoad;
+      } };
+      Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+      return __returned__;
+    }
+  };
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
+      vue.createCommentVNode(" Header "),
+      vue.createElementVNode("view", { class: "gacha-header" }, [
+        vue.createElementVNode("view", { class: "header-left" }, [
+          vue.createElementVNode("text", {
+            class: "back-btn",
+            onClick: $setup.goBack
+          }, "←"),
+          vue.createElementVNode(
+            "text",
+            { class: "header-title" },
+            vue.toDisplayString($setup.activity ? $setup.activity.name : "幸运抽卡"),
+            1
+            /* TEXT */
+          )
+        ]),
+        vue.createElementVNode("view", { class: "header-right" }, [
+          $setup.activity && $setup.remainingCount > 0 ? (vue.openBlock(), vue.createElementBlock("text", {
+            key: 0,
+            class: "status-badge"
+          }, "进行中")) : $setup.activity ? (vue.openBlock(), vue.createElementBlock("text", {
+            key: 1,
+            class: "status-badge ended"
+          }, "已抽完")) : vue.createCommentVNode("v-if", true)
+        ])
+      ]),
+      vue.createCommentVNode(" No Activity Selected "),
+      !$setup.activity ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        class: "no-activity"
+      }, [
+        vue.createElementVNode("text", { class: "na-icon" }, "🎴"),
+        vue.createElementVNode("text", { class: "na-text" }, "请先从活动列表选择一个活动"),
+        vue.createElementVNode("view", {
+          class: "na-btn",
+          onClick: $setup.goBack
+        }, [
+          vue.createElementVNode("text", null, "返回活动列表")
+        ])
+      ])) : (vue.openBlock(), vue.createElementBlock(
+        vue.Fragment,
+        { key: 1 },
+        [
+          vue.createCommentVNode(" Draw Area "),
+          vue.createElementVNode("view", { class: "draw-area" }, [
+            vue.createCommentVNode(" Activity Cover "),
+            $setup.activity.coverImage ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 0,
+              class: "draw-cover"
+            }, [
+              vue.createElementVNode("image", {
+                src: $setup.activity.coverImage,
+                mode: "aspectFill",
+                class: "draw-cover-img"
+              }, null, 8, ["src"])
+            ])) : vue.createCommentVNode("v-if", true),
+            vue.createCommentVNode(" Activity Info "),
+            vue.createElementVNode("view", { class: "info-bar" }, [
+              vue.createElementVNode(
+                "text",
+                { class: "info-text" },
+                vue.toDisplayString($setup.activity.description),
+                1
+                /* TEXT */
+              )
+            ]),
+            vue.createCommentVNode(" Mystery Box "),
+            vue.createElementVNode("view", { class: "box-container" }, [
+              vue.createElementVNode(
+                "view",
+                {
+                  class: vue.normalizeClass(["box-glow", { "is-drawing": $setup.isDrawing }])
+                },
+                null,
+                2
+                /* CLASS */
+              ),
+              vue.createElementVNode(
+                "view",
+                {
+                  class: vue.normalizeClass(["mystery-box", { "is-drawing": $setup.isDrawing }]),
+                  onClick: $setup.doDraw
+                },
+                [
+                  vue.createElementVNode("view", { class: "box-inner" }, [
+                    vue.createElementVNode("view", { class: "orb" }, [
+                      vue.createElementVNode("view", { class: "orb-highlight" }),
+                      vue.createElementVNode(
+                        "text",
+                        { class: "orb-emoji" },
+                        vue.toDisplayString($setup.remainingCount > 0 ? "🎁" : "📭"),
+                        1
+                        /* TEXT */
+                      )
+                    ]),
+                    vue.createElementVNode(
+                      "text",
+                      { class: "box-label" },
+                      vue.toDisplayString($setup.remainingCount > 0 ? "点击抽取" : "已全部抽完"),
+                      1
+                      /* TEXT */
+                    )
+                  ])
+                ],
+                2
+                /* CLASS */
+              )
+            ]),
+            vue.createCommentVNode(" Draw Stats "),
+            vue.createElementVNode("view", { class: "draw-stats" }, [
+              vue.createElementVNode("view", { class: "stat-item" }, [
+                vue.createElementVNode("text", { class: "stat-label" }, "剩余奖品"),
+                vue.createElementVNode(
+                  "text",
+                  { class: "stat-num" },
+                  vue.toDisplayString($setup.remainingCount) + " / " + vue.toDisplayString($setup.activity.prizes.length),
+                  1
+                  /* TEXT */
+                )
+              ]),
+              vue.createElementVNode("view", { class: "stat-divider" }),
+              vue.createElementVNode("view", { class: "stat-item" }, [
+                vue.createElementVNode("text", { class: "stat-label" }, "已抽取"),
+                vue.createElementVNode(
+                  "text",
+                  { class: "stat-num" },
+                  vue.toDisplayString($setup.activity.drawnPrizeIds.length) + " 件",
+                  1
+                  /* TEXT */
+                )
+              ])
+            ]),
+            vue.createCommentVNode(" Recently Drawn "),
+            $setup.recentDrawn.length > 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+              key: 1,
+              class: "recent-section"
+            }, [
+              vue.createElementVNode("text", { class: "recent-title" }, "最近抽中"),
+              vue.createElementVNode("view", { class: "recent-list" }, [
+                (vue.openBlock(true), vue.createElementBlock(
+                  vue.Fragment,
+                  null,
+                  vue.renderList($setup.recentDrawn, (prize, idx) => {
+                    return vue.openBlock(), vue.createElementBlock("view", {
+                      class: "recent-item",
+                      key: idx
+                    }, [
+                      prize.image ? (vue.openBlock(), vue.createElementBlock("image", {
+                        key: 0,
+                        src: prize.image,
+                        mode: "aspectFill",
+                        class: "recent-img"
+                      }, null, 8, ["src"])) : (vue.openBlock(), vue.createElementBlock(
+                        "text",
+                        {
+                          key: 1,
+                          class: "recent-emoji"
+                        },
+                        vue.toDisplayString(prize.emoji || "🎁"),
+                        1
+                        /* TEXT */
+                      )),
+                      vue.createElementVNode("view", { class: "recent-info" }, [
+                        vue.createElementVNode(
+                          "text",
+                          { class: "recent-name" },
+                          vue.toDisplayString(prize.name),
+                          1
+                          /* TEXT */
+                        ),
+                        vue.createElementVNode("view", { class: "recent-bottom" }, [
+                          vue.createElementVNode(
+                            "text",
+                            {
+                              class: vue.normalizeClass(["recent-rarity", $setup.rarityClass(prize.rarity)])
+                            },
+                            vue.toDisplayString($setup.RARITY_LABELS[prize.rarity] || prize.rarity),
+                            3
+                            /* TEXT, CLASS */
+                          ),
+                          prize.drawnAt ? (vue.openBlock(), vue.createElementBlock(
+                            "text",
+                            {
+                              key: 0,
+                              class: "recent-time"
+                            },
+                            vue.toDisplayString($setup.formatTime(prize.drawnAt)),
+                            1
+                            /* TEXT */
+                          )) : vue.createCommentVNode("v-if", true)
+                        ])
+                      ])
+                    ]);
+                  }),
+                  128
+                  /* KEYED_FRAGMENT */
+                ))
+              ])
+            ])) : vue.createCommentVNode("v-if", true)
+          ])
+        ],
+        2112
+        /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */
+      )),
+      vue.createCommentVNode(" Result Overlay "),
+      $setup.showResult && $setup.lastPrize ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 2,
+        class: "result-overlay",
+        onClick: $setup.closeResult
+      }, [
+        vue.createElementVNode("view", {
+          class: "result-card",
+          onClick: _cache[0] || (_cache[0] = vue.withModifiers(() => {
+          }, ["stop"]))
+        }, [
+          vue.createElementVNode("view", {
+            class: "result-orb",
+            onClick: vue.withModifiers($setup.previewPrizeImage, ["stop"])
+          }, [
+            $setup.lastPrize.image ? (vue.openBlock(), vue.createElementBlock("image", {
+              key: 0,
+              src: $setup.lastPrize.image,
+              mode: "aspectFill",
+              class: "result-img"
+            }, null, 8, ["src"])) : (vue.openBlock(), vue.createElementBlock(
+              "text",
+              {
+                key: 1,
+                class: "result-emoji"
+              },
+              vue.toDisplayString($setup.lastPrize.emoji || "🎁"),
+              1
+              /* TEXT */
+            ))
+          ]),
+          vue.createElementVNode(
+            "text",
+            {
+              class: vue.normalizeClass(["result-rarity-badge", $setup.rarityClass($setup.lastPrize.rarity)])
+            },
+            vue.toDisplayString($setup.RARITY_LABELS[$setup.lastPrize.rarity] || $setup.lastPrize.rarity),
+            3
+            /* TEXT, CLASS */
+          ),
+          vue.createElementVNode(
+            "text",
+            { class: "result-name" },
+            vue.toDisplayString($setup.lastPrize.name),
+            1
+            /* TEXT */
+          ),
+          vue.createElementVNode("text", { class: "result-hint" }, "点击任意处关闭")
+        ])
+      ])) : vue.createCommentVNode("v-if", true)
+    ]);
+  }
+  const PagesGachaDrawIndex = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$2], ["__scopeId", "data-v-3a7d4be3"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/gacha/draw/index.vue"]]);
+  const STORAGE_KEY$1 = "gacha_activities";
+  const _sfc_main$2 = {
+    __name: "index",
+    setup(__props, { expose: __expose }) {
+      __expose();
+      const rarities = [
+        { value: "LEGENDARY", label: "传说" },
+        { value: "EPIC", label: "史诗" },
+        { value: "COMMON", label: "普通" }
+      ];
+      const name = vue.ref("");
+      const coverImage = vue.ref("");
+      const editId = vue.ref("");
+      const prizes = vue.ref([
+        { name: "", image: "", rarity: "COMMON" },
+        { name: "", image: "", rarity: "COMMON" }
+      ]);
+      function genId() {
+        return (/* @__PURE__ */ new Date()).getTime().toString(36) + Math.random().toString(36).substr(2, 6);
+      }
+      function addPrize() {
+        prizes.value.push({ name: "", image: "", rarity: "COMMON" });
+      }
+      function removePrize(idx) {
+        prizes.value.splice(idx, 1);
+      }
+      function uploadCover() {
+        uni.chooseImage({
+          count: 1,
+          sizeType: ["compressed"],
+          success: (res) => {
+            uni.saveFile({
+              tempFilePath: res.tempFilePaths[0],
+              success: (saveRes) => {
+                coverImage.value = saveRes.savedFilePath;
+              },
+              fail: () => {
+                coverImage.value = res.tempFilePaths[0];
+              }
+            });
+          }
+        });
+      }
+      function uploadPrizeImage(idx) {
+        uni.chooseImage({
+          count: 1,
+          sizeType: ["compressed"],
+          success: (res) => {
+            uni.saveFile({
+              tempFilePath: res.tempFilePaths[0],
+              success: (saveRes) => {
+                prizes.value[idx].image = saveRes.savedFilePath;
+              },
+              fail: () => {
+                prizes.value[idx].image = res.tempFilePaths[0];
+              }
+            });
+          }
+        });
+      }
+      function doSave() {
+        const n = name.value.trim();
+        if (!n) {
+          uni.showToast({ title: "请输入活动名称", icon: "none" });
+          return;
+        }
+        const validPrizes = prizes.value.filter((p) => p.name.trim());
+        if (validPrizes.length < 2) {
+          uni.showToast({ title: "请至少填写 2 个奖品名称", icon: "none" });
+          return;
+        }
+        try {
+          const raw = uni.getStorageSync(STORAGE_KEY$1);
+          const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
+          const activities = Array.isArray(parsed) ? parsed : [];
+          if (editId.value) {
+            const idx = activities.findIndex((a) => a.id === editId.value);
+            if (idx > -1) {
+              activities[idx].name = n;
+              activities[idx].coverImage = coverImage.value;
+              activities[idx].coverGradient = "";
+              activities[idx].emoji = "";
+              activities[idx].prizes = validPrizes.map((p) => ({
+                id: p.id || genId(),
+                name: p.name.trim(),
+                rarity: p.rarity,
+                image: p.image
+              }));
+            }
+          } else {
+            activities.push({
+              id: genId(),
+              name: n,
+              description: "精彩抽卡活动",
+              coverImage: coverImage.value,
+              createdAt: (/* @__PURE__ */ new Date()).toISOString(),
+              prizes: validPrizes.map((p) => ({
+                id: genId(),
+                name: p.name.trim(),
+                rarity: p.rarity,
+                image: p.image
+              })),
+              drawnPrizeIds: []
+            });
+          }
+          uni.setStorageSync(STORAGE_KEY$1, JSON.stringify(activities));
+          uni.showToast({ title: editId.value ? "已保存" : "创建成功", icon: "success" });
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 800);
+        } catch (e) {
+          uni.showToast({ title: "保存失败", icon: "none" });
+        }
+      }
+      function goBack() {
+        uni.navigateBack();
+      }
+      onLoad((options) => {
+        if (options && options.editId) {
+          editId.value = options.editId;
+          try {
+            const raw = uni.getStorageSync(STORAGE_KEY$1);
+            const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
+            const activities = Array.isArray(parsed) ? parsed : [];
+            const act = activities.find((a) => a.id === options.editId);
+            if (act) {
+              name.value = act.name;
+              coverImage.value = act.coverImage || "";
+              prizes.value = (act.prizes || []).map((p) => ({
+                id: p.id,
+                name: p.name,
+                image: p.image || "",
+                rarity: p.rarity || "COMMON"
+              }));
+              if (prizes.value.length < 2) {
+                prizes.value.push({ name: "", image: "", rarity: "COMMON" });
+              }
+            }
+          } catch (e) {
+          }
+        }
+      });
+      const __returned__ = { STORAGE_KEY: STORAGE_KEY$1, rarities, name, coverImage, editId, prizes, genId, addPrize, removePrize, uploadCover, uploadPrizeImage, doSave, goBack, ref: vue.ref, get onLoad() {
+        return onLoad;
+      } };
+      Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+      return __returned__;
+    }
+  };
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
+      vue.createCommentVNode(" Header "),
+      vue.createElementVNode("view", { class: "gacha-header" }, [
+        vue.createElementVNode("view", { class: "header-left" }, [
+          vue.createElementVNode("text", {
+            class: "back-btn",
+            onClick: $setup.goBack
+          }, "←"),
+          vue.createElementVNode(
+            "text",
+            { class: "header-title" },
+            vue.toDisplayString($setup.editId ? "编辑活动" : "创建新活动"),
+            1
+            /* TEXT */
+          )
+        ])
+      ]),
+      vue.createCommentVNode(" Form "),
+      vue.createElementVNode("view", { class: "form-body" }, [
+        vue.createCommentVNode(" Activity Cover "),
+        vue.createElementVNode("view", { class: "section" }, [
+          vue.createElementVNode("text", { class: "section-label" }, "活动封面"),
+          vue.createElementVNode("view", {
+            class: "cover-upload",
+            onClick: $setup.uploadCover
+          }, [
+            $setup.coverImage ? (vue.openBlock(), vue.createElementBlock("image", {
+              key: 0,
+              src: $setup.coverImage,
+              mode: "aspectFill",
+              class: "cover-preview"
+            }, null, 8, ["src"])) : (vue.openBlock(), vue.createElementBlock("view", {
+              key: 1,
+              class: "cover-placeholder"
+            }, [
+              vue.createElementVNode("text", { class: "cover-icon-big" }, "📷"),
+              vue.createElementVNode("text", { class: "cover-hint" }, "点击上传封面图")
+            ]))
+          ])
+        ]),
+        vue.createCommentVNode(" Activity Info "),
+        vue.createElementVNode("view", { class: "section" }, [
+          vue.createElementVNode("text", { class: "section-label" }, "活动信息"),
+          vue.createElementVNode("view", { class: "form-card" }, [
+            vue.createElementVNode("text", { class: "field-label" }, [
+              vue.createElementVNode("text", { class: "label-icon" }, "🎯"),
+              vue.createTextVNode("活动名称")
+            ]),
+            vue.withDirectives(vue.createElementVNode(
+              "input",
+              {
+                class: "field-input",
+                "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $setup.name = $event),
+                placeholder: "输入响亮的活动标题...",
+                "placeholder-style": "color:#a0a0a0"
+              },
+              null,
+              512
+              /* NEED_PATCH */
+            ), [
+              [vue.vModelText, $setup.name]
+            ])
+          ])
+        ]),
+        vue.createCommentVNode(" Prizes "),
+        vue.createElementVNode("view", { class: "section" }, [
+          vue.createElementVNode("text", { class: "section-label" }, "奖品列表"),
+          vue.createElementVNode("view", { class: "prize-list" }, [
+            (vue.openBlock(true), vue.createElementBlock(
+              vue.Fragment,
+              null,
+              vue.renderList($setup.prizes, (prize, idx) => {
+                return vue.openBlock(), vue.createElementBlock("view", {
+                  class: "prize-item",
+                  key: idx
+                }, [
+                  vue.createElementVNode("view", {
+                    class: "prize-img-box",
+                    onClick: ($event) => $setup.uploadPrizeImage(idx)
+                  }, [
+                    prize.image ? (vue.openBlock(), vue.createElementBlock("image", {
+                      key: 0,
+                      src: prize.image,
+                      mode: "aspectFill",
+                      class: "prize-img"
+                    }, null, 8, ["src"])) : (vue.openBlock(), vue.createElementBlock("view", {
+                      key: 1,
+                      class: "prize-img-placeholder"
+                    }, [
+                      vue.createElementVNode("text", { class: "prize-img-add" }, "+"),
+                      vue.createElementVNode("text", { class: "prize-img-hint" }, "图片")
+                    ]))
+                  ], 8, ["onClick"]),
+                  vue.createElementVNode("view", { class: "prize-body" }, [
+                    vue.withDirectives(vue.createElementVNode("input", {
+                      class: "field-input",
+                      "onUpdate:modelValue": ($event) => prize.name = $event,
+                      placeholder: "例如：限量款潮玩",
+                      "placeholder-style": "color:#a0a0a0"
+                    }, null, 8, ["onUpdate:modelValue"]), [
+                      [vue.vModelText, prize.name]
+                    ]),
+                    vue.createElementVNode("view", { class: "rarity-row" }, [
+                      (vue.openBlock(), vue.createElementBlock(
+                        vue.Fragment,
+                        null,
+                        vue.renderList($setup.rarities, (r) => {
+                          return vue.createElementVNode("text", {
+                            key: r.value,
+                            class: vue.normalizeClass([
+                              "rarity-chip",
+                              prize.rarity === r.value ? "active" : "",
+                              "rarity-" + r.value.toLowerCase()
+                            ]),
+                            onClick: ($event) => prize.rarity = r.value
+                          }, vue.toDisplayString(r.label), 11, ["onClick"]);
+                        }),
+                        64
+                        /* STABLE_FRAGMENT */
+                      ))
+                    ])
+                  ]),
+                  $setup.prizes.length > 1 ? (vue.openBlock(), vue.createElementBlock("view", {
+                    key: 0,
+                    class: "prize-remove",
+                    onClick: ($event) => $setup.removePrize(idx)
+                  }, [
+                    vue.createElementVNode("text", null, "✕")
+                  ], 8, ["onClick"])) : vue.createCommentVNode("v-if", true)
+                ]);
+              }),
+              128
+              /* KEYED_FRAGMENT */
+            ))
+          ]),
+          vue.createElementVNode("view", {
+            class: "add-prize-btn",
+            onClick: $setup.addPrize
+          }, [
+            vue.createElementVNode("text", { class: "add-icon" }, "+"),
+            vue.createElementVNode("text", null, "添加更多奖品")
+          ])
+        ]),
+        vue.createCommentVNode(" Tips "),
+        vue.createElementVNode("view", { class: "tips-card" }, [
+          vue.createElementVNode("text", { class: "tips-icon" }, "💡"),
+          vue.createElementVNode("view", { class: "tips-body" }, [
+            vue.createElementVNode("text", { class: "tips-title" }, "贴士"),
+            vue.createElementVNode("text", { class: "tips-text" }, "为每个奖品上传一张精美的实拍图，可以极大地提高用户的参与热情。")
+          ])
+        ])
+      ]),
+      vue.createCommentVNode(" Save Button "),
+      vue.createElementVNode("view", { class: "save-bar" }, [
+        vue.createElementVNode("view", {
+          class: "save-btn",
+          onClick: $setup.doSave
+        }, [
+          vue.createElementVNode(
+            "text",
+            { class: "save-btn-text" },
+            vue.toDisplayString($setup.editId ? "保存修改" : "完成并保存"),
+            1
+            /* TEXT */
+          ),
+          vue.createElementVNode("text", { class: "save-btn-check" }, "✓")
+        ])
+      ])
+    ]);
+  }
+  const PagesGachaCreateIndex = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$1], ["__scopeId", "data-v-e1b0d72e"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/gacha/create/index.vue"]]);
+  const STORAGE_KEY = "gacha_activities";
+  const _sfc_main$1 = {
+    __name: "index",
+    setup(__props, { expose: __expose }) {
+      __expose();
+      const activities = vue.ref([]);
+      function getDrawnPrizeIds(arr) {
+        return (arr || []).map(
+          (item) => typeof item === "string" ? item : item.prizeId
+        );
+      }
+      function formatTime(iso) {
+        const d = new Date(iso);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(
+          d.getHours()
+        )}:${pad(d.getMinutes())}`;
+      }
+      const RARITY_LABELS = {
+        LEGENDARY: "传说",
+        EPIC: "史诗",
+        RARE: "稀有",
+        COMMON: "普通"
+      };
+      const drawnItems = vue.computed(() => {
+        const items = [];
+        activities.value.forEach((act) => {
+          const drawnRecords = act.drawnPrizeIds || [];
+          const drawnIds = getDrawnPrizeIds(drawnRecords);
+          const idToRecord = {};
+          drawnRecords.forEach((r) => {
+            idToRecord[typeof r === "string" ? r : r.prizeId] = typeof r === "string" ? null : r;
+          });
+          act.prizes.forEach((p) => {
+            if (drawnIds.includes(p.id)) {
+              const record = idToRecord[p.id];
+              items.push({
+                prizeId: p.id,
+                activityId: act.id,
+                activityName: act.name,
+                name: p.name,
+                emoji: p.emoji,
+                image: p.image,
+                rarity: p.rarity,
+                rarityLabel: RARITY_LABELS[p.rarity] || p.rarity,
+                drawnAt: record ? record.drawnAt : null
+              });
+            }
+          });
+        });
+        return items;
+      });
+      function loadActivities() {
+        try {
+          const raw = uni.getStorageSync(STORAGE_KEY);
+          const parsed = raw && typeof raw === "string" ? JSON.parse(raw) : raw;
+          activities.value = Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          activities.value = [];
+        }
+      }
+      function doRestore(item) {
+        const act = activities.value.find((a) => a.id === item.activityId);
+        if (!act)
+          return;
+        const drawnRecords = act.drawnPrizeIds || [];
+        const idx = drawnRecords.findIndex(
+          (r) => (typeof r === "string" ? r : r.prizeId) === item.prizeId
+        );
+        if (idx > -1) {
+          act.drawnPrizeIds.splice(idx, 1);
+          uni.setStorageSync(STORAGE_KEY, JSON.stringify(activities.value));
+          uni.showToast({ title: "已恢复到奖池", icon: "success" });
+        }
+      }
+      function goBack() {
+        uni.navigateBack();
+      }
+      onShow(() => {
+        loadActivities();
+      });
+      const __returned__ = { STORAGE_KEY, activities, getDrawnPrizeIds, formatTime, RARITY_LABELS, drawnItems, loadActivities, doRestore, goBack, ref: vue.ref, computed: vue.computed, get onShow() {
+        return onShow;
+      }, GachaNav };
+      Object.defineProperty(__returned__, "__isScriptSetup", { enumerable: false, value: true });
+      return __returned__;
+    }
+  };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.openBlock(), vue.createElementBlock("view", { class: "page" }, [
+      vue.createCommentVNode(" Header "),
+      vue.createElementVNode("view", { class: "gacha-header" }, [
+        vue.createElementVNode("view", { class: "header-left" }, [
+          vue.createElementVNode("text", {
+            class: "back-btn",
+            onClick: $setup.goBack
+          }, "←"),
+          vue.createElementVNode("text", { class: "header-title" }, "已抽取内容")
+        ]),
+        vue.createElementVNode("view", { class: "header-right" }, [
+          vue.createElementVNode(
+            "text",
+            { class: "count-badge" },
+            "共 " + vue.toDisplayString($setup.drawnItems.length) + " 件",
+            1
+            /* TEXT */
+          )
+        ])
+      ]),
+      vue.createCommentVNode(" Empty State "),
+      $setup.drawnItems.length === 0 ? (vue.openBlock(), vue.createElementBlock("view", {
+        key: 0,
+        class: "empty-state"
+      }, [
+        vue.createElementVNode("text", { class: "empty-icon" }, "📭"),
+        vue.createElementVNode("text", { class: "empty-text" }, "还没有抽中的奖品"),
+        vue.createElementVNode("text", { class: "empty-hint" }, "去抽卡页面试试手气吧")
+      ])) : (vue.openBlock(), vue.createElementBlock(
+        vue.Fragment,
+        { key: 1 },
+        [
+          vue.createCommentVNode(" Drawn Items List "),
+          vue.createElementVNode("view", { class: "history-list" }, [
+            vue.createElementVNode("view", { class: "list-header" }, [
+              vue.createElementVNode("text", { class: "list-title" }, "全部抽中记录")
+            ]),
+            (vue.openBlock(true), vue.createElementBlock(
+              vue.Fragment,
+              null,
+              vue.renderList($setup.drawnItems, (item) => {
+                return vue.openBlock(), vue.createElementBlock("view", {
+                  class: "item",
+                  key: item.prizeId + item.activityId
+                }, [
+                  vue.createElementVNode("view", { class: "item-left" }, [
+                    vue.createElementVNode("view", { class: "item-icon" }, [
+                      item.image ? (vue.openBlock(), vue.createElementBlock("image", {
+                        key: 0,
+                        src: item.image,
+                        mode: "aspectFill",
+                        class: "item-img"
+                      }, null, 8, ["src"])) : (vue.openBlock(), vue.createElementBlock(
+                        "text",
+                        { key: 1 },
+                        vue.toDisplayString(item.emoji || "🎁"),
+                        1
+                        /* TEXT */
+                      ))
+                    ])
+                  ]),
+                  vue.createElementVNode("view", { class: "item-body" }, [
+                    vue.createElementVNode("view", { class: "item-top" }, [
+                      vue.createElementVNode(
+                        "text",
+                        {
+                          class: vue.normalizeClass(["rarity-badge", "rarity-" + item.rarity.toLowerCase()])
+                        },
+                        vue.toDisplayString(item.rarityLabel),
+                        3
+                        /* TEXT, CLASS */
+                      ),
+                      vue.createElementVNode(
+                        "text",
+                        { class: "item-source" },
+                        vue.toDisplayString(item.activityName),
+                        1
+                        /* TEXT */
+                      )
+                    ]),
+                    vue.createElementVNode(
+                      "text",
+                      { class: "item-name" },
+                      vue.toDisplayString(item.name),
+                      1
+                      /* TEXT */
+                    ),
+                    item.drawnAt ? (vue.openBlock(), vue.createElementBlock(
+                      "text",
+                      {
+                        key: 0,
+                        class: "item-time"
+                      },
+                      vue.toDisplayString($setup.formatTime(item.drawnAt)),
+                      1
+                      /* TEXT */
+                    )) : vue.createCommentVNode("v-if", true)
+                  ]),
+                  vue.createElementVNode("view", { class: "item-right" }, [
+                    vue.createElementVNode("view", {
+                      class: "restore-btn",
+                      onClick: ($event) => $setup.doRestore(item)
+                    }, [
+                      vue.createElementVNode("text", null, "恢复到奖池")
+                    ], 8, ["onClick"])
+                  ])
+                ]);
+              }),
+              128
+              /* KEYED_FRAGMENT */
+            ))
+          ])
+        ],
+        2112
+        /* STABLE_FRAGMENT, DEV_ROOT_FRAGMENT */
+      )),
+      vue.createVNode($setup["GachaNav"], { active: "history" })
+    ]);
+  }
+  const PagesGachaHistoryIndex = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render], ["__scopeId", "data-v-9f35b6f8"], ["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/pages/gacha/history/index.vue"]]);
   __definePage("pages/index/index", PagesIndexIndex);
   __definePage("pages/add/index", PagesAddIndex);
+  __definePage("pages/gacha/list/index", PagesGachaListIndex);
+  __definePage("pages/gacha/draw/index", PagesGachaDrawIndex);
+  __definePage("pages/gacha/create/index", PagesGachaCreateIndex);
+  __definePage("pages/gacha/history/index", PagesGachaHistoryIndex);
   const _sfc_main = {};
   const App = /* @__PURE__ */ _export_sfc(_sfc_main, [["__file", "D:/mygitee/00/记账本APP/bookkeeping-app/app/App.vue"]]);
   function createApp() {

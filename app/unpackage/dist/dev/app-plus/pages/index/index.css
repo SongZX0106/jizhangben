@@ -35,6 +35,16 @@
   color: #a0a0a0;
   border-color: rgba(160, 160, 160, 0.3);
 }
+.gacha-btn[data-v-1cf27b2a] {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: transparent;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 8px;
+  margin-right: 8px;
+}
 .app-logo[data-v-1cf27b2a] {
   font-family: "Noto Serif SC", "Playfair Display", serif;
   font-size: 32px;

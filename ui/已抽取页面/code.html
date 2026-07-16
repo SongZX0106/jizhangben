@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>幸运抽卡 - 历史记录</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#dcd9d9",
+                    "inverse-primary": "#e9c400",
+                    "primary-fixed-dim": "#e9c400",
+                    "on-background": "#1c1b1b",
+                    "on-tertiary-container": "#61613e",
+                    "primary-fixed": "#ffe16d",
+                    "background": "#fcf9f8",
+                    "secondary-fixed-dim": "#fbbc00",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-container": "#f0eded",
+                    "primary-container": "#ffd700",
+                    "surface": "#fcf9f8",
+                    "secondary": "#795900",
+                    "on-primary-fixed": "#221b00",
+                    "surface-container-highest": "#e5e2e1",
+                    "on-primary-variant": "#4d4732",
+                    "on-surface-variant": "#4d4732",
+                    "on-error": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#484828",
+                    "outline-variant": "#d0c6ab",
+                    "inverse-surface": "#313030",
+                    "on-secondary-fixed": "#261a00",
+                    "surface-variant": "#e5e2e1",
+                    "on-tertiary-fixed": "#1d1d03",
+                    "secondary-container": "#ffbf00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-fixed-variant": "#544600",
+                    "surface-tint": "#705d00",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#60603e",
+                    "tertiary-container": "#dedcb1",
+                    "error-container": "#ffdad6",
+                    "secondary-fixed": "#ffdfa0",
+                    "on-secondary-fixed-variant": "#5c4300",
+                    "surface-container-high": "#eae7e7",
+                    "on-surface": "#1c1b1b",
+                    "on-tertiary": "#ffffff",
+                    "outline": "#7e775f",
+                    "tertiary-fixed": "#e6e5b9",
+                    "on-secondary-container": "#6d5000",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-bright": "#fcf9f8",
+                    "inverse-on-surface": "#f3f0ef",
+                    "tertiary-fixed-dim": "#cac99f"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "12px",
+                    "container-padding": "20px",
+                    "unit": "4px",
+                    "section-margin": "32px",
+                    "card-gap": "16px"
+            },
+            "fontFamily": {
+                    "title-md": ["Plus Jakarta Sans"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"],
+                    "headline-lg-mobile": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "title-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}],
+                    "display-lg": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background: radial-gradient(circle at top left, #fff9e6 0%, #fffcf5 50%, #fcf9f8 100%);
+            min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(255, 191, 0, 0.05);
+        }
+        .item-row {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .item-row:active {
+            transform: scale(0.98);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .restore-btn {
+            background: #FFD700;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="font-body-lg text-on-surface selection:bg-primary/20">
+<!-- Top AppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/15 backdrop-blur-xl border-b border-white/20 shadow-[0_4px_30px_rgba(0,0,0,0.05)] flex items-center justify-between px-container-padding h-16">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+</button>
+<h1 class="font-title-md text-title-md text-primary">幸运抽卡</h1>
+</div>
+<div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a cheerful young woman with a warm smile, wearing stylish glasses and a cream-colored sweater. The lighting is soft and golden, matching the overall warm yellow and white UI aesthetic. The background is a softly blurred modern office interior with warm ambient tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwNWm9Bo3N521LpUjuVC1KVJnfms8ZbjLuwowoPBidfJ2EIQMKduThkP6uzLMifUoYkAghwCJh8noPa9GeTiJ3QMGJxTkDTjKytYPoPvqNIANfQcPREDOQjiUR6xd2ZhQSXRaCyeJLfEIM365Ru5rXcHMD331lXQAY7D_NKik2SzTTdt9xLRWmKuX9_l-moIY1eKwKIH9xnlRHa7M1PUQi9bgoDb6fxJLow8HqNc2mGDW8RC3Rn9WC"/>
+</div>
+</header>
+<main class="pt-24 pb-32 px-container-padding">
+<!-- Section Header -->
+<div class="mb-section-margin flex items-end justify-between">
+<div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-1">已抽取内容</h2>
+<p class="text-on-surface-variant font-label-sm text-label-sm">共计 24 件奖品，可在下方进行管理</p>
+</div>
+<div class="glass-card px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]" data-icon="filter_list">filter_list</span>
+<span class="text-label-sm text-secondary">筛选</span>
+</div>
+</div>
+<!-- History Bento List -->
+<div class="space-y-card-gap">
+<!-- Item 1 -->
+<div class="glass-card rounded-lg p-4 flex items-center gap-4 item-row">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-white/40 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A luxurious golden rare card featuring a mystical phoenix illustration. The design uses high-contrast warm yellows and deep oranges, with intricate glowing details. The style is premium 2D game art with a glossy glass-like finish, perfectly fitting the modern gachapon theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcLvl51EfZQNYpNBNWI900FENMrRvCKoj-YQjdFWUV3qlVm9n63kkRV3C3AlIMvW7TPXQvPpTyASF8Wyu7OTaCTU8xU_CZ_GyLSDFBTBJ6Q5QLCmplunxFYGKr4S686HqzkACAfGFMCbDlS2E9wVmhKU7ZvqtWjfFDQJNtZ2EpcUOyrquTTge1F8j7FlDj3z2dqVpXxvowxYqgikk9T7r6KIU5iv1spgPtFFceJ8qqBwUFMS_45q7z"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0.5 rounded-full font-bold">LEGENDARY</span>
+<span class="text-on-surface-variant text-[12px]">2023.10.24 14:30</span>
+</div>
+<h3 class="font-title-md text-[18px] text-on-surface truncate">不灭凤凰之魂</h3>
+<p class="text-on-surface-variant text-label-sm truncate">全服限量 100 份的珍稀藏品</p>
+</div>
+<button class="restore-btn text-on-primary-fixed font-bold text-label-sm px-4 py-2.5 rounded-full active:scale-90 transition-transform flex-shrink-0">
+                    恢复到奖池
+                </button>
+</div>
+<!-- Item 2 -->
+<div class="glass-card rounded-lg p-4 flex items-center gap-4 item-row">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-white/40 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A magical violet-tinted orb containing a swirling galaxy nebula. The orb has a glossy 3D texture with high-key white crescent highlights on top, creating a tactile glass effect. The surrounding palette is soft lavender and gold, consistent with a high-end mobile UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCD62oRikjbCH3IkHmESzLA_LKwbjlokkedaA0AMC_fEmqva1d1YzKeLYqc5hpR3hi3n8tgLHJ14TGzp5eiNApfq3FgxPDfLDERoTU_zD3NRBMweb8qzYdv6Fn-XANv3LuXHW1VbZOPn2J-G3QOI38AaHw5mQ6nG4DGEhQy8MZihzQn28gS7LrvWuiyAjoHUgAkTBHjyCh_1KD9txooJ1BYpGiaJPvvRMFTkcxs4-nkf1M-YEN-PTfB"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded-full font-bold">EPIC</span>
+<span class="text-on-surface-variant text-[12px]">2023.10.24 12:15</span>
+</div>
+<h3 class="font-title-md text-[18px] text-on-surface truncate">星辰幻镜之球</h3>
+<p class="text-on-surface-variant text-label-sm truncate">提升下一次抽卡幸运值</p>
+</div>
+<button class="restore-btn text-on-primary-fixed font-bold text-label-sm px-4 py-2.5 rounded-full active:scale-90 transition-transform flex-shrink-0">
+                    恢复到奖池
+                </button>
+</div>
+<!-- Item 3 -->
+<div class="glass-card rounded-lg p-4 flex items-center gap-4 item-row">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-white/40 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A stack of glowing digital coins with a warm golden metallic finish. The coins feature an embossed sun icon. They are presented in a clean, minimalist 3D style on a semi-transparent surface, with soft ambient occlusion and warm highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBffwKWfimc7oOSylDDFls2OTvKUzYbpPg6fGiIZjSYBvfP1atGK05xZGiHQMNtbMb-fVbNOWE5Aj4QtyaXWxgGf_zFhgR31uqAX1ceOhgzmKlTfxXut-cGwA_JHz5G8ViTktu2uc6DLSRn01RegMnAbxDDpWyGuyzk4wZRsierpj5QeYB0qtW3A5i88Y4MdPSLr77lfH3ZmNPMl_-H483nCDlnvzYS_n-A-AU7-5CIeR3odMtR61I2"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 rounded-full font-bold">COMMON</span>
+<span class="text-on-surface-variant text-[12px]">2023.10.23 20:05</span>
+</div>
+<h3 class="font-title-md text-[18px] text-on-surface truncate">金币福袋 (500)</h3>
+<p class="text-on-surface-variant text-label-sm truncate">基础游戏货币奖励</p>
+</div>
+<button class="restore-btn text-on-primary-fixed font-bold text-label-sm px-4 py-2.5 rounded-full active:scale-90 transition-transform flex-shrink-0">
+                    恢复到奖池
+                </button>
+</div>
+<!-- Item 4 -->
+<div class="glass-card rounded-lg p-4 flex items-center gap-4 item-row">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-white/40 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A stylized digital key crafted from crystal and gold, emitting a soft amber glow. The key floats in a bright, clean space with subtle light particles. The art style is polished and modern, emphasizing transparency and luxury." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeHr0tMtwwjOZ7_UCQPZ67hvwIdl6EIMlK49bTodFa4HV_1Nrrdq640cZuYY0p9bU_7VmavkFpedngOGkUir-2oPCbqy-BjNgN7zGn8nPKdVXYIrgsNiRX0qjCYoajHMZeESYAB6O2oze5V_0O7vLHDUn7EngoOM2x0iAoHB9rqtZiiL4k9MySiHodg8d9exfLssCmBKgDk0-mDWVDHAQV_JnMIkBv4Wcb3q03oO6iKdKOzC_cQcTl"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded-full font-bold">RARE</span>
+<span class="text-on-surface-variant text-[12px]">2023.10.22 15:40</span>
+</div>
+<h3 class="font-title-md text-[18px] text-on-surface truncate">远古密匣钥匙</h3>
+<p class="text-on-surface-variant text-label-sm truncate">用于开启特殊奖池的凭证</p>
+</div>
+<button class="restore-btn text-on-primary-fixed font-bold text-label-sm px-4 py-2.5 rounded-full active:scale-90 transition-transform flex-shrink-0">
+                    恢复到奖池
+                </button>
+</div>
+<!-- Item 5 -->
+<div class="glass-card rounded-lg p-4 flex items-center gap-4 item-row">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-white/40 flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A collection of colorful vibrant gems—rubies, sapphires, and emeralds—scattered on a warm white surface. The gems have high refraction and sharp facets, glowing under warm studio lighting. The aesthetic is clean, professional, and visually rich." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNFqscLbj8tUTxVm8NrmFFfGYwi9-blkMTDDZyZvXo4AX6dsyWwvyxVhMmX_UKLEAPvzT-qvgw6RLxH8X-dxtUKmMk9QSov3SKIIZvYYEg8aKgxRaND2rz63dRe6_yIc1BfiBv59G7_vsq_E82ipFuVJ_fAS4wIURDYmX5IGaLiFFbLxXlKjZDIA0xf8t3hIhVyg9tGfbmHuKIEcyGtch-__WlgFxm1fXjMXR7pFSwet2qVpiSMgNU"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex items-center gap-2 mb-1">
+<span class="bg-surface-container-highest text-on-surface-variant text-[10px] px-2 py-0.5 rounded-full font-bold">COMMON</span>
+<span class="text-on-surface-variant text-[12px]">2023.10.21 09:12</span>
+</div>
+<h3 class="font-title-md text-[18px] text-on-surface truncate">碎星矿石 *10</h3>
+<p class="text-on-surface-variant text-label-sm truncate">强化卡牌等级的必要材料</p>
+</div>
+<button class="restore-btn text-on-primary-fixed font-bold text-label-sm px-4 py-2.5 rounded-full active:scale-90 transition-transform flex-shrink-0">
+                    恢复到奖池
+                </button>
+</div>
+</div>
+<div class="mt-8 text-center">
+<button class="text-secondary font-bold hover:underline">查看更多记录</button>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-white/10 backdrop-blur-2xl border-t border-white/30 shadow-[0_-8px_32px_rgba(255,191,0,0.15)] flex justify-around items-center px-4 py-3 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="home_app_logo">home_app_logo</span>
+<span class="font-label-sm text-label-sm">活动</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="library_add">library_add</span>
+<span class="font-label-sm text-label-sm">奖池</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-white/20 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="stars">stars</span>
+<span class="font-label-sm text-label-sm">抽卡</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="history" style="font-variation-settings: 'FILL' 1;">history</span>
+<span class="font-label-sm text-label-sm">历史</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for buttons
+        document.querySelectorAll('.restore-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const row = this.closest('.item-row');
+                row.style.transform = 'scale(0.95) translateX(20px)';
+                row.style.opacity = '0';
+                setTimeout(() => {
+                    row.remove();
+                }, 300);
+            });
+        });
+
+        // Simple parallax-like tilt on scroll for cards (Mobile optimized)
+        window.addEventListener('scroll', () => {
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const center = window.innerHeight / 2;
+                const offset = (rect.top + rect.height/2 - center) / center;
+                // Subtle shadow adjustment based on position
+                if(Math.abs(offset) < 1) {
+                    card.style.boxShadow = `0 ${8 + offset * 10}px 32px rgba(255, 191, 0, ${0.05 + Math.abs(offset) * 0.05})`;
+                }
+            });
+        });
+    </script>
+</body></html>

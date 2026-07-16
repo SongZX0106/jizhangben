@@ -7,6 +7,7 @@
         <text class="app-tagline">ShiJi</text>
       </view>
       <view class="app-bar-right">
+        <text class="gacha-btn" @click="goGacha">◆ 抽卡</text>
         <text
           class="compare-btn"
           v-if="!compareMode && computedSnapshots.length > 1"
@@ -556,6 +557,10 @@ function closeCompare() {
 function goAdd() {
   uni.navigateTo({ url: "/pages/add/index" });
 }
+
+function goGacha() {
+  uni.navigateTo({ url: "/pages/gacha/list/index" });
+}
 </script>
 
 <style scoped>
@@ -594,6 +599,16 @@ function goAdd() {
 .compare-btn.cancel {
   color: #a0a0a0;
   border-color: rgba(160, 160, 160, 0.3);
+}
+.gacha-btn {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: transparent;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 8px;
+  margin-right: 8px;
 }
 .app-logo {
   font-family: "Noto Serif SC", "Playfair Display", serif;
