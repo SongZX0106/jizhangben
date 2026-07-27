@@ -195,6 +195,11 @@ import { onLoad } from "@dcloudio/uni-app";
 
 const STORAGE_KEY = "asset_snapshots";
 
+// ==================== 图片金额识别服务 ====================
+// Python 后端地址（运行在电脑上）
+// H5 模式本机调试可用 127.0.0.1，真机调试需改为电脑的局域网 IP
+const RECOGNIZE_API = "http://127.0.0.1:5000/api/recognize";
+
 const defaultPlatforms = [
   { name: "微信", desc: "社交支付", icon: "微", cls: "wechat" },
   { name: "支付宝", desc: "数字钱包", icon: "支", cls: "alipay" },
@@ -216,6 +221,7 @@ const pickerOpen = ref(false);
 const customName = ref("");
 const lastTotal = ref(0);
 const savingImages = ref(false);
+const recognizing = ref(false);
 const showScreenshots = ref(true);
 const showNote = ref(true);
 
@@ -386,19 +392,30 @@ function chooseImage() {
     sourceType: ["album", "camera"],
     success: (res) => {
       savingImages.value = true;
-      let pending = res.tempFilePaths.length;
-      res.tempFilePaths.forEach(function (tempPath) {
+      const tempPaths = res.tempFilePaths;
+      // 用数组按索引保存，保证顺序与 tempPaths 一致
+      const savedPaths = [];
+      let pending = tempPaths.length;
+      tempPaths.forEach(function (tempPath, index) {
         uni.saveFile({
           tempFilePath: tempPath,
           success: function (saveRes) {
-            screenshots.value.push(saveRes.savedFilePath);
+            savedPaths[index] = saveRes.savedFilePath;
           },
           fail: function () {
-            screenshots.value.push(tempPath);
+            savedPaths[index] = tempPath;
           },
           complete: function () {
             pending--;
-            if (pending <= 0) savingImages.value = false;
+            if (pending <= 0) {
+              // 倒序：chooseImage 返回的图片顺序通常与选择顺序相反
+              screenshots.value = savedPaths.filter(Boolean).reverse();
+              savingImages.value = false;
+              console.log(tempPaths,"tempPaths");
+              
+              // 同时倒序传入，使识别顺序与平台列表顺序一致
+              if (tempPaths.length > 0) recognizeAll([...tempPaths].reverse());
+            }
           },
         });
       });
@@ -408,6 +425,87 @@ function chooseImage() {
 
 function removeScreenshot(index) {
   screenshots.value.splice(index, 1);
+}
+
+/** 依次识别多张图片，按识别出的平台名称匹配填入对应金额 */
+function recognizeAll(tempPaths) {
+  if (tempPaths.length === 0 || recognizing.value) return;
+  recognizing.value = true;
+  uni.showLoading({ title: "识别金额…", mask: true });
+
+  let i = 0;
+  function next() {
+    if (i >= tempPaths.length) {
+      recognizing.value = false;
+      uni.hideLoading();
+      uni.showToast({
+        title: "识别完成",
+        icon: "success",
+      });
+      return;
+    }
+    uni.uploadFile({
+      url: RECOGNIZE_API,
+      filePath: tempPaths[i],
+      name: "image",
+      success: (res) => {
+        if (res.statusCode !== 200) return;
+        try {
+          const result = JSON.parse(res.data);
+          if (result.success && result.data && result.data.balance != null) {
+            const balance = result.data.balance;
+            let target = null;
+
+            // 优先按识别的平台名称匹配
+            if (result.data.name) {
+              const name = result.data.name.trim();
+              target = platforms.value.find((p) => p.name === name);
+
+              // 名称不在列表中 → 自动新增平台并填入
+              if (!target && name) {
+                const colors = ["wechat", "alipay", "cmb", "icbc"];
+                const cls = colors[Math.floor(Math.random() * colors.length)];
+                target = {
+                  id: ++platformIdCounter,
+                  name: name,
+                  desc: "自动识别",
+                  icon: name[0],
+                  cls: cls,
+                  amount: "",
+                };
+                platforms.value.push(target);
+              }
+            }
+
+            // 按名称未匹配到，回退到第一个空平台
+            if (!target) {
+              target = platforms.value.find(
+                (p) => !p.amount || parseFloat(p.amount) === 0,
+              );
+            }
+
+            if (target) target.amount = String(balance);
+          }
+        } catch (e) {
+          console.error("解析识别结果失败:", e);
+        }
+      },
+      fail: () => {
+        if (i === 0) {
+          uni.showToast({
+            title: "识别服务未连接，请确保 Python 后端已启动",
+            icon: "none",
+            duration: 2500,
+          });
+        }
+      },
+      complete: () => {
+        i++;
+        next();
+      },
+    });
+  }
+  next();
 }
 
 function previewImage(index) {
