@@ -198,7 +198,8 @@ const STORAGE_KEY = "asset_snapshots";
 // ==================== 图片金额识别服务 ====================
 // Python 后端地址（运行在电脑上）
 // H5 模式本机调试可用 127.0.0.1，真机调试需改为电脑的局域网 IP
-const RECOGNIZE_API = "http://127.0.0.1:5000/api/recognize";
+// const RECOGNIZE_API = "http://127.0.0.1:5000/api/recognize";
+const RECOGNIZE_API = "http://8.140.220.145:5000/api/recognize";
 
 const defaultPlatforms = [
   { name: "微信", desc: "社交支付", icon: "微", cls: "wechat" },
@@ -463,14 +464,16 @@ function recognizeAll(tempPaths) {
 
               // 名称不在列表中 → 自动新增平台并填入
               if (!target && name) {
-                const colors = ["wechat", "alipay", "cmb", "icbc"];
-                const cls = colors[Math.floor(Math.random() * colors.length)];
+                // 匹配默认平台的样式
+                const matched = defaultPlatforms.find(
+                  (dp) => dp.name === name,
+                );
                 target = {
                   id: ++platformIdCounter,
                   name: name,
-                  desc: "自动识别",
-                  icon: name[0],
-                  cls: cls,
+                  desc: matched ? matched.desc : "自动识别",
+                  icon: matched ? matched.icon : name[0],
+                  cls: matched ? matched.cls : "default",
                   amount: "",
                 };
                 platforms.value.push(target);
